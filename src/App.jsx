@@ -1069,7 +1069,24 @@ export default function DetailPageGenerator() {
     };
 
     setConcept(templateConceptMap[templateId] || "minimal");
+    // 변경: 바로 돌아가지 않음 (selectedTemplate만 저장)
+  };
+
+  // 템플릿을 선택한 후 상세페이지 생성
+  const handleGenerateWithTemplate = async () => {
+    if (!selectedTemplate) {
+      setError("템플릿을 선택해주세요.");
+      return;
+    }
+    
+    // 메인 화면으로 이동
     setViewMode("main");
+    
+    // 상세페이지 생성 실행 (설계는 이미 있으므로 바로 생성)
+    // runPipeline()의 로직을 따름: showPageDesign이 true면 생성 실행
+    setTimeout(() => {
+      runPipeline();
+    }, 100);
   };
 
   // 템플릿 메뉴 돌아가기
@@ -2068,20 +2085,20 @@ ${fontLink}
                   <div style={{ fontSize: 13.5, color: "#8B8175", lineHeight: 1.6 }}>AI가 구매 전환을 높일 수 있는 상세페이지 구조를 먼저 설계했습니다.</div>
                 </div>
                 <button
-                  onClick={runPipeline}
+                  onClick={() => setViewMode("templates")}
                   style={{
                     padding: "12px 18px",
                     borderRadius: 12,
                     border: "none",
-                    background: "linear-gradient(135deg, #A87535 0%, #8B5E2C 100%)",
+                    background: "linear-gradient(135deg, #5A6E52 0%, #4A5E42 100%)",
                     color: "#fff",
                     fontWeight: 900,
                     fontSize: 13.5,
                     cursor: "pointer",
-                    boxShadow: "0 14px 28px rgba(168,117,53,0.22)",
+                    boxShadow: "0 14px 28px rgba(90,110,82,0.22)",
                   }}
                 >
-                  ✨ 이 설계로 상세페이지 생성
+                  다음 단계 : 템플릿 선택 →
                 </button>
               </div>
 
@@ -2745,12 +2762,12 @@ ${fontLink}
           </>
         ) : viewMode === "templates" ? (
           <TemplateGallery
-            selected={selectedTemplate}
-            onSelect={handleSelectTemplate}
-            onBack={handleBackFromTemplates}
-            mainColor={themeColor}
-            accentColor={accent1}
-            recommendedId="premium-white"
+            selectedTemplate={selectedTemplate}
+            onSelectTemplate={handleSelectTemplate}
+            onBack={() => setViewMode("main")}
+            onGenerate={handleGenerateWithTemplate}
+            themeColor={themeColor}
+            pointColors={pointColors}
           />
         ) : (
           // 내 프로젝트 화면
