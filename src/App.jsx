@@ -318,7 +318,6 @@ function buildMockPageDesign(product) {
   };
 }
 
-function buildMockStrategyAnalysis(product) {
 
 function buildMockDetailPage(prompt) {
   const text = String(prompt || "");
@@ -618,10 +617,7 @@ export default function DetailPageGenerator() {
 
   // 템플릿 및 전략 분석 state
   const [selectedTemplate, setSelectedTemplate] = useState(null);
-  const [strategyAnalysis, setStrategyAnalysis] = useState(null);
-  const [showStrategyResult, setShowStrategyResult] = useState(false);
-
-  // 변경: pageDesign으로 추가 저장
+  // 페이지 설계 state
   const [pageDesign, setPageDesign] = useState(null);
   const [showPageDesign, setShowPageDesign] = useState(false);
 
