@@ -54,6 +54,7 @@ function saveProject(projectData) {
       headingFont: projectData.headingFont,
       bodyFont: projectData.bodyFont,
       concept: projectData.concept,
+      additionalRequest: projectData.additionalRequest || "",
       draft: projectData.draft || null,
       compliance: projectData.compliance || null,
     };
@@ -363,6 +364,18 @@ function buildMockPageDesign(product) {
     { name: "Science Clean", reason: "수치, 함량, 인증 정보를 투명하게 보여주기 좋음" },
   ];
 
+  const requestNote = safe(product.additionalRequest);
+  if (requestNote) {
+    pageStructure.splice(7, 0, {
+      step: "08",
+      title: "요청사항 반영 섹션",
+      description: `사용자가 요청한 "${requestNote.slice(0, 28)}${requestNote.length > 28 ? "..." : ""}" 내용을 규정에 맞게 자연스럽게 배치합니다.`,
+    });
+    pageStructure.forEach((item, idx) => {
+      item.step = String(idx + 1).padStart(2, "0");
+    });
+  }
+
   const recommendedImages = [
     { label: "Hero", recommendation: "제품 패키지와 핵심 원료가 함께 보이는 프리미엄 컷", reason: "첫 화면에서 제품 존재감과 원료 신뢰를 동시에 전달합니다." },
     { label: "공감", recommendation: "식후 루틴이나 일상 관리 상황을 은은하게 보여주는 이미지", reason: "고객이 자신의 상황을 대입하기 쉽게 만듭니다." },
@@ -667,7 +680,8 @@ export default function DetailPageGenerator() {
   const [pointColors, setPointColors] = useState([]); // 최대 2개
   const [headingFont, setHeadingFont] = useState("pretendard");
   const [bodyFont, setBodyFont] = useState("pretendard");
-  const [concept, setConcept] = useState("minimal");
+  const [concept, setConcept] = useState("minimal"); // 내부 미리보기 스타일 호환용
+  const [additionalRequest, setAdditionalRequest] = useState("");
 
   const [stage, setStage] = useState(-1); // -1 idle, 0..3 running, 4 done
   const [error, setError] = useState("");
@@ -749,6 +763,7 @@ export default function DetailPageGenerator() {
       headingFont,
       bodyFont,
       concept,
+      additionalRequest,
       draft: draft || null,
       compliance: compliance || null,
     };
@@ -796,8 +811,9 @@ export default function DetailPageGenerator() {
     setThemeColor(project.themeColor);
     setPointColors(project.pointColors || []);
     setHeadingFont(project.headingFont);
-    setBodyFont(project.bodyFont);
-    setConcept(project.concept);
+    setBodyFont(project.bodyFont || "pretendard");
+    setConcept(project.concept || "minimal");
+    setAdditionalRequest(project.additionalRequest || "");
     setDraft(project.draft);
     setCompliance(project.compliance);
     setCurrentProjectId(project.projectId);
@@ -844,7 +860,7 @@ export default function DetailPageGenerator() {
     setPageDesign(null);
 
     // AI 상세페이지 설계 생성
-    const design = buildMockPageDesign(product);
+    const design = buildMockPageDesign({ ...product, additionalRequest });
     setPageDesign(design);
     setShowPageDesign(true);
   }
@@ -1760,14 +1776,32 @@ ${fontLink}
             <FontPicker value={bodyFont} onChange={setBodyFont} themeColor={themeColor} />
           </Field>
 
-          <Field label="디자인 컨셉">
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {CONCEPTS.map((c) => (
-                <button key={c.id} onClick={() => setConcept(c.id)} style={{ textAlign: "left", padding: "8px 10px", borderRadius: 8, border: concept === c.id ? `1.5px solid ${themeColor}` : "1.5px solid rgba(244,243,238,0.15)", background: concept === c.id ? "#FFFFFF" : "transparent", color: "#2B2925", cursor: "pointer" }}>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>{c.label}</div>
-                  <div style={{ fontSize: 11, opacity: 0.55 }}>{c.desc}</div>
-                </button>
-              ))}
+          <Field label="추가 요청사항 (선택)">
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <div style={{ fontSize: 11.5, color: "#6F665C", lineHeight: 1.45 }}>
+                AI가 상세페이지를 설계할 때 반드시 반영했으면 하는 내용을 자유롭게 입력해주세요.
+              </div>
+              <textarea
+                value={additionalRequest}
+                onChange={(e) => setAdditionalRequest(e.target.value)}
+                placeholder={`예)\n• 인도산 원료를 강조해주세요.\n• 시험성적서는 마지막에 넣어주세요.\n• 브랜드 스토리를 포함해주세요.`}
+                rows={5}
+                disabled={isGenerating}
+                style={{
+                  width: "100%",
+                  minHeight: 104,
+                  resize: "vertical",
+                  border: `1.5px solid ${additionalRequest ? themeColor : "#E7DED3"}`,
+                  borderRadius: 10,
+                  background: isGenerating ? "#F7F4EE" : "#FFFFFF",
+                  color: "#2B2925",
+                  padding: "11px 12px",
+                  fontSize: 12.5,
+                  lineHeight: 1.55,
+                  outline: "none",
+                  fontFamily: bodyFamily,
+                }}
+              />
             </div>
           </Field>
 
