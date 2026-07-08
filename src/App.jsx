@@ -131,24 +131,71 @@ const CONCEPTS = [
   { id: "editorial", label: "에디토리얼", desc: "매거진풍, 큰 여백, 라인 구분" },
 ];
 
-const PRESET_COLORS = ["#2F4739", "#5A6E52", "#A6543C", "#B8894A", "#6E3B3B", "#4A4038", "#2B3A42", "#7A6A80"];
+const PRESET_COLORS = [
+  "#D8C3A5", // Warm Beige
+  "#AFC3A4", // Sage Green
+  "#C8785F", // Soft Terracotta
+  "#C89A5A", // Caramel Gold
+  "#A86F73", // Dusty Rose
+  "#7FA0AA", // Dusty Blue
+  "#A896B5", // Mauve
+  "#8A6A56", // Soft Brown
+  "#355545", // Deep Green
+];
 
 // 포인트(강조) 컬러 프리셋 — 라벨/배지/강조에 쓰는 보조색
-const POINT_COLORS = ["#A6543C", "#B8894A", "#2F4739", "#6E3B3B", "#C9A227", "#5A6E52", "#8C6239", "#3E5C63", "#8A4A54", "#2B3A42"];
+const POINT_COLORS = [
+  "#C8785F", // Terracotta
+  "#D2A15F", // Caramel
+  "#2F5A46", // Forest Green
+  "#A86F73", // Rose Brown
+  "#D0AF39", // Soft Mustard
+  "#7F9568", // Olive Sage
+  "#B08355", // Cocoa Beige
+  "#5F8390", // Dusty Blue
+  "#B06F86", // Mauve Pink
+  "#506B7C", // Blue Gray
+  "#E6C7B0", // Peach Beige
+  "#B8A3C7", // Lavender Mauve
+  "#E0B7A4", // Blush Terracotta
+  "#9DB8A3", // Pale Sage
+];
 
 // 폰트 무드 옵션. 한글 지원 구글 폰트 위주.
 // family는 CSS font-family 값, google은 구글폰트 로드용 키.
 const FONTS = [
+  // Korean Sans
   { id: "pretendard", label: "프리텐다드 (기본)", family: '"Pretendard", "Apple SD Gothic Neo", sans-serif', google: null },
-  { id: "notosans", label: "노토 산스 (모던 고딕)", family: '"Noto Sans KR", sans-serif', google: "Noto+Sans+KR:wght@400;700;800" },
-  { id: "notoserif", label: "노토 세리프 (명조)", family: '"Noto Serif KR", serif', google: "Noto+Serif+KR:wght@400;600;700;900" },
-  { id: "gothica1", label: "고딕 A1 (깔끔 고딕)", family: '"Gothic A1", sans-serif', google: "Gothic+A1:wght@400;700;800" },
+  { id: "suit", label: "SUIT (깔끔한 고딕)", family: '"SUIT", "Pretendard", sans-serif', google: null },
+  { id: "paperlogy", label: "Paperlogy (브랜드 고딕)", family: '"Paperlogy", "Pretendard", sans-serif', google: null },
+  { id: "spoqa", label: "Spoqa Han Sans (정돈된 고딕)", family: '"Spoqa Han Sans Neo", "Pretendard", sans-serif', google: null },
+  { id: "notosans", label: "Noto Sans KR (모던 고딕)", family: '"Noto Sans KR", sans-serif', google: "Noto+Sans+KR:wght@400;500;700;800" },
+  { id: "gothica1", label: "Gothic A1 (깔끔 고딕)", family: '"Gothic A1", sans-serif', google: "Gothic+A1:wght@400;500;700;800" },
   { id: "nanumgothic", label: "나눔고딕 (친근)", family: '"Nanum Gothic", sans-serif', google: "Nanum+Gothic:wght@400;700;800" },
+  { id: "gmarket", label: "Gmarket Sans (커머스 고딕)", family: '"Gmarket Sans", "Pretendard", sans-serif', google: null },
+
+  // Korean Serif / Display
+  { id: "notoserif", label: "Noto Serif KR (명조)", family: '"Noto Serif KR", serif', google: "Noto+Serif+KR:wght@400;600;700;900" },
+  { id: "ridibatang", label: "RIDIBatang (감성 명조)", family: '"RIDIBatang", "Noto Serif KR", serif', google: null },
   { id: "nanummyeongjo", label: "나눔명조 (클래식)", family: '"Nanum Myeongjo", serif', google: "Nanum+Myeongjo:wght@400;700;800" },
   { id: "jua", label: "주아 (둥근 발랄)", family: '"Jua", sans-serif', google: "Jua" },
   { id: "dohyeon", label: "도현 (두꺼운 임팩트)", family: '"Do Hyeon", sans-serif', google: "Do+Hyeon" },
   { id: "gaegu", label: "개구 (손글씨 느낌)", family: '"Gaegu", cursive', google: "Gaegu:wght@400;700" },
   { id: "songmyung", label: "송명 (감성 명조)", family: '"Song Myung", serif', google: "Song+Myung" },
+
+  // English Sans
+  { id: "inter", label: "Inter (EN 기본)", family: '"Inter", sans-serif', google: "Inter:wght@400;500;700;800" },
+  { id: "poppins", label: "Poppins (EN 모던)", family: '"Poppins", sans-serif', google: "Poppins:wght@400;500;700;800" },
+  { id: "montserrat", label: "Montserrat (EN 프리미엄)", family: '"Montserrat", sans-serif', google: "Montserrat:wght@400;500;700;800" },
+  { id: "dmsans", label: "DM Sans (EN 부드러운 고딕)", family: '"DM Sans", sans-serif', google: "DM+Sans:wght@400;500;700;800" },
+  { id: "outfit", label: "Outfit (EN 세련된 고딕)", family: '"Outfit", sans-serif', google: "Outfit:wght@400;500;700;800" },
+  { id: "manrope", label: "Manrope (EN 깔끔)", family: '"Manrope", sans-serif', google: "Manrope:wght@400;500;700;800" },
+
+  // English Serif
+  { id: "playfair", label: "Playfair Display (EN 명조)", family: '"Playfair Display", serif', google: "Playfair+Display:wght@400;600;700;800" },
+  { id: "cormorant", label: "Cormorant Garamond (EN 클래식)", family: '"Cormorant Garamond", serif', google: "Cormorant+Garamond:wght@400;500;700" },
+  { id: "lora", label: "Lora (EN 감성 세리프)", family: '"Lora", serif', google: "Lora:wght@400;500;700" },
+  { id: "librebaskerville", label: "Libre Baskerville (EN 고급 세리프)", family: '"Libre Baskerville", serif', google: "Libre+Baskerville:wght@400;700" },
 ];
 
 // 선택된 폰트들의 구글폰트 로드 URL 생성
@@ -676,7 +723,7 @@ export default function DetailPageGenerator() {
     dha: "",
   });
   const [image, setImage] = useState(null);
-  const [themeColor, setThemeColor] = useState("#A87535");
+  const [themeColor, setThemeColor] = useState("#C89A5A");
   const [pointColors, setPointColors] = useState([]); // 최대 2개
   const [headingFont, setHeadingFont] = useState("pretendard");
   const [bodyFont, setBodyFont] = useState("pretendard");
