@@ -191,7 +191,7 @@ export default function DetailPageGenerator() {
       const categoryConstraint = buildGenerationConstraint(product.category);
 
       // 1+2단계 병합: 타깃 분석과 상세페이지 생성을 한 번의 호출로 처리
-      const genResult = await callClaude(`당신은 이커머스 소비자 심리 분석가이자 상세페이지 카피라이터입니다. 먼저 아래 제품의 타깃 고객이 구매 전 느끼는 pain_points와 의심(objections)을 머릿속으로 분석한 뒤, 그 분석을 근거로 진부하지 않고 타깃을 정확히 겨냥한 상세페이지 구성안을 작성하세요.\n\n[제품 정보]\n${productBlock}\n\n[제품 카테고리 제약 - ${product.category}]\n${categoryConstraint}\n\n${product.purity || product.actualAmount || product.epa || product.dha ? numericGuidance : ""}\n\n진부한 상투적 표현("이제는 ~해보세요", "여러분의 건강을 책임집니다" 등)을 쓰지 말고, 제공된 정보에 없는 성분·효능·인증은 지어내지 마세요.\n\n반드시 아래 JSON 형식으로만 답하세요. 설명 문구 없이 JSON만.\n{"hero_headline": "string", "hero_subcopy": "string", "sections": [{"type": "problem", "title": "string", "body": "string"}, {"type": "solution", "title": "string", "body": "string"}, {"type": "objection_handling", "title": "string", "body": "string"}, {"type": "benefit_list", "items": ["string"]}, {"type": "how_to_use", "body": "string"}, {"type": "trust_badges", "items": ["string"]}]}`, 3500, { product });
+      const genResult = await callClaude(`당신은 이커머스 소비자 심리 분석가이자 상세페이지 카피라이터입니다. 먼저 아래 제품의 타깃 고객이 구매 전 느끼는 pain_points와 의심(objections)을 머릿속으로 분석한 뒤, 그 분석을 근거로 진부하지 않고 타깃을 정확히 겨냥한 상세페이지 구성안을 작성하세요.\n\n[제품 정보]\n${productBlock}\n\n[제품 카테고리 제약 - ${product.category}]\n${categoryConstraint}\n\n${product.purity || product.actualAmount || product.epa || product.dha ? numericGuidance : ""}\n\n진부한 상투적 표현("이제는 ~해보세요", "여러분의 건강을 책임집니다" 등)을 쓰지 말고, 제공된 정보에 없는 성분·효능·인증은 지어내지 마세요.\n\n반드시 아래 JSON 형식으로만 답하세요. 설명 문구 없이 JSON만.\n{"hero_headline": "string", "hero_subcopy": "string", "sections": [{"type": "problem", "title": "string", "body": "string"}, {"type": "solution", "title": "string", "body": "string"}, {"type": "objection_handling", "title": "string", "body": "string"}, {"type": "benefit_list", "items": ["string"]}, {"type": "how_to_use", "body": "string"}, {"type": "trust_badges", "items": ["string"]}]}`, 3500, { product }, "generation");
       const finalContent = genResult;
       setDraft(finalContent);
       setStage(2);
@@ -201,7 +201,7 @@ export default function DetailPageGenerator() {
       const complianceFocus = buildComplianceFocus(product.category);
 
       async function checkCompliance(content) {
-        return callClaude(`아래 상세페이지 콘텐츠를 건강기능식품 표시·광고 규정(식품 등의 표시·광고에 관한 법률 제8조) 관점에서 검토하세요.\n${JSON.stringify(content)}\n\n제품 카테고리: ${product.category}\n\n[체크 규칙]\n${complianceRules}\n\n[이 카테고리에서 특히 주의해서 볼 부분]\n${complianceFocus}\n\n각 항목의 suggested_revision은 1문장 이내로 간결하게 쓰세요.\n\n반드시 아래 JSON 형식으로만 답하세요.\n{"flags": [{"field": "string", "flagged_text": "string", "violation_type": "string", "risk_level": "high/medium/low", "suggested_revision": "string"}], "overall_status": "pass/needs_review"}`, 3000, { product });
+        return callClaude(`아래 상세페이지 콘텐츠를 건강기능식품 표시·광고 규정(식품 등의 표시·광고에 관한 법률 제8조) 관점에서 검토하세요.\n${JSON.stringify(content)}\n\n제품 카테고리: ${product.category}\n\n[체크 규칙]\n${complianceRules}\n\n[이 카테고리에서 특히 주의해서 볼 부분]\n${complianceFocus}\n\n각 항목의 suggested_revision은 1문장 이내로 간결하게 쓰세요.\n\n반드시 아래 JSON 형식으로만 답하세요.\n{"flags": [{"field": "string", "flagged_text": "string", "violation_type": "string", "risk_level": "high/medium/low", "suggested_revision": "string"}], "overall_status": "pass/needs_review"}`, 3000, { product }, "compliance");
       }
 
       let currentContent = finalContent;
@@ -210,7 +210,7 @@ export default function DetailPageGenerator() {
 
       while (complianceResult.overall_status === "needs_review" && complianceResult.flags?.length > 0 && attempts < 1) {
         setStage(3);
-        currentContent = await callClaude(`아래 상세페이지 콘텐츠에서, 명시된 리스크 항목들을 모두 제안된 방향으로 수정하세요. 리스크와 무관한 나머지 내용과 톤은 최대한 그대로 유지하세요.\n\n원본 콘텐츠: ${JSON.stringify(currentContent)}\n\n수정해야 할 리스크 목록: ${JSON.stringify(complianceResult.flags)}\n\n[전체 규정 - 수정 시 새로운 위반이 생기지 않도록 참고]\n${complianceRules}\n\n제품 카테고리 제약: ${categoryConstraint}${numericGuidance}\n\n반드시 원본과 동일한 JSON 구조로 전체 콘텐츠를 반환하세요. 설명 없이 JSON만.\n{"hero_headline": "string", "hero_subcopy": "string", "sections": [{"type": "problem", "title": "string", "body": "string"}, {"type": "solution", "title": "string", "body": "string"}, {"type": "objection_handling", "title": "string", "body": "string"}, {"type": "benefit_list", "items": ["string"]}, {"type": "how_to_use", "body": "string"}, {"type": "trust_badges", "items": ["string"]}]}`, 2500, { product });
+        currentContent = await callClaude(`아래 상세페이지 콘텐츠에서, 명시된 리스크 항목들을 모두 제안된 방향으로 수정하세요. 리스크와 무관한 나머지 내용과 톤은 최대한 그대로 유지하세요.\n\n원본 콘텐츠: ${JSON.stringify(currentContent)}\n\n수정해야 할 리스크 목록: ${JSON.stringify(complianceResult.flags)}\n\n[전체 규정 - 수정 시 새로운 위반이 생기지 않도록 참고]\n${complianceRules}\n\n제품 카테고리 제약: ${categoryConstraint}${numericGuidance}\n\n반드시 원본과 동일한 JSON 구조로 전체 콘텐츠를 반환하세요. 설명 없이 JSON만.\n{"hero_headline": "string", "hero_subcopy": "string", "sections": [{"type": "problem", "title": "string", "body": "string"}, {"type": "solution", "title": "string", "body": "string"}, {"type": "objection_handling", "title": "string", "body": "string"}, {"type": "benefit_list", "items": ["string"]}, {"type": "how_to_use", "body": "string"}, {"type": "trust_badges", "items": ["string"]}]}`, 2500, { product }, "remediation");
         setDraft(currentContent);
         complianceResult = await checkCompliance(currentContent);
         attempts += 1;
@@ -232,7 +232,7 @@ export default function DetailPageGenerator() {
       const feedbackLine = feedback
         ? `\n\n[사용자 수정 요청] 다음 요청을 반드시 반영해서 다시 쓰세요: "${feedback}"`
         : "";
-      const result = await callClaude(`아래는 상세페이지의 나머지 확정된 콘텐츠입니다. 이 톤과 맥락을 유지하면서, 지정된 필드만 다시 작성하세요.\n\n전체 콘텐츠: ${JSON.stringify(draft)}\n\n다시 작성할 대상: ${JSON.stringify(target)}\n\n제품 카테고리 제약: ${categoryConstraint}${feedbackLine}\n\n반드시 대상과 동일한 JSON 구조로만, 새로 작성된 내용을 반환하세요. 설명 없이 JSON만.`, 1200, { product });
+      const result = await callClaude(`아래는 상세페이지의 나머지 확정된 콘텐츠입니다. 이 톤과 맥락을 유지하면서, 지정된 필드만 다시 작성하세요.\n\n전체 콘텐츠: ${JSON.stringify(draft)}\n\n다시 작성할 대상: ${JSON.stringify(target)}\n\n제품 카테고리 제약: ${categoryConstraint}${feedbackLine}\n\n반드시 대상과 동일한 JSON 구조로만, 새로 작성된 내용을 반환하세요. 설명 없이 JSON만.`, 1200, { product }, "regenerate");
       if (idx === "hero") {
         setDraft((d) => ({ ...d, hero_headline: result.hero_headline, hero_subcopy: result.hero_subcopy }));
       } else {
