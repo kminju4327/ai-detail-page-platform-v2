@@ -485,10 +485,10 @@ function analyzePainPointsDeep(target, benefits, category, ingredient) {
     analysis.psychologicalShift = "\"좋은 정보\"보다 \"검증된 정보\"를 신뢰";
     analysis.trustIssue = "\"효과 있다더라\"는 카더라는 이제 안 통함. 수치와 근거가 필요";
     analysis.headlineCandidates = [
-      "호르몬이 멈춰도, 내 선택은 멈추지 않는다",
-      "40년을 살아온 당신의 몸이 신뢰할 수 있는 원료",
-      "의심하지 않고 먹을 수 있는 제품, 이제 찾았다",
-      `${ingredient || "원료"}의 투명한 수치, 비로소 안심`,
+      "매일 챙기기 좋은 건강 관리",
+      "선택할 이유? 충분합니다",
+      "간편하게, 명확하게",
+      `이거 하나면 끝`,
     ];
   } else if (isYoungWorker) {
     analysis.primaryPain = "바쁘고 복잡한 일상 속 건강 관리의 어려움";
@@ -500,9 +500,9 @@ function analyzePainPointsDeep(target, benefits, category, ingredient) {
     analysis.psychologicalShift = "복잡함을 제거한 \"극도로 간편한\" 솔루션만 먹힘";
     analysis.trustIssue = "\"진짜 효과 있나?\" 보다 \"이거 진짜 매일 먹을 수 있나?\"";
     analysis.headlineCandidates = [
-      "바쁜 당신을 위해, 복잡함은 모두 뺐다",
-      "하루 30초, 이것만으로 충분합니다",
-      "포기하지 않는 건강 습관, 이제 가능해졌습니다",
+      "바쁠 때는 이거 하나로",
+      "매일 챙기기 쉬운 제품",
+      "간편함이 전부",
     ];
   } else if (isSkinCare) {
     analysis.primaryPain = "눈에 보이는 피부 변화에 대한 절박함";
@@ -514,9 +514,9 @@ function analyzePainPointsDeep(target, benefits, category, ingredient) {
     analysis.psychologicalShift = "\"확실한 효과\"를 보여주는 브랜드만 신뢰";
     analysis.trustIssue = "광고와 실제 효과의 괴리감";
     analysis.headlineCandidates = [
-      "3주 후, 거울 앞에서 다시 웃는 당신",
-      "피부도 알아보는 원료, 선택의 기준",
-      "가짜 효과보다, 검증된 결과를 선택했다",
+      "피부 관심층의 선택",
+      "이거 먹으면 달라져요",
+      "매일 챙기는 피부 관리",
     ];
   } else {
     analysis.primaryPain = "제품 선택의 불확실성";
@@ -538,27 +538,34 @@ function analyzePainPointsDeep(target, benefits, category, ingredient) {
 }
 
 function generateTargetedHeadline(painAnalysis, productName) {
-  // Pain Point 기반 감정적 Headline
-  const headline = painAnalysis.headlineCandidates[0];
-  return headline || `${productName}, 당신의 선택입니다`;
+  // 캐주얼하고 자연스러운 Headline (정관장 스타일)
+  const casualHeadlines = [
+    `매일 챙기기 좋은, ${productName}`,
+    `간편하게, 명확하게`,
+    `선택할 이유? 충분합니다`,
+    `이거 하나면 끝`,
+    `${productName}, 이제 시작해보세요`,
+  ];
+  
+  return casualHeadlines[Math.floor(Math.random() * casualHeadlines.length)];
 }
 
 function generateStrongCopyBySection(painAnalysis, productName, benefits) {
-  // 각 섹션의 강력한 카피
+  // 캐주얼하고 자연스러운 카피 (정관장 스타일)
   return {
     problem: {
-      title: painAnalysis.primaryPain,
-      body: `${painAnalysis.emotionalCore}는 현실입니다. 특히 ${painAnalysis.psychologicalShift}`,
-      context: painAnalysis.socialContext,
+      title: "선택을 어렵게 만드는 정보의 차이",
+      body: "비슷한 제품도 많고, 어떤 걸 고를지 헷갈리죠. 결국 확인할 수 있는 정보가 가장 중요합니다.",
+      context: "명확한 정보가 신뢰입니다.",
     },
     solution: {
-      title: `${productName}이 풀 수 있는 이유`,
-      body: `${benefits}로 시작합니다. ${painAnalysis.trustIssue}에 답하기 위해, 모든 정보를 공개했습니다.`,
-      emphasis: "검증된 수치 → 투명한 정보 → 확신으로의 구매",
+      title: `${productName}이 다른 이유`,
+      body: `${benefits}. 이게 기준입니다. 모든 정보를 공개합니다.`,
+      emphasis: "간편하게, 명확하게, 믿고 마시세요",
     },
     cta: {
-      emotional: `당신의 ${painAnalysis.emotionalCore}를 끝내는 시작`,
-      rational: `${benefits}가 증명하는 ${productName}의 차이`,
+      emotional: "이제 선택해보세요",
+      rational: `${productName}`,
     },
   };
 }
@@ -572,64 +579,55 @@ function buildMockDetailPage(prompt) {
   const ingredient = text.match(/성분:\s*(.+)/)?.[1]?.split("\n")?.[0]?.trim();
   const certs = text.match(/인증정보:\s*(.+)/)?.[1]?.split("\n")?.[0]?.trim();
 
-  // 깊은 소구점 분석 실행
+  // 깊은 소구점 분석 (백그라운드에서만 사용)
   const painAnalysis = analyzePainPointsDeep(target, benefits, category, ingredient);
   
-  // 감정적 Headline 생성
+  // 감정적 Headline 생성 (이 부분만 개선)
   const emotionalHeadline = generateTargetedHeadline(painAnalysis, name);
-  
-  // 섹션별 강력한 카피 생성
-  const strongCopy = generateStrongCopyBySection(painAnalysis, name, benefits);
 
+  // 자연스러운 카피로 유지
   return {
     hero_headline: emotionalHeadline,
-    hero_subcopy: `${painAnalysis.psychologicalShift}는 많은 사람의 현실입니다. ${name}은 그 현실에 답합니다.`,
+    hero_subcopy: `${benefits}. 이게 우리의 기준입니다. 매일 챙기기 좋은 ${name}.`,
     painAnalysis: painAnalysis, // 이미지 생성용 정보
     sections: [
       {
         type: "problem",
-        title: strongCopy.problem.title,
-        body: strongCopy.problem.body,
-        context: strongCopy.problem.context,
+        title: "선택을 어렵게 만드는 정보의 차이",
+        body: `비슷한 제품도 많고, 뭐가 다른지 헷갈리죠. 결국 확인할 수 있는 정보가 가장 중요합니다.`,
       },
       {
         type: "solution",
-        title: strongCopy.solution.title,
-        body: strongCopy.solution.body,
-        emphasis: strongCopy.solution.emphasis,
+        title: `${name}이 다른 이유`,
+        body: `${benefits}. 이게 기준입니다. 간단하게, 명확하게.`,
       },
       {
         type: "objection_handling",
-        title: "\"효과가 있나요?\" 이 질문에 답합니다",
-        body: `${benefits}. 이것이 ${name}의 첫 번째 약속입니다. 광고나 주장이 아닌, 검증된 수치입니다.`,
+        title: "확실하게 확인할 수 있습니다",
+        body: `${benefits}. 모든 정보를 공개합니다. 의심 없이 매일 챙기세요.`,
       },
       {
         type: "benefit_list",
         items: [
-          `${benefits}로 시작하는 명확한 신뢰`,
-          "\"복잡함\"을 제거한 간단한 구성",
-          "의심 없이 지속할 수 있는 제품",
-          certs && certs !== "없음" ? `${certs}로 검증된 품질` : "투명한 정보 공개",
+          "원료와 함량이 명확합니다",
+          "복잡하지 않습니다",
+          "매일 챙기기 쉽습니다",
+          certs && certs !== "없음" ? `${certs}로 검증되었습니다` : "정보가 투명합니다",
         ].filter(Boolean),
       },
       {
         type: "how_to_use",
-        title: "복잡함 없이, 매일 같은 시간에",
-        body: "제품 라벨의 섭취 방법을 따르고, 최소 4주 지속해보세요. 변화는 확신이 필요합니다.",
+        title: "매일 챙기기 쉬운 방법",
+        body: "라벨에 적힌 대로 챙기세요. 4주 정도 지속하면 차이를 느낄 수 있습니다.",
       },
       {
         type: "trust_badges",
         items: [
-          `${ingredient || "핵심 원료"}의 투명성`,
-          "함량 정보의 명확성",
-          "지속 가능한 복용법",
-          category && category.includes("건강기능식품") ? "표시광고 준수" : "품질 신뢰",
+          ingredient ? `${ingredient}` : "원료 정보",
+          "함량",
+          "섭취 방법",
+          certs && certs !== "없음" ? certs : "품질 정보",
         ].filter(Boolean),
-      },
-      {
-        type: "cta",
-        title: strongCopy.cta.emotional,
-        subtitle: strongCopy.cta.rational,
       },
     ],
   };
