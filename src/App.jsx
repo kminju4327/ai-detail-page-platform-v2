@@ -1,17 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { Image as ImageIcon, X, Sparkles, ShieldAlert, ShieldCheck, RotateCw, CheckCircle2, Circle, Loader2, Copy, RefreshCw, Check, MessageSquare, Code, Download } from "lucide-react";
+import TemplateGallery, { DESIGN_TEMPLATES } from "./TemplateGallery";
 
 // ════════════════════════════════════════════════════════════════
 // 템플릿 상수
 // ════════════════════════════════════════════════════════════════
-const TEMPLATES = [
-  { id: "premium-story", label: "Premium Story", desc: "프리미엄 제품의 가치를 강조하는 스토리텔링" },
-  { id: "problem-solution", label: "Problem → Solution", desc: "고객의 문제 정의 후 해결책 제시" },
-  { id: "scientific", label: "Scientific", desc: "연구 결과와 과학적 근거 중심" },
-  { id: "lifestyle", label: "Lifestyle", desc: "생활 방식과의 통합, 라이프스타일 제시" },
-  { id: "brand-story", label: "Brand Story", desc: "브랜드의 철학과 스토리 강조" },
-  { id: "comparison", label: "Comparison", desc: "기존 제품 대비 우월성 강조" },
-];
+const TEMPLATES = DESIGN_TEMPLATES.map((template) => ({
+  id: template.id,
+  label: template.label,
+  desc: template.desc,
+}));
 
 // 다국어 언어 목록
 const LANGUAGES = [
@@ -1055,6 +1053,22 @@ export default function DetailPageGenerator() {
   // 템플릿 선택
   const handleSelectTemplate = (templateId) => {
     setSelectedTemplate(templateId);
+
+    // 현재 미리보기 렌더링과 호환되도록 디자인 템플릿을 기존 concept 스타일에 매핑
+    const templateConceptMap = {
+      "premium-white": "minimal",
+      "soft-beige": "warm",
+      editorial: "editorial",
+      "dark-luxury": "premium",
+      "science-lab": "minimal",
+      "natural-green": "natural",
+      minimal: "minimal",
+      "modern-clean": "minimal",
+      "bold-impact": "bold",
+      "warm-story": "warm",
+    };
+
+    setConcept(templateConceptMap[templateId] || "minimal");
     setViewMode("main");
   };
 
@@ -2730,80 +2744,14 @@ ${fontLink}
         </div>
           </>
         ) : viewMode === "templates" ? (
-          // 템플릿 선택 화면
-          <div style={{ background: "#F4F3EE", color: "#2B2925", padding: "28px 30px", display: "flex", flexDirection: "column", gap: 18, borderRight: "1px solid #E8E1D7", overflowY: "auto", flex: 1 }}>
-            {/* 헤더 */}
-            <div style={{ paddingBottom: 8, borderBottom: "1px solid #EEE7DD" }}>
-              <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.04em", marginBottom: 5 }}>상세페이지 템플릿</div>
-              <div style={{ fontSize: 12.5, color: "#8B8175" }}>원하는 스타일을 선택하세요.</div>
-            </div>
-
-            {/* 템플릿 목록 */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, flex: 1, overflowY: "auto" }}>
-              {TEMPLATES.map((template) => (
-                <button
-                  key={template.id}
-                  onClick={() => handleSelectTemplate(template.id)}
-                  style={{
-                    border: selectedTemplate === template.id ? `2px solid #A87535` : "1px solid #E3E1DA",
-                    background: selectedTemplate === template.id ? "#FFF8F0" : "#FFFFFF",
-                    borderRadius: 8,
-                    padding: 16,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 6,
-                    cursor: "pointer",
-                    transition: "all 0.2s ease",
-                    textAlign: "left",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (selectedTemplate !== template.id) {
-                      e.target.style.borderColor = "#D4C4B0";
-                      e.target.style.backgroundColor = "#FAFAF8";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (selectedTemplate !== template.id) {
-                      e.target.style.borderColor = "#E3E1DA";
-                      e.target.style.backgroundColor = "#FFFFFF";
-                    }
-                  }}
-                >
-                  <div style={{ fontSize: 15, fontWeight: 700, color: "#2B2925" }}>
-                    {selectedTemplate === template.id && "✓ "}{template.label}
-                  </div>
-                  <div style={{ fontSize: 12, color: "#8B8175", lineHeight: 1.5 }}>
-                    {template.desc}
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            {/* 돌아가기 버튼 */}
-            <button
-              onClick={handleBackFromTemplates}
-              style={{
-                marginTop: "auto",
-                padding: "12px 16px",
-                borderRadius: 10,
-                border: "none",
-                background: "#A87535",
-                color: "#fff",
-                fontWeight: 700,
-                fontSize: 14,
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 8,
-                width: "100%",
-                transition: "all 0.2s ease",
-                boxShadow: "0 2px 6px rgba(168,117,53,0.2)",
-              }}
-            >
-              ← 돌아가기
-            </button>
-          </div>
+          <TemplateGallery
+            selected={selectedTemplate}
+            onSelect={handleSelectTemplate}
+            onBack={handleBackFromTemplates}
+            mainColor={themeColor}
+            accentColor={accent1}
+            recommendedId="premium-white"
+          />
         ) : (
           // 내 프로젝트 화면
           <div style={{ background: "#F4F3EE", color: "#2B2925", padding: "28px 30px", display: "flex", flexDirection: "column", gap: 18, borderRight: "1px solid #E8E1D7", overflowY: "auto", flex: 1 }}>
