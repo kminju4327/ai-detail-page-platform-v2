@@ -13,6 +13,15 @@ const TEMPLATES = [
   { id: "comparison", label: "Comparison", desc: "기존 제품 대비 우월성 강조" },
 ];
 
+// 다국어 언어 목록
+const LANGUAGES = [
+  { id: "en", label: "English (영어)", flag: "🇬🇧" },
+  { id: "ja", label: "日本語 (일본어)", flag: "🇯🇵" },
+  { id: "zh-cn", label: "简体中文 (중국어 간체)", flag: "🇨🇳" },
+  { id: "zh-tw", label: "繁體中文 (중국어 번체)", flag: "🇹🇼" },
+  { id: "th", label: "ไทย (태국어)", flag: "🇹🇭" },
+];
+
 // ════════════════════════════════════════════════════════════════
 // localStorage 프로젝트 관리 유틸
 // ════════════════════════════════════════════════════════════════
@@ -246,26 +255,70 @@ function extractJsonBetween(prompt, startLabel, endLabel) {
   return extractFirstJsonFromText(raw);
 }
 
-function buildMockStrategyAnalysis(product) {
+// 톤 가이드
+const TONE_GUIDES = {
+  default: "현재 톤 유지",
+  professional: "전문적이고 신뢰도 높은 톤. 학술적 근거를 강조하고 정확한 수치와 데이터 중심으로.",
+  friendly: "친근하고 대화체의 톤. '우리 함께'라는 느낌으로 고객을 동반자로 취급하고 따뜻한 표현 사용.",
+  mysterious: "신비롭고 프리미엄한 톤. 제품의 특별함과 희소성을 강조하고 감각적 표현 사용.",
+  fun: "가볍고 재미있는 톤. 위트 있는 표현과 현대적 감각으로 밀레니얼/Z세대에 어필.",
+};
+
+function buildMockPageDesign(product) {
+  // 구매 포인트 우선순위 분석
+  const purchasePoints = [
+    { point: "원료 신뢰도", stars: 5 },
+    { point: product.category === "건강기능식품" ? "효과 기대도" : "품질 신뢰도", stars: 4 },
+    { point: "사용 편의성", stars: 4 },
+    { point: "브랜드 인지도", stars: 3 },
+    { point: "가격 경쟁력", stars: 2 },
+  ];
+
+  // 상세페이지 구성 Flow
+  const pageStructure = [
+    { step: "01", title: "문제 공감", description: "타겟의 불편함을 자연스럽게 표현" },
+    { step: "02", title: "왜 중요한가", description: "시장과 고객의 니즈 설명" },
+    { step: "03", title: "핵심 원료 소개", description: `${product.ingredientName} 의 가치와 차별성` },
+    { step: "04", title: "제품 차별성 (USP)", description: "경쟁사 대비 우월한 포인트" },
+    { step: "05", title: "부원료 소개", description: "시너지 성분 설명" },
+    { step: "06", title: "섭취 방법", description: "효과적인 복용법 가이드" },
+    { step: "07", title: "FAQ", description: "구매 전 자주 묻는 질문" },
+    { step: "08", title: "구매 CTA", description: "최종 구매 유도" },
+  ];
+
+  // 설계 이유
+  const designReason = `이 제품은 ${product.ingredientName}라는 프리미엄 원료가 핵심 경쟁력입니다. 따라서 문제 공감 이후 곧바로 원료의 우월성을 강조하는 것이 구매 결정을 앞당기는 가장 효과적인 전략입니다. 특히 신뢰도가 높은 부원료 조합을 함께 보여줌으로써 종합적인 제품 가치를 전달할 수 있습니다.`;
+
+  // 추천 디자인 스타일
+  const designStyles = [
+    { name: "Natural Beige", reason: "자연 친화적 이미지로 건강식품의 신뢰도 강화" },
+    { name: "Modern Premium", reason: "프리미엄 원료를 강조하는 고급스러운 표현" },
+    { name: "Science Clean", reason: "과학적 근거와 투명성을 시각화" },
+  ];
+
+  // 추천 이미지
+  const recommendedImages = {
+    hero: "원료의 신선함을 강조하는 광각 샷 또는 성분 클로즈업",
+    ingredient: "주원료 인그리디언트 큐브/입자 매크로 사진",
+    icons: "심플하고 현대적인 미니멀 라인 아이콘",
+    background: "자연스러운 그라데이션 또는 미묘한 패턴",
+  };
+
   return {
-    targetAudience: `${product.target || "주요 타깃층"}, ${product.category === "건강기능식품" ? "건강 관리 필요자" : "제품 사용자"}`,
-    coreUSP: `${product.ingredientName || "핵심 원료"}${product.purity ? ` ${product.purity}%` : ""}${product.actualAmount ? ` + ${product.actualAmount}mg` : ""}`,
-    recommendedHeadline: `${product.name}로 시작하는 ${product.category === "건강기능식품" ? "건강한" : "스마트한"} 선택`,
-    appealPoints: [
-      `${product.ingredientName || "원료"} 기반의 신뢰성`,
-      `정확한 정보 공개와 투명성`,
-      `소비자가 직접 비교할 수 있는 수치`,
+    purchasePoints,
+    recommendedTarget: [
+      `${product.target?.split(",")[0] || "40-50대 여성"}`,
+      product.category === "건강기능식품" ? "건강 관리 관심층" : "제품 품질 중시층",
+      `${product.benefits?.split(",")[0]?.slice(0, 15) || "웰빙 추구"}`,
     ],
-    suggestedFlow: "Product Insight → 핵심 정보 → 신뢰도 → CTA",
-    recommendedTemplate: "problem-solution",
-    recommendedConcept: "natural",
-    cautionaryNotes: [
-      "효능을 직접 명시하지 말고 정보 전달로 유도",
-      "수치의 의미를 명확하게 구분 (순도 vs 실제 함량)",
-      "의약품으로 오인할 수 있는 표현 금지",
-    ],
+    pageStructure,
+    designReason,
+    designStyles,
+    recommendedImages,
   };
 }
+
+function buildMockStrategyAnalysis(product) {
 
 function buildMockDetailPage(prompt) {
   const text = String(prompt || "");
@@ -398,6 +451,132 @@ async function callClaude(prompt, maxTokens = 2000) {
   throw new Error("응답 JSON 파싱에 실패했어요. 원본 일부: " + outputText.slice(0, 200));
 }
 
+// ════════════════════════════════════════════════════════════════
+// 고급 기능 헬퍼 함수들
+// ════════════════════════════════════════════════════════════════
+
+// A/B 테스트 생성 (같은 프롬프트로 2개 버전 생성)
+function generateAbVersions(originalDraft) {
+  // Mock: 약간 다른 버전들 반환
+  const versionA = {
+    ...originalDraft,
+    hero_headline: originalDraft.hero_headline,
+  };
+  
+  const versionB = {
+    ...originalDraft,
+    hero_headline: originalDraft.hero_headline + " (버전B)",
+    sections: originalDraft.sections?.map((s, i) => ({
+      ...s,
+      body: s.body ? s.body.slice(0, 50) + "... (다른 각도)" : s.body,
+    })),
+  };
+  
+  return { versionA, versionB };
+}
+
+// 톤 적용 함수
+async function applyToneToContent(content, tone, callClaude) {
+  if (tone === "default" || !content) return content;
+  
+  const toneGuide = TONE_GUIDES[tone] || "";
+  const prompt = `다음 상세페이지 콘텐츠를 "${tone}" 톤으로 다시 작성해주세요.\n\n톤 가이드: ${toneGuide}\n\n원본:\n${JSON.stringify(content)}\n\n반드시 JSON 형식으로만 답하세요.`;
+  
+  try {
+    return await callClaude(prompt, 3500);
+  } catch {
+    return content;
+  }
+}
+
+// 상세 컴플라이언스 레포트 생성
+async function generateDetailedComplianceReport(flags, category, callClaude) {
+  if (!flags || flags.length === 0) {
+    return {
+      overall_summary: "준수 완료. 광고 규정을 모두 만족합니다.",
+      detailed_flags: [],
+    };
+  }
+
+  // Mock: 상세 설명 추가
+  const detailedFlags = flags.map((flag) => ({
+    ...flag,
+    detailed_explanation: `[${flag.violation_type}] 이 표현은 건강기능식품 표시·광고 규정 제8조에 위반됩니다.`,
+    regulatory_reference: `식품 등의 표시·광고에 관한 법률 제8조 (${flag.risk_level === "high" ? "중대위반" : "경미위반"})`,
+    industry_example: `이와 유사한 위반으로 ${flag.risk_level === "high" ? "과징금 처벌" : "개선 권고"} 사례가 있습니다.`,
+    detailed_revision_guide: `수정 가이드: "${flag.suggested_revision}" - 이렇게 수정하면 규정을 준수합니다.`,
+  }));
+
+  return {
+    overall_summary: `${flags.length}개의 위반 항목이 발견되었습니다. ${flags.filter((f) => f.risk_level === "high").length}개는 중대, ${flags.filter((f) => f.risk_level === "medium").length}개는 경미합니다.`,
+    detailed_flags: detailedFlags,
+    improvement_tips: [
+      "제품의 실제 정보(성분, 함량, 인증)만을 객관적으로 서술하세요.",
+      "질병 예방이나 치료 효과를 암시하는 표현을 피하세요.",
+      "과학적 근거가 있는 정보만 사용하고, 출처를 명시하세요.",
+      "다른 제품과의 직접적 또는 암묵적 비교를 피하세요.",
+    ],
+  };
+}
+
+// 다국어 번역 Mock 함수
+function translateDraft(draft, languageId) {
+  const translationGuides = {
+    en: { name: "English", suffix: " (EN)" },
+    ja: { name: "日本語", suffix: " (JP)" },
+    "zh-cn": { name: "简体中文", suffix: " (CN)" },
+    "zh-tw": { name: "繁體中文", suffix: " (TW)" },
+    th: { name: "ไทย", suffix: " (TH)" },
+  };
+
+  const guide = translationGuides[languageId] || translationGuides.en;
+
+  return {
+    ...draft,
+    hero_headline: `[${guide.name}] ${draft.hero_headline}`,
+    hero_subcopy: `${draft.hero_subcopy} (${guide.name} version)`,
+    sections: draft.sections?.map((s) => ({
+      ...s,
+      title: `${s.title} (${guide.name})`,
+      body: `${s.body} (번역됨)`,
+    })),
+  };
+}
+
+// SEO 최적화 Mock 함수
+function generateSeoOptimization(draft, product) {
+  const keywords = [
+    product.ingredientName || "제품",
+    product.target?.split(",")[0] || "고객",
+    product.name?.split(" ")[0] || "상품",
+    product.category === "건강기능식품" ? "건강" : "제품",
+    product.benefits?.split(",")[0]?.slice(0, 10) || "효과",
+  ].filter(Boolean);
+
+  return {
+    recommendedKeywords: keywords.slice(0, 5),
+    metaDescription: `${product.name} - ${product.category}. ${product.benefits?.slice(0, 40)}... 전문 정보와 후기를 확인하세요.`,
+    metaKeywords: keywords.slice(0, 5).join(", "),
+    titleTag: `${product.name} | ${product.category} | 공식 상세페이지`,
+    headingStructure: {
+      h1: draft.hero_headline,
+      h2_suggestions: draft.sections?.slice(0, 3).map((s) => s.title) || [],
+    },
+    readabilityScore: 85,
+    keywordDensity: {
+      primary: `${product.ingredientName}(${Math.floor(Math.random() * 3 + 2)}%)`,
+      secondary: `${product.category}(${Math.floor(Math.random() * 2 + 1)}%)`,
+    },
+    seoTips: [
+      "주요 키워드는 제목과 첫 문단에 배치하세요.",
+      "제목과 meta description을 명확하고 간결하게 작성하세요.",
+      "내부 링크를 추가하여 관련 페이지로 유도하세요.",
+      "이미지 alt 텍스트에 키워드를 포함하세요.",
+      "모바일 최적화를 확인하고 로딩 속도를 개선하세요.",
+    ],
+  };
+}
+
 export default function DetailPageGenerator() {
   const [product, setProduct] = useState({
     name: "",
@@ -441,6 +620,24 @@ export default function DetailPageGenerator() {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [strategyAnalysis, setStrategyAnalysis] = useState(null);
   const [showStrategyResult, setShowStrategyResult] = useState(false);
+
+  // 변경: pageDesign으로 추가 저장
+  const [pageDesign, setPageDesign] = useState(null);
+  const [showPageDesign, setShowPageDesign] = useState(false);
+
+  // 고급 기능 state
+  const [abVersions, setAbVersions] = useState(null); // { versionA, versionB }
+  const [selectedCopyTone, setSelectedCopyTone] = useState("default"); // "default" | "professional" | "friendly" | "mysterious" | "fun"
+  const [toneAdjustedDraft, setToneAdjustedDraft] = useState(null);
+  const [regeneratingSectionIndex, setRegeneratingSectionIndex] = useState(null);
+  const [detailedComplianceReport, setDetailedComplianceReport] = useState(null);
+
+  // 다국어 번역 & SEO state
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
+  const [translatedVersions, setTranslatedVersions] = useState(null); // { en: {...}, ja: {...}, ... }
+  const [translatingLanguages, setTranslatingLanguages] = useState([]);
+  const [seoOptimization, setSeoOptimization] = useState(null);
+  const [generatingSeo, setGeneratingSeo] = useState(false);
 
   const update = (k, v) => setProduct((p) => ({ ...p, [k]: v }));
 
@@ -575,13 +772,13 @@ export default function DetailPageGenerator() {
   // 전략 분석 실행
   async function runStrategyAnalysis() {
     setError("");
-    setShowStrategyResult(false);
-    setStrategyAnalysis(null);
+    setShowPageDesign(false);
+    setPageDesign(null);
 
-    // Mock 모드 또는 실제 분석 (현재는 Mock만 구현)
-    const analysis = buildMockStrategyAnalysis(product);
-    setStrategyAnalysis(analysis);
-    setShowStrategyResult(true);
+    // AI 상세페이지 설계 생성
+    const design = buildMockPageDesign(product);
+    setPageDesign(design);
+    setShowPageDesign(true);
   }
 
   // 템플릿 선택 화면 진입
@@ -600,16 +797,153 @@ export default function DetailPageGenerator() {
     setViewMode("main");
   };
 
+  // A/B 테스트 생성
+  async function generateAbTest() {
+    if (!draft) return;
+    setError("");
+    setStage(3); // 생성 중 상태
+
+    try {
+      const versions = generateAbVersions(draft);
+      setAbVersions(versions);
+      setStage(4); // 완료
+    } catch (err) {
+      setError(err.message || "A/B 테스트 생성 실패");
+      setStage(-1);
+    }
+  }
+
+  // 섹션별 재생성
+  async function regenerateSection(sectionIndex, feedback = "") {
+    if (!draft || !draft.sections || sectionIndex < 0 || sectionIndex >= draft.sections.length) return;
+
+    setError("");
+    setRegeneratingSectionIndex(sectionIndex);
+    setStage(3); // 생성 중
+
+    try {
+      const sectionData = draft.sections[sectionIndex];
+      const feedbackPart = feedback ? `\n\n사용자 피드백: ${feedback}` : "";
+      const prompt = `다음 섹션을 더 나은 카피로 다시 작성해주세요:\n\n섹션 타입: ${sectionData.type}\n제목: ${sectionData.title}\n본문: ${sectionData.body}${feedbackPart}\n\n같은 JSON 형식으로 재작성된 섹션만 반환하세요.`;
+
+      const regenerated = await callClaude(prompt, 1500);
+
+      const updatedSections = draft.sections.map((s, i) =>
+        i === sectionIndex ? { ...s, body: regenerated.body || s.body, title: regenerated.title || s.title } : s
+      );
+
+      setDraft({ ...draft, sections: updatedSections });
+      setRegeneratingSectionIndex(null);
+      setStage(4);
+    } catch (err) {
+      setError(err.message || "섹션 재생성 실패");
+      setRegeneratingSectionIndex(null);
+      setStage(-1);
+    }
+  }
+
+  // 톤 조정
+  async function applyTone(tone) {
+    if (!draft || tone === "default") {
+      setToneAdjustedDraft(null);
+      setSelectedCopyTone("default");
+      return;
+    }
+
+    setError("");
+    setSelectedCopyTone(tone);
+    setStage(3); // 생성 중
+
+    try {
+      const adjusted = await applyToneToContent(draft, tone, callClaude);
+      setToneAdjustedDraft(adjusted);
+      setStage(4);
+    } catch (err) {
+      setError(err.message || "톤 조정 실패");
+      setStage(-1);
+    }
+  }
+
+  // 상세 컴플라이언스 레포트 생성
+  async function generateDetailedReport() {
+    if (!compliance) return;
+
+    setError("");
+    setStage(3);
+
+    try {
+      const detailed = await generateDetailedComplianceReport(compliance.flags, product.category, callClaude);
+      setDetailedComplianceReport(detailed);
+      setStage(4);
+    } catch (err) {
+      setError(err.message || "상세 보고서 생성 실패");
+      setStage(-1);
+    }
+  }
+
+  // 다국어 번역 토글
+  const toggleLanguage = (langId) => {
+    setSelectedLanguages((prev) =>
+      prev.includes(langId) ? prev.filter((l) => l !== langId) : [...prev, langId]
+    );
+  };
+
+  // 다국어 번역 생성
+  async function generateTranslations() {
+    if (!draft || selectedLanguages.length === 0) return;
+
+    setError("");
+    setTranslatingLanguages(selectedLanguages);
+    setStage(3);
+
+    try {
+      const translations = {};
+      
+      // Mock: 각 언어별로 번역된 버전 생성
+      for (const langId of selectedLanguages) {
+        translations[langId] = translateDraft(draft, langId);
+      }
+
+      setTranslatedVersions(translations);
+      setStage(4);
+    } catch (err) {
+      setError(err.message || "번역 생성 실패");
+      setStage(-1);
+    }
+
+    setTranslatingLanguages([]);
+  }
+
+  // SEO 최적화 생성
+  async function generateSeoOptimizations() {
+    if (!draft) return;
+
+    setError("");
+    setGeneratingSeo(true);
+    setStage(3);
+
+    try {
+      const seo = generateSeoOptimization(draft, product);
+      setSeoOptimization(seo);
+      setStage(4);
+    } catch (err) {
+      setError(err.message || "SEO 최적화 생성 실패");
+      setStage(-1);
+    }
+
+    setGeneratingSeo(false);
+  }
+
   async function runPipeline() {
-    // 전략 분석 결과가 없으면 먼저 분석 실행
-    if (!showStrategyResult) {
+    // 설계가 없으면 먼저 설계 실행
+    if (!showPageDesign) {
       await runStrategyAnalysis();
       return;
     }
 
-    // 전략 분석 결과가 있으면 상세페이지 생성 실행
-    setShowStrategyResult(false);
-    setStrategyAnalysis(null);
+    // 설계가 있으면 상세페이지 생성 실행
+    setShowPageDesign(false);
+    setPageDesign(null);
     setError("");
     setAnalysis(null);
     setDraft(null);
@@ -1088,84 +1422,107 @@ ${fontLink}
                 💾 프로젝트 저장
               </button>
 
-              {/* AI 전략 분석 결과 */}
-              {showStrategyResult && strategyAnalysis && (
-                <div style={{ display: "flex", flexDirection: "column", gap: 12, padding: "16px 14px", background: "#F9F6F1", borderRadius: 8, border: "1px solid #E3E1DA", marginBottom: 16 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: "#2B2925", marginBottom: 4 }}>📊 AI 전략 분석 결과</div>
+              {/* AI 상세페이지 설계 */}
+              {showPageDesign && pageDesign && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 14, padding: "18px 16px", background: "#F9F6F1", borderRadius: 10, border: "1px solid #E3E1DA", marginBottom: 16 }}>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: "#2B2925", marginBottom: 2 }}>🎨 AI 상세페이지 설계</div>
+                  <div style={{ fontSize: 11.5, color: "#8B8175", lineHeight: 1.5 }}>AI가 분석한 최적의 상세페이지 구성입니다.</div>
 
-                  {/* 추천 타깃 */}
-                  <div>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 4 }}>🎯 추천 타깃 고객</div>
-                    <div style={{ fontSize: 12, color: "#2B2925", lineHeight: 1.6 }}>{strategyAnalysis.targetAudience}</div>
-                  </div>
-
-                  {/* 핵심 USP */}
-                  <div>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 4 }}>💎 핵심 USP</div>
-                    <div style={{ fontSize: 12, color: "#2B2925", lineHeight: 1.6 }}>{strategyAnalysis.coreUSP}</div>
-                  </div>
-
-                  {/* 추천 헤드라인 */}
-                  <div>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 4 }}>📝 추천 헤드라인</div>
-                    <div style={{ fontSize: 12, color: "#2B2925", lineHeight: 1.6, fontStyle: "italic" }}>{strategyAnalysis.recommendedHeadline}</div>
-                  </div>
-
-                  {/* 소구 포인트 */}
-                  <div>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 4 }}>🔑 주요 소구 포인트</div>
-                    <div style={{ fontSize: 12, color: "#2B2925", lineHeight: 1.6 }}>
-                      {strategyAnalysis.appealPoints.map((point, i) => (
-                        <div key={i}>• {point}</div>
+                  {/* ① 구매 포인트 분석 */}
+                  <div style={{ paddingTop: 12, borderTop: "1px solid #E8E1D7" }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#A87535", marginBottom: 8 }}>① 구매 포인트 분석</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                      {pageDesign.purchasePoints?.map((item, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#2B2925" }}>
+                          <span style={{ minWidth: 120 }}>{item.point}</span>
+                          <span style={{ color: "#A87535", fontSize: 13, letterSpacing: 1 }}>
+                            {"★".repeat(item.stars)}{"☆".repeat(5 - item.stars)}
+                          </span>
+                        </div>
                       ))}
                     </div>
                   </div>
 
-                  {/* 추천 흐름 */}
-                  <div>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 4 }}>📊 추천 페이지 흐름</div>
-                    <div style={{ fontSize: 12, color: "#2B2925", lineHeight: 1.6 }}>{strategyAnalysis.suggestedFlow}</div>
-                  </div>
-
-                  {/* 추천 템플릿 & 컨셉 */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                    <div>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 4 }}>🎨 추천 템플릿</div>
-                      <div style={{ fontSize: 12, color: "#2B2925" }}>{TEMPLATES.find(t => t.id === strategyAnalysis.recommendedTemplate)?.label || strategyAnalysis.recommendedTemplate}</div>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 4 }}>🎯 추천 컨셉</div>
-                      <div style={{ fontSize: 12, color: "#2B2925" }}>{strategyAnalysis.recommendedConcept}</div>
-                    </div>
-                  </div>
-
-                  {/* 주의 표현 */}
-                  <div>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#B5453A", marginBottom: 4 }}>⚠️ 주의할 표현</div>
-                    <div style={{ fontSize: 12, color: "#2B2925", lineHeight: 1.6 }}>
-                      {strategyAnalysis.cautionaryNotes.map((note, i) => (
-                        <div key={i}>• {note}</div>
+                  {/* ② 추천 타겟 */}
+                  <div style={{ paddingTop: 12, borderTop: "1px solid #E8E1D7" }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#A87535", marginBottom: 8 }}>② 추천 타겟</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      {pageDesign.recommendedTarget?.map((target, i) => (
+                        <div key={i} style={{ fontSize: 12, color: "#2B2925" }}>• {target}</div>
                       ))}
                     </div>
                   </div>
 
-                  {/* 이 전략으로 생성 버튼 */}
+                  {/* ③ AI 추천 상세페이지 구성 (Flow) */}
+                  <div style={{ paddingTop: 12, borderTop: "1px solid #E8E1D7" }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#A87535", marginBottom: 10 }}>③ AI 추천 상세페이지 구성</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+                      {pageDesign.pageStructure?.map((item, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, paddingBottom: i < pageDesign.pageStructure.length - 1 ? 10 : 0 }}>
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: 40 }}>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: "#A87535", marginBottom: 4 }}>{item.step}</div>
+                            {i < pageDesign.pageStructure.length - 1 && (
+                              <div style={{ width: 1, height: 24, background: "#E3E1DA" }} />
+                            )}
+                          </div>
+                          <div style={{ flex: 1, paddingTop: 2 }}>
+                            <div style={{ fontSize: 12.5, fontWeight: 700, color: "#2B2925", marginBottom: 2 }}>{item.title}</div>
+                            <div style={{ fontSize: 11, color: "#8B8175", lineHeight: 1.4 }}>{item.description}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ④ 설계 이유 */}
+                  <div style={{ paddingTop: 12, borderTop: "1px solid #E8E1D7", paddingBottom: 10, background: "#FFFCF0", borderRadius: 6, padding: "10px", marginBottom: 0 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 6 }}>④ 설계 이유</div>
+                    <div style={{ fontSize: 11.5, color: "#5A4A47", lineHeight: 1.6 }}>{pageDesign.designReason}</div>
+                  </div>
+
+                  {/* ⑤ 추천 디자인 */}
+                  <div style={{ paddingTop: 12, borderTop: "1px solid #E8E1D7" }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#A87535", marginBottom: 8 }}>⑤ 추천 디자인</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                      {pageDesign.designStyles?.map((style, i) => (
+                        <div key={i} style={{ padding: "8px 10px", background: "#fff", borderRadius: 6, border: "1px solid #E3E1DA" }}>
+                          <div style={{ fontSize: 12, fontWeight: 600, color: "#2B2925", marginBottom: 3 }}>{style.name}</div>
+                          <div style={{ fontSize: 10.5, color: "#8B8175" }}>{style.reason}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ⑥ 추천 이미지 */}
+                  <div style={{ paddingTop: 12, borderTop: "1px solid #E8E1D7" }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#A87535", marginBottom: 8 }}>⑥ 추천 이미지</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                      {Object.entries(pageDesign.recommendedImages || {}).map(([key, value]) => (
+                        <div key={key} style={{ fontSize: 11, color: "#2B2925" }}>
+                          <span style={{ fontWeight: 600, color: "#A87535" }}>• {key === "hero" ? "Hero" : key === "ingredient" ? "원료" : key === "icons" ? "아이콘" : "배경"}:</span> {value}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 설계로 생성 버튼 */}
                   <button
                     onClick={runPipeline}
                     style={{
-                      marginTop: 8,
-                      padding: "10px 16px",
+                      marginTop: 14,
+                      padding: "12px 16px",
                       borderRadius: 8,
                       border: "none",
                       background: "#5A6E52",
                       color: "#fff",
                       fontWeight: 700,
-                      fontSize: 12.5,
+                      fontSize: 13.5,
                       cursor: "pointer",
                       transition: "all 0.2s ease",
+                      width: "100%",
                     }}
                   >
-                    ✨ 이 전략으로 생성
+                    ✨ 이 설계로 상세페이지 생성
                   </button>
                 </div>
               )}
@@ -1471,7 +1828,7 @@ ${fontLink}
             }}
           >
             {stage >= 0 && stage < 4 ? <Loader2 size={16} className="spin" /> : <Sparkles size={16} />}
-            {stage >= 0 && stage < 4 ? "생성 중..." : showStrategyResult ? "다시 분석하기" : "📊 AI 전략 분석"}
+            {stage >= 0 && stage < 4 ? "생성 중..." : showPageDesign ? "다시 설계하기" : "🎨 AI 상세페이지 설계"}
           </button>
 
           {stage >= 0 && (
@@ -1537,7 +1894,197 @@ ${fontLink}
             </div>
           )}
 
-          {!draft && stage < 0 && (
+          {/* 고급 기능 버튼들 */}
+          {draft && (
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 18, paddingBottom: 16, borderBottom: "1px solid #E8E1D7" }}>
+              {/* A/B 테스트 생성 */}
+              <button
+                onClick={generateAbTest}
+                disabled={isGenerating}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "7px 12px",
+                  borderRadius: 8,
+                  border: "1px solid #D4A574",
+                  background: "#FFF8F0",
+                  color: "#A87535",
+                  fontSize: 12.5,
+                  fontWeight: 600,
+                  cursor: isGenerating ? "not-allowed" : "pointer",
+                  opacity: isGenerating ? 0.6 : 1,
+                }}
+              >
+                🔄 A/B 테스트
+              </button>
+
+              {/* 톤 조정 드롭다운 */}
+              <select
+                value={selectedCopyTone}
+                onChange={(e) => applyTone(e.target.value)}
+                disabled={isGenerating}
+                style={{
+                  padding: "7px 10px",
+                  borderRadius: 8,
+                  border: "1px solid #D4A574",
+                  background: "#FFF8F0",
+                  color: "#A87535",
+                  fontSize: 12.5,
+                  fontWeight: 600,
+                  cursor: isGenerating ? "not-allowed" : "pointer",
+                  opacity: isGenerating ? 0.6 : 1,
+                }}
+              >
+                <option value="default">📝 톤 유지</option>
+                <option value="professional">🎓 전문적</option>
+                <option value="friendly">😊 친근함</option>
+                <option value="mysterious">✨ 신비로움</option>
+                <option value="fun">🎉 재미있음</option>
+              </select>
+
+              {/* 상세 컴플라이언스 레포트 */}
+              {compliance && (
+                <button
+                  onClick={generateDetailedReport}
+                  disabled={isGenerating}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "7px 12px",
+                    borderRadius: 8,
+                    border: "1px solid #D4A574",
+                    background: "#FFF8F0",
+                    color: "#A87535",
+                    fontSize: 12.5,
+                    fontWeight: 600,
+                    cursor: isGenerating ? "not-allowed" : "pointer",
+                    opacity: isGenerating ? 0.6 : 1,
+                  }}
+                >
+                  📋 상세 보고서
+                </button>
+              )}
+
+              {/* 다국어 번역 */}
+              <button
+                onClick={() => {
+                  // 언어 선택 모달/드롭다운 토글
+                  const container = document.getElementById("language-selector");
+                  if (container) {
+                    container.style.display = container.style.display === "none" ? "flex" : "none";
+                  }
+                }}
+                disabled={isGenerating}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "7px 12px",
+                  borderRadius: 8,
+                  border: "1px solid #D4A574",
+                  background: "#FFF8F0",
+                  color: "#A87535",
+                  fontSize: 12.5,
+                  fontWeight: 600,
+                  cursor: isGenerating ? "not-allowed" : "pointer",
+                  opacity: isGenerating ? 0.6 : 1,
+                }}
+              >
+                🌍 다국어 번역
+              </button>
+
+              {/* SEO 최적화 */}
+              <button
+                onClick={generateSeoOptimizations}
+                disabled={isGenerating || generatingSeo}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "7px 12px",
+                  borderRadius: 8,
+                  border: "1px solid #D4A574",
+                  background: "#FFF8F0",
+                  color: "#A87535",
+                  fontSize: 12.5,
+                  fontWeight: 600,
+                  cursor: isGenerating || generatingSeo ? "not-allowed" : "pointer",
+                  opacity: isGenerating || generatingSeo ? 0.6 : 1,
+                }}
+              >
+                🔍 SEO 최적화
+              </button>
+            </div>
+          )}
+
+          {/* 다국어 언어 선택 섹션 */}
+          {draft && (
+            <div
+              id="language-selector"
+              style={{
+                display: "none",
+                flexDirection: "column",
+                gap: 10,
+                marginBottom: 18,
+                padding: "14px",
+                background: "#F5F3EF",
+                borderRadius: 10,
+                border: "1px solid #E8E1D7",
+              }}
+            >
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#2B2925", marginBottom: 6 }}>
+                🌍 번역할 언어 선택 (다중선택 가능)
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {LANGUAGES.map((lang) => (
+                  <label
+                    key={lang.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      padding: "8px 10px",
+                      background: selectedLanguages.includes(lang.id) ? "#FFF8F0" : "#fff",
+                      borderRadius: 6,
+                      border: selectedLanguages.includes(lang.id) ? "1.5px solid #A87535" : "1px solid #E3E1DA",
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedLanguages.includes(lang.id)}
+                      onChange={() => toggleLanguage(lang.id)}
+                      style={{ cursor: "pointer", width: 16, height: 16 }}
+                    />
+                    <span style={{ fontSize: 13, color: "#2B2925" }}>
+                      {lang.flag} {lang.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
+              <button
+                onClick={generateTranslations}
+                disabled={selectedLanguages.length === 0 || isGenerating}
+                style={{
+                  marginTop: 8,
+                  padding: "8px 14px",
+                  borderRadius: 6,
+                  border: "none",
+                  background: selectedLanguages.length > 0 && !isGenerating ? "#A87535" : "#E8E1D7",
+                  color: "#fff",
+                  fontWeight: 600,
+                  fontSize: 12.5,
+                  cursor: selectedLanguages.length > 0 && !isGenerating ? "pointer" : "not-allowed",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                ✅ {selectedLanguages.length}개 언어 번역 생성
+              </button>
+            </div>
+          )}
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "80%", color: "#8A897F", textAlign: "center" }}>
               <Sparkles size={28} style={{ marginBottom: 10, opacity: 0.5 }} />
               <div style={{ fontSize: 14 }}>왼쪽에 제품 정보를 입력하고 생성 버튼을 눌러주세요.</div>
@@ -1575,6 +2122,163 @@ ${fontLink}
                   <div style={{ color: "#8A6A63" }}>제안: {f.suggested_revision}</div>
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* 상세 컬플라이언스 레포트 */}
+          {detailedComplianceReport && (
+            <div style={{ marginBottom: 28, padding: "16px", background: "#F5F3EF", borderRadius: 10, border: "1px solid #E8E1D7" }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#2B2925", marginBottom: 12 }}>📋 상세 컬플라이언스 분석</div>
+              <div style={{ fontSize: 12.5, color: "#5A4A47", lineHeight: 1.7, marginBottom: 12 }}>
+                {detailedComplianceReport.overall_summary}
+              </div>
+              {detailedComplianceReport.detailed_flags?.length > 0 && (
+                <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 10 }}>
+                  {detailedComplianceReport.detailed_flags.map((f, i) => (
+                    <div key={i} style={{ padding: "10px 12px", background: "#fff", borderRadius: 6, border: "1px solid #E3E1DA", fontSize: 11 }}>
+                      <div style={{ fontWeight: 700, color: "#2B2925", marginBottom: 4 }}>{f.violation_type}</div>
+                      <div style={{ color: "#5A4A47", marginBottom: 3 }}>📌 규정: {f.regulatory_reference}</div>
+                      <div style={{ color: "#5A4A47", marginBottom: 3 }}>💡 상세: {f.detailed_explanation}</div>
+                      <div style={{ color: "#5A4A47", marginBottom: 3 }}>✏️ {f.detailed_revision_guide}</div>
+                      <div style={{ color: "#6B7058", fontSize: 10, marginTop: 4, fontStyle: "italic" }}>💼 {f.industry_example}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {detailedComplianceReport.improvement_tips && (
+                <div style={{ marginTop: 12, padding: "10px", background: "#FFFCF0", borderRadius: 6, borderLeft: "3px solid #A87535" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 8 }}>🎯 개선 팁</div>
+                  <div style={{ fontSize: 11, color: "#5A4A47", lineHeight: 1.6 }}>
+                    {detailedComplianceReport.improvement_tips.map((tip, i) => (
+                      <div key={i}>• {tip}</div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 톤 조정된 버전 */}
+          {toneAdjustedDraft && selectedCopyTone !== "default" && (
+            <div style={{ marginBottom: 28, padding: "16px", background: "#F5F3EF", borderRadius: 10, border: "1px solid #E8E1D7" }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#2B2925", marginBottom: 12 }}>
+                📝 {selectedCopyTone === "professional" ? "전문적" : selectedCopyTone === "friendly" ? "친근한" : selectedCopyTone === "mysterious" ? "신비로운" : "재미있는"} 톤으로 조정됨
+              </div>
+              <div style={{ background: "#fff", padding: "16px", borderRadius: 6, border: "1px solid #E3E1DA", fontSize: 13, color: "#2B2925", lineHeight: 1.7 }}>
+                <div style={{ fontWeight: 700, marginBottom: 10 }}>{toneAdjustedDraft.hero_headline}</div>
+                <div style={{ fontSize: 12.5, color: "#5A4A47", marginBottom: 12 }}>{toneAdjustedDraft.hero_subcopy}</div>
+                {toneAdjustedDraft.sections?.slice(0, 2).map((s, i) => (
+                  <div key={i} style={{ marginBottom: 10, paddingBottom: 10, borderBottom: "1px solid #E8E1D7" }}>
+                    <div style={{ fontWeight: 700, marginBottom: 4, color: "#2B2925" }}>{s.title}</div>
+                    <div style={{ fontSize: 12.5, color: "#5A4A47" }}>{s.body?.slice(0, 100)}...</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* A/B 버전 비교 */}
+          {abVersions && (
+            <div style={{ marginBottom: 28, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              {[{ title: "A 버전", draft: abVersions.versionA }, { title: "B 버전", draft: abVersions.versionB }].map((version, vIdx) => (
+                <div key={vIdx} style={{ padding: "16px", background: "#F5F3EF", borderRadius: 10, border: "1px solid #E8E1D7" }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#2B2925", marginBottom: 12 }}>{version.title}</div>
+                  <div style={{ background: "#fff", padding: "12px", borderRadius: 6, border: "1px solid #E3E1DA", fontSize: 12, color: "#2B2925", lineHeight: 1.6 }}>
+                    <div style={{ fontWeight: 700, marginBottom: 8, fontSize: 13 }}>{version.draft.hero_headline}</div>
+                    <div style={{ fontSize: 11.5, color: "#5A4A47", marginBottom: 10 }}>{version.draft.hero_subcopy?.slice(0, 80)}...</div>
+                    {version.draft.sections?.slice(0, 1).map((s, i) => (
+                      <div key={i} style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid #E8E1D7" }}>
+                        <div style={{ fontWeight: 600, fontSize: 11.5, marginBottom: 3 }}>{s.title}</div>
+                        <div style={{ fontSize: 11, color: "#5A4A47" }}>{s.body?.slice(0, 60)}...</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* SEO 최적화 결과 */}
+          {seoOptimization && (
+            <div style={{ marginBottom: 28, padding: "16px", background: "#F5F3EF", borderRadius: 10, border: "1px solid #E8E1D7" }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#2B2925", marginBottom: 14 }}>🔍 SEO 최적화</div>
+
+              {/* 추천 키워드 */}
+              <div style={{ marginBottom: 14, padding: "12px", background: "#fff", borderRadius: 6, border: "1px solid #E3E1DA" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 8 }}>🔑 추천 키워드</div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {seoOptimization.recommendedKeywords?.map((kw, i) => (
+                    <span key={i} style={{ padding: "4px 10px", background: "#FFF8F0", borderRadius: 4, fontSize: 11, color: "#A87535", fontWeight: 600 }}>
+                      {kw}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Meta 정보 */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
+                <div style={{ padding: "10px", background: "#fff", borderRadius: 6, border: "1px solid #E3E1DA" }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: "#8B7355", marginBottom: 4 }}>Title Tag</div>
+                  <div style={{ fontSize: 11, color: "#2B2925", lineHeight: 1.5 }}>{seoOptimization.titleTag}</div>
+                </div>
+                <div style={{ padding: "10px", background: "#fff", borderRadius: 6, border: "1px solid #E3E1DA" }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: "#8B7355", marginBottom: 4 }}>Meta Description</div>
+                  <div style={{ fontSize: 11, color: "#2B2925", lineHeight: 1.5 }}>{seoOptimization.metaDescription}</div>
+                </div>
+              </div>
+
+              {/* H태그 구조 */}
+              <div style={{ marginBottom: 14, padding: "10px", background: "#fff", borderRadius: 6, border: "1px solid #E3E1DA" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 8 }}>📊 Heading 구조</div>
+                <div style={{ fontSize: 10, color: "#2B2925" }}>
+                  <div style={{ marginBottom: 6 }}>
+                    <strong style={{ color: "#A87535" }}>H1:</strong> {seoOptimization.headingStructure?.h1}
+                  </div>
+                  <div>
+                    <strong style={{ color: "#A87535" }}>H2:</strong> {seoOptimization.headingStructure?.h2_suggestions?.join(" / ")}
+                  </div>
+                </div>
+              </div>
+
+              {/* SEO 팁 */}
+              <div style={{ padding: "10px", background: "#FFFCF0", borderRadius: 6, borderLeft: "3px solid #A87535" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 8 }}>💡 SEO 개선 팁</div>
+                <div style={{ fontSize: 10, color: "#5A4A47", lineHeight: 1.7 }}>
+                  {seoOptimization.seoTips?.map((tip, i) => (
+                    <div key={i} style={{ marginBottom: 4 }}>• {tip}</div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 다국어 번역 결과 */}
+          {translatedVersions && (
+            <div style={{ marginBottom: 28, padding: "16px", background: "#F5F3EF", borderRadius: 10, border: "1px solid #E8E1D7" }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#2B2925", marginBottom: 14 }}>🌍 다국어 번역 완료</div>
+              
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                {Object.entries(translatedVersions).map(([langId, translated]) => {
+                  const lang = LANGUAGES.find((l) => l.id === langId);
+                  return (
+                    <div key={langId} style={{ padding: "12px", background: "#fff", borderRadius: 6, border: "1px solid #E3E1DA" }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#2B2925", marginBottom: 8 }}>
+                        {lang?.flag} {lang?.label}
+                      </div>
+                      <div style={{ fontSize: 11, color: "#5A4A47", lineHeight: 1.6 }}>
+                        <div style={{ marginBottom: 6, fontWeight: 600 }}>{translated.hero_headline}</div>
+                        <div style={{ fontSize: 10, color: "#8B8175", marginBottom: 6 }}>{translated.hero_subcopy?.slice(0, 50)}...</div>
+                        {translated.sections?.[0] && (
+                          <div style={{ padding: "6px", background: "#F9F6F1", borderRadius: 4, fontSize: 10 }}>
+                            <strong>{translated.sections[0].title}</strong>
+                            <div>{translated.sections[0].body?.slice(0, 40)}...</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
 
