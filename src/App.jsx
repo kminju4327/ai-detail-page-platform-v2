@@ -1,7 +1,104 @@
 import { useState, useRef, useEffect } from "react";
 import { Image as ImageIcon, X, Sparkles, ShieldAlert, ShieldCheck, RotateCw, CheckCircle2, Circle, Loader2, Copy, RefreshCw, Check, MessageSquare, Code, Download } from "lucide-react";
 
-const STAGE_LABELS = ["상세페이지 생성", "컴플라이언스 체크"];
+// ════════════════════════════════════════════════════════════════
+// localStorage 프로젝트 관리 유틸
+// ════════════════════════════════════════════════════════════════
+const PROJECTS_STORAGE_KEY = "dpg_projects";
+const MAX_PROJECTS = 20;
+
+function loadProjects() {
+  try {
+    const data = localStorage.getItem(PROJECTS_STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveProject(projectData) {
+  try {
+    let projects = loadProjects();
+    const now = Date.now();
+    
+    const projectToSave = {
+      projectId: projectData.projectId || `proj_${now}`,
+      projectName: projectData.projectName || "무제",
+      createdAt: projectData.createdAt || now,
+      updatedAt: now,
+      saveStatus: projectData.saveStatus || "draft",
+      product: projectData.product,
+      themeColor: projectData.themeColor,
+      pointColors: projectData.pointColors,
+      headingFont: projectData.headingFont,
+      bodyFont: projectData.bodyFont,
+      concept: projectData.concept,
+      draft: projectData.draft || null,
+      compliance: projectData.compliance || null,
+    };
+    
+    const existingIndex = projects.findIndex((p) => p.projectId === projectToSave.projectId);
+    if (existingIndex >= 0) {
+      projects[existingIndex] = projectToSave;
+    } else {
+      projects.push(projectToSave);
+    }
+    
+    if (projects.length > MAX_PROJECTS) {
+      projects = projects.sort((a, b) => a.createdAt - b.createdAt).slice(1);
+    }
+    
+    localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(projects));
+    return projectToSave;
+  } catch (e) {
+    console.error("프로젝트 저장 오류:", e);
+    return null;
+  }
+}
+
+function getProject(projectId) {
+  try {
+    const projects = loadProjects();
+    return projects.find((p) => p.projectId === projectId) || null;
+  } catch {
+    return null;
+  }
+}
+
+function deleteProject(projectId) {
+  try {
+    let projects = loadProjects();
+    projects = projects.filter((p) => p.projectId !== projectId);
+    localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(projects));
+    return true;
+  } catch (e) {
+    console.error("프로젝트 삭제 오류:", e);
+    return false;
+  }
+}
+
+function searchProjects(query) {
+  try {
+    const projects = loadProjects();
+    if (!query) return projects;
+    const lower = query.toLowerCase();
+    return projects.filter((p) => p.projectName.toLowerCase().includes(lower));
+  } catch {
+    return [];
+  }
+}
+
+function formatDate(timestamp) {
+  const d = new Date(timestamp);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const date = String(d.getDate()).padStart(2, "0");
+  const hours = String(d.getHours()).padStart(2, "0");
+  const mins = String(d.getMinutes()).padStart(2, "0");
+  return `${year}-${month}-${date} ${hours}:${mins}`;
+}
+
+const STAGE_LABELS = ["상세페이지 생성", "컬플라이언스 체크"];
 
 const CONCEPTS = [
   { id: "minimal", label: "미니멀", desc: "여백 중심, 얇은 선, 정보 위주" },
@@ -300,6 +397,13 @@ export default function DetailPageGenerator() {
   const fileInputRef = useRef(null);
   const isGenerating = stage >= 0 && stage < 4;
 
+  // 프로젝트 관리 state
+  const [viewMode, setViewMode] = useState("main"); // "main" | "projects"
+  const [projectsList, setProjectsList] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [projectName, setProjectName] = useState("");
+  const [currentProjectId, setCurrentProjectId] = useState(null);
+
   const update = (k, v) => setProduct((p) => ({ ...p, [k]: v }));
 
   // 폰트 선택 미리보기가 각자 폰트로 보이도록, 모든 구글폰트를 로드해둔다.
@@ -322,6 +426,97 @@ export default function DetailPageGenerator() {
       if (prev.length >= 2) return [prev[1], c]; // 오래된 것 밀어내기
       return [...prev, c];
     });
+  };
+
+  // ════════════════════════════════════════════════════════════════
+  // 프로젝트 관리 함수들
+  // ════════════════════════════════════════════════════════════════
+
+  const handleSaveProject = () => {
+    const displayName = projectName.trim() || product.name || "무제";
+    const saveStatus = draft ? "completed" : "draft";
+
+    const projectData = {
+      projectId: currentProjectId || undefined,
+      projectName: displayName,
+      saveStatus,
+      product,
+      themeColor,
+      pointColors,
+      headingFont,
+      bodyFont,
+      concept,
+      draft: draft || null,
+      compliance: compliance || null,
+    };
+
+    const saved = saveProject(projectData);
+    if (saved) {
+      setCurrentProjectId(saved.projectId);
+      setProjectName("");
+      setError("");
+      alert(`프로젝트 "${displayName}"이(가) 저장되었습니다.`);
+    }
+  };
+
+  const handleOpenProjects = () => {
+    const projects = loadProjects();
+    setProjectsList(projects);
+    setSearchQuery("");
+    setViewMode("projects");
+  };
+
+  const handleBackToMain = () => {
+    setViewMode("main");
+    setSearchQuery("");
+  };
+
+  const handleSearchProjects = (query) => {
+    setSearchQuery(query);
+    if (query.trim()) {
+      const results = searchProjects(query);
+      setProjectsList(results);
+    } else {
+      setProjectsList(loadProjects());
+    }
+  };
+
+  const handleLoadProject = (projectId) => {
+    const project = getProject(projectId);
+    if (!project) {
+      alert("프로젝트를 찾을 수 없습니다.");
+      return;
+    }
+
+    // 모든 상태 복원
+    setProduct(project.product);
+    setThemeColor(project.themeColor);
+    setPointColors(project.pointColors || []);
+    setHeadingFont(project.headingFont);
+    setBodyFont(project.bodyFont);
+    setConcept(project.concept);
+    setDraft(project.draft);
+    setCompliance(project.compliance);
+    setCurrentProjectId(project.projectId);
+    setImage(null); // 이미지는 복원하지 않음
+    setStage(-1);
+
+    setViewMode("main");
+    setProjectName("");
+  };
+
+  const handleDeleteProject = (projectId) => {
+    const project = getProject(projectId);
+    if (!project) return;
+
+    if (confirm(`"${project.projectName}" 프로젝트를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`)) {
+      const success = deleteProject(projectId);
+      if (success) {
+        const projects = loadProjects();
+        setProjectsList(projects);
+        alert("프로젝트가 삭제되었습니다.");
+      }
+    }
   };
 
   // 실제 적용할 폰트 family 문자열
@@ -733,12 +928,49 @@ ${fontLink}
               ✦ BRAND<br />ENGINE
             </div>
             <nav style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {["상세페이지 생성", "내 프로젝트", "템플릿", "가이드", "설정"].map((item, idx) => (
-                <div key={item} style={{ display: "flex", alignItems: "center", gap: 10, padding: "11px 10px", borderRadius: 10, background: idx === 0 ? "#FFFFFF" : "transparent", boxShadow: idx === 0 ? "0 10px 24px rgba(47,38,28,0.06)" : "none", color: idx === 0 ? "#9A672E" : "#6D665E", fontSize: 13, fontWeight: idx === 0 ? 800 : 600 }}>
-                  <span style={{ width: 18, height: 18, borderRadius: 6, border: `1px solid ${idx === 0 ? "#B8874D" : "#D8D0C5"}`, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 10 }}>{idx === 0 ? "✧" : ""}</span>
-                  {item}
-                </div>
-              ))}
+              {["상세페이지 생성", "내 프로젝트", "템플릿", "가이드", "설정"].map((item, idx) => {
+                const isActive = (idx === 0 && viewMode === "main") || (idx === 1 && viewMode === "projects");
+                const isClickable = idx === 0 || idx === 1;
+                return (
+                  <div
+                    key={item}
+                    onClick={() => {
+                      if (idx === 0) setViewMode("main");
+                      else if (idx === 1) handleOpenProjects();
+                    }}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      padding: "11px 10px",
+                      borderRadius: 10,
+                      background: isActive ? "#FFFFFF" : "transparent",
+                      boxShadow: isActive ? "0 10px 24px rgba(47,38,28,0.06)" : "none",
+                      color: isActive ? "#9A672E" : "#6D665E",
+                      fontSize: 13,
+                      fontWeight: isActive ? 800 : 600,
+                      cursor: isClickable ? "pointer" : "default",
+                      transition: "all 0.2s ease",
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: 18,
+                        height: 18,
+                        borderRadius: 6,
+                        border: `1px solid ${isActive ? "#B8874D" : "#D8D0C5"}`,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 10,
+                      }}
+                    >
+                      {isActive ? "✧" : ""}
+                    </span>
+                    {item}
+                  </div>
+                );
+              })}
             </nav>
           </div>
           <div style={{ color: "#7B7268", fontSize: 12 }}>
@@ -747,12 +979,38 @@ ${fontLink}
             <div style={{ opacity: 0.55 }}>© 2026 Brand Engine</div>
           </div>
         </aside>
-        {/* LEFT: input rail */}
-        <div style={{ background: "#FFFEFB", color: "#26231F", padding: "28px 30px", display: "flex", flexDirection: "column", gap: 18, borderRight: "1px solid #E8E1D7", overflowY: "auto" }}>
-          <div style={{ paddingBottom: 8, borderBottom: "1px solid #EEE7DD" }}>
-            <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.04em", marginBottom: 5 }}>1. 제품 정보 입력</div>
-            <div style={{ fontSize: 12.5, color: "#8B8175" }}>정확한 정보를 입력할수록 더 좋은 결과가 생성됩니다.</div>
-          </div>
+
+        {/* CONDITIONAL RENDERING: viewMode 기반 화면 전환 */}
+        {viewMode === "main" ? (
+          <>
+            {/* LEFT: input rail */}
+            <div style={{ background: "#FFFEFB", color: "#26231F", padding: "28px 30px", display: "flex", flexDirection: "column", gap: 18, borderRight: "1px solid #E8E1D7", overflowY: "auto" }}>
+              {/* 프로젝트 저장 버튼 */}
+              <button
+                onClick={handleSaveProject}
+                disabled={isGenerating}
+                style={{
+                  width: "100%",
+                  padding: "10px 16px",
+                  borderRadius: 10,
+                  border: "none",
+                  background: "#A87535",
+                  color: "#fff",
+                  fontWeight: 700,
+                  fontSize: 13.5,
+                  cursor: isGenerating ? "not-allowed" : "pointer",
+                  marginBottom: 8,
+                  opacity: isGenerating ? 0.6 : 1,
+                  transition: "all 0.2s ease",
+                }}
+              >
+                💾 프로젝트 저장
+              </button>
+
+              <div style={{ paddingBottom: 8, borderBottom: "1px solid #EEE7DD" }}>
+                <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.04em", marginBottom: 5 }}>1. 제품 정보 입력</div>
+                <div style={{ fontSize: 12.5, color: "#8B8175" }}>정확한 정보를 입력할수록 더 좋은 결과가 생성됩니다.</div>
+              </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "2px 0 4px" }}>
             {["입력", "생성 중", "완료"].map((s, i) => (
               <div key={s} style={{ display: "flex", alignItems: "center", gap: 8, color: i === 0 ? "#9A672E" : "#B9B0A5", fontSize: 12, fontWeight: 700 }}>
@@ -1272,6 +1530,150 @@ ${fontLink}
             </div>
           )}
         </div>
+          </>
+        ) : (
+          // 내 프로젝트 화면
+          <div style={{ background: "#F4F3EE", color: "#2B2925", padding: "28px 30px", display: "flex", flexDirection: "column", gap: 18, borderRight: "1px solid #E8E1D7", overflowY: "auto", flex: 1 }}>
+            {/* 헤더 */}
+            <div style={{ paddingBottom: 8, borderBottom: "1px solid #EEE7DD" }}>
+              <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.04em", marginBottom: 5 }}>내 프로젝트</div>
+              <div style={{ fontSize: 12.5, color: "#8B8175" }}>저장된 프로젝트를 관리합니다.</div>
+            </div>
+
+            {/* 검색 입력 */}
+            <input
+              type="text"
+              placeholder="프로젝트 검색..."
+              value={searchQuery}
+              onChange={(e) => handleSearchProjects(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px 12px",
+                borderRadius: 8,
+                border: "1px solid #E1D8CB",
+                background: "#FFFFFF",
+                color: "#2B2925",
+                fontSize: 13.5,
+                outline: "none",
+                boxSizing: "border-box",
+                boxShadow: "0 1px 0 rgba(50,38,25,0.02)",
+              }}
+            />
+
+            {/* 프로젝트 목록 */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, flex: 1, overflowY: "auto" }}>
+              {projectsList.length === 0 ? (
+                <div style={{ textAlign: "center", color: "#8B8175", padding: "40px 20px" }}>
+                  <div style={{ fontSize: 14, marginBottom: 8 }}>저장된 프로젝트가 없습니다.</div>
+                  <div style={{ fontSize: 12 }}>프로젝트를 생성 후 저장해주세요.</div>
+                </div>
+              ) : (
+                projectsList.map((project) => (
+                  <div
+                    key={project.projectId}
+                    style={{
+                      border: "1px solid #E3E1DA",
+                      background: "#FFFFFF",
+                      borderRadius: 8,
+                      padding: 14,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 10,
+                      boxShadow: "0 1px 2px rgba(50,38,25,0.02)",
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: "#2B2925", marginBottom: 6 }}>
+                          {project.projectName}
+                        </div>
+                        <div style={{ fontSize: 11, color: "#8B8175", lineHeight: 1.5 }}>
+                          <div>저장: {formatDate(project.createdAt)}</div>
+                          {project.updatedAt !== project.createdAt && (
+                            <div>수정: {formatDate(project.updatedAt)}</div>
+                          )}
+                        </div>
+                      </div>
+                      <div
+                        style={{
+                          padding: "4px 10px",
+                          background: project.saveStatus === "completed" ? "#EBF0E6" : "#F5EDE3",
+                          color: project.saveStatus === "completed" ? "#5A6E52" : "#8B7355",
+                          borderRadius: 4,
+                          fontSize: 10,
+                          fontWeight: 600,
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {project.saveStatus === "completed" ? "생성 완료" : "생성 전"}
+                      </div>
+                    </div>
+
+                    <div style={{ display: "flex", gap: 6, justifyContent: "flex-end", borderTop: "1px solid #E3E1DA", paddingTop: 10 }}>
+                      <button
+                        onClick={() => handleLoadProject(project.projectId)}
+                        style={{
+                          padding: "6px 10px",
+                          borderRadius: 6,
+                          border: "1px solid #E1D8CB",
+                          background: "#FFFFFF",
+                          color: "#2B2925",
+                          fontSize: 12,
+                          cursor: "pointer",
+                          transition: "all 0.2s ease",
+                          fontWeight: 500,
+                        }}
+                      >
+                        불러오기
+                      </button>
+                      <button
+                        onClick={() => handleDeleteProject(project.projectId)}
+                        style={{
+                          padding: "6px 10px",
+                          borderRadius: 6,
+                          border: "1px solid #E1D8CB",
+                          background: "#FFFFFF",
+                          color: "#2B2925",
+                          fontSize: 12,
+                          cursor: "pointer",
+                          transition: "all 0.2s ease",
+                          fontWeight: 500,
+                        }}
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* 돌아가기 버튼 */}
+            <button
+              onClick={handleBackToMain}
+              style={{
+                marginTop: "auto",
+                padding: "12px 16px",
+                borderRadius: 10,
+                border: "none",
+                background: "#A87535",
+                color: "#fff",
+                fontWeight: 700,
+                fontSize: 14,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                width: "100%",
+                transition: "all 0.2s ease",
+                boxShadow: "0 2px 6px rgba(168,117,53,0.2)",
+              }}
+            >
+              ← 돌아가기
+            </button>
+          </div>
+        )}
       </div>
       <style>{`.spin{animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
         @media (max-width: 720px) {
