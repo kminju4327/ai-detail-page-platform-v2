@@ -268,8 +268,8 @@ function buildMockPageDesign(product) {
   const safe = (value, fallback = "") => String(value || fallback).trim();
   const name = safe(product.name, "제품");
   const category = safe(product.category, "일반식품");
-  const targetRaw = safe(product.target, "40~50대 여성");
-  const benefitsRaw = safe(product.benefits, "원료와 함량을 명확하게 제시할 수 있는 제품");
+  const targetRaw = safe(product.target, "건강한 루틴을 원하는 고객");
+  const benefitsRaw = safe(product.benefits, "제품의 핵심 장점을 명확하게 전달할 수 있는 상품");
   const ingredient = safe(product.ingredientName, name.includes("베르베린") ? "베르베린" : "핵심 원료");
   const purity = safe(product.purity);
   const amount = safe(product.actualAmount);
@@ -278,82 +278,84 @@ function buildMockPageDesign(product) {
   const hasPurity = Boolean(purity);
   const hasAmount = Boolean(amount);
   const hasCerts = Boolean(certs && certs !== "없음");
-  const hasIngredient = Boolean(product.ingredientName || name.includes("베르베린") || benefitsRaw.includes("원료"));
   const isGeneralFood = category === "일반식품";
-  const isBerberine = `${name} ${ingredient} ${benefitsRaw}`.toLowerCase().includes("베르베린") || `${name} ${ingredient}`.toLowerCase().includes("berberine");
+  const lowerText = `${name} ${ingredient} ${benefitsRaw}`.toLowerCase();
+  const isBerberine = lowerText.includes("베르베린") || lowerText.includes("berberine");
+  const hasPlantMood = /식물|자연|원료|추출|잎|열매|허브|베르베린/i.test(`${name} ${ingredient} ${benefitsRaw}`);
+  const targetMain = targetRaw.split(/[,.，]/)[0] || targetRaw;
 
-  const productType = isGeneralFood
-    ? hasPurity || hasIngredient
-      ? "원료 신뢰형 일반식품"
-      : "정보 명확화형 일반식품"
-    : hasAmount || hasCerts
-    ? "기능성 정보 중심 건강기능식품"
-    : "신뢰 보강형 건강기능식품";
+  const featureCandidates = [
+    ingredient && `${ingredient} 중심의 원료 구성`,
+    hasPurity && `${ingredient} ${purity}% 수치 강조 가능`,
+    hasAmount && `1일 섭취량 기준 ${amount}mg 정보 제공`,
+    hasCerts && `${certs} 기반 품질 신뢰 요소`,
+    benefitsRaw.split(/[,.，]/)[0],
+  ].filter(Boolean);
+
+  const productFeatures = [...new Set(featureCandidates)].slice(0, 5);
 
   const strongestPoint = hasPurity
-    ? `${ingredient} ${purity}% 원료 정보`
+    ? `${ingredient} ${purity}%`
     : hasAmount
     ? `${amount}mg 함량 정보`
     : hasCerts
-    ? `${certs} 기반 품질 신뢰`
-    : `${ingredient} 중심의 원료 스토리`;
+    ? `${certs} 품질 신뢰`
+    : ingredient || "제품 핵심 장점";
 
-  const weakPoint = hasCerts
-    ? "브랜드 스토리와 실제 후기 보강"
-    : "제조·인증·후기 등 신뢰 근거 보강";
+  const aiSummary = isGeneralFood
+    ? `이 제품은 효능을 직접 약속하기보다, 고객이 안심하고 선택할 수 있는 정보의 순서를 잘 설계하는 것이 중요합니다. 따라서 첫 화면에서는 제품과 브랜드를 간결하게 소개하고, 바로 이어서 고객의 고민에 공감한 뒤 ${strongestPoint}와 원료·품질 정보를 차례로 보여주는 흐름을 추천합니다.`
+    : `이 제품은 기능성 표현 범위를 지키면서도 고객의 고민에 먼저 공감하고, 그 다음 인정된 정보와 ${strongestPoint}를 명확하게 보여주는 구성이 적합합니다. 구매 전환을 위해서는 제품 소개보다 고객의 상황을 먼저 열어주는 흐름이 유리합니다.`;
 
-  const strategyName = hasIngredient || hasPurity
-    ? "원료 신뢰 중심 설계"
-    : hasCerts
-    ? "품질 신뢰 중심 설계"
-    : "구매 불안 해소형 설계";
-
-  const aiSummary = `이 제품은 ${name}의 핵심 장점이 '${strongestPoint}'에 집중되어 있습니다. 따라서 첫 화면부터 과장된 효능보다 원료의 출처·함량·품질 정보를 명확하게 보여주고, 이후 섭취 편의성과 신뢰 요소를 순서대로 보강하는 구성이 가장 적합합니다.`;
-
-  const purchasePoints = [
-    { point: "원료 신뢰도", stars: hasIngredient || hasPurity ? 5 : 3, reason: hasPurity ? `${purity}% 수치를 중심으로 차별화 가능` : `${ingredient} 정보를 중심으로 신뢰 형성 가능` },
-    { point: "정보 명확성", stars: hasAmount || hasPurity ? 5 : 3, reason: hasAmount ? `${amount}mg 기준을 명확히 안내 가능` : "함량·기준을 보강하면 설득력 상승" },
-    { point: "품질 신뢰도", stars: hasCerts ? 5 : 3, reason: hasCerts ? `${certs}를 신뢰 배지로 활용 가능` : "인증·제조 정보를 추가하면 신뢰도 개선" },
-    { point: "섭취 편의성", stars: benefitsRaw.includes("정") || benefitsRaw.includes("포") || benefitsRaw.includes("캡슐") ? 4 : 3, reason: "구매 전 마지막 망설임을 줄이는 보조 포인트" },
-    { point: "브랜드 인지도", stars: 2, reason: "초기 브랜드는 원료·제조 신뢰로 보완 필요" },
+  const persuasionPoints = [
+    {
+      label: hasPurity || ingredient ? "원료·성분 신뢰" : "제품 정보 명확성",
+      score: hasPurity ? 92 : ingredient ? 86 : 76,
+      reason: hasPurity ? `${purity}% 수치가 있어 첫 신뢰 형성에 유리합니다.` : `${ingredient} 정보를 중심으로 제품의 기준을 설명할 수 있습니다.`,
+    },
+    {
+      label: "고객 공감",
+      score: targetRaw ? 84 : 70,
+      reason: `${targetMain}의 일상 고민을 먼저 짚으면 상세페이지 이탈을 줄일 수 있습니다.`,
+    },
+    {
+      label: "품질 근거",
+      score: hasCerts ? 88 : 62,
+      reason: hasCerts ? `${certs} 정보를 신뢰 배지와 품질 섹션으로 활용할 수 있습니다.` : "인증·제조·시험성적서 정보가 추가되면 설득력이 더 올라갑니다.",
+    },
+    {
+      label: "섭취 편의성",
+      score: /정|포|캡슐|1일|하루|간편/.test(benefitsRaw) ? 78 : 66,
+      reason: "구매 직전에는 ‘어떻게 먹는지’가 망설임을 줄이는 보조 근거가 됩니다.",
+    },
   ];
 
   const recommendedTarget = [
-    targetRaw.split(/[,.，]/)[0] || targetRaw,
-    isBerberine ? "식후 루틴과 가벼운 관리에 관심 있는 고객" : "제품 정보를 꼼꼼히 비교하는 고객",
-    "과장된 효능보다 원료·함량·제조 정보를 확인하는 구매층",
+    { label: targetMain, reason: "입력된 타깃 중 가장 직접적인 구매 가능성이 있는 고객층입니다." },
+    { label: isBerberine ? "식후 루틴에 관심 있는 고객" : "건강한 생활 루틴을 만들고 싶은 고객", reason: "제품을 질환 해결책이 아니라 일상 관리 선택지로 받아들이기 쉽습니다." },
+    { label: "원료와 품질을 꼼꼼히 확인하는 고객", reason: "초기 브랜드일수록 후기보다 원료·함량·제조 정보가 신뢰 형성에 중요합니다." },
   ];
 
-  const pageStructure = isGeneralFood
-    ? [
-        { step: "01", title: "선택 기준 제시", description: "효능 단정 대신 어떤 정보를 보고 선택해야 하는지 먼저 제안" },
-        { step: "02", title: `${ingredient} 원료 소개`, description: "주원료의 특징과 제품 안에서의 역할을 명확히 설명" },
-        { step: "03", title: hasPurity ? `${purity}% 수치 설명` : "함량·배합 정보 정리", description: "순도와 실제 함량 기준을 혼동 없이 구분" },
-        { step: "04", title: "제품 차별성", description: `${benefitsRaw.split(/[,.，]/)[0] || "제품의 핵심 장점"}을 구매 포인트로 정리` },
-        { step: "05", title: "부원료·배합 의도", description: "부원료가 있다면 왜 함께 담았는지 구조적으로 설명" },
-        { step: "06", title: "섭취 편의성", description: "언제, 어떻게, 얼마나 간편하게 섭취하는지 안내" },
-        { step: "07", title: "신뢰 요소", description: hasCerts ? `${certs} 정보와 제조·품질 요소 제시` : "제조, 보관, 주의사항 등 불안 요소 해소" },
-        { step: "08", title: "구매 CTA", description: "효능 약속이 아닌 '정보를 확인하고 선택'하는 톤으로 전환" },
-      ]
-    : [
-        { step: "01", title: "고객 고민 공감", description: "타깃이 느끼는 일상적 불편을 과장 없이 제시" },
-        { step: "02", title: "기능성 정보", description: "인정된 기능성 범위 안에서 핵심 정보를 설명" },
-        { step: "03", title: `${ingredient} 핵심 성분`, description: "주원료와 함량 기준을 먼저 확인하게 구성" },
-        { step: "04", title: "제품 차별성", description: "원료·함량·섭취 편의성 중심으로 USP 정리" },
-        { step: "05", title: "섭취 방법", description: "복용이 아닌 섭취 기준과 주의사항 안내" },
-        { step: "06", title: "신뢰 요소", description: "인증, 제조, 품질관리 정보를 배치" },
-        { step: "07", title: "FAQ", description: "구매 전 망설임을 줄이는 질문 정리" },
-        { step: "08", title: "CTA", description: "부담 없는 다음 행동으로 전환 유도" },
-      ];
+  const pageStructure = [
+    { step: "01", title: "브랜드 & 제품 소개", description: `${name}이 어떤 제품인지 첫 화면에서 짧고 선명하게 인식시킵니다.` },
+    { step: "02", title: "이런 고민 있으신가요?", description: `${targetMain}이 공감할 수 있는 일상 상황을 먼저 제시합니다.` },
+    { step: "03", title: "왜 이 제품인가?", description: `문제 제기 후 곧바로 ${name}을 선택해야 하는 이유를 연결합니다.` },
+    { step: "04", title: "핵심 원료 소개", description: `${ingredient}의 특징과 제품 안에서의 역할을 쉽게 설명합니다.` },
+    { step: "05", title: "우리 제품만의 차별점", description: `${strongestPoint}를 중심으로 다른 제품과 구분되는 포인트를 정리합니다.` },
+    { step: "06", title: "성분·배합 포인트", description: "주원료와 부원료가 있다면 왜 함께 구성됐는지 한눈에 보여줍니다." },
+    { step: "07", title: "품질 & 신뢰 요소", description: hasCerts ? `${certs}와 제조·품질 정보를 배치해 구매 불안을 낮춥니다.` : "제조, 보관, 주의사항, 시험성적서 등 신뢰 자료를 배치합니다." },
+    { step: "08", title: "섭취 방법", description: "하루 몇 회, 언제, 어떻게 섭취하는지 간단하게 안내합니다." },
+    { step: "09", title: "FAQ", description: "구매 전 자주 생기는 질문을 미리 해소합니다." },
+    { step: "10", title: "구매 CTA", description: "효능 단정이 아니라 ‘정보를 확인하고 선택’하는 톤으로 마무리합니다." },
+  ];
 
-  const designReason = `AI 분석 결과, 이 제품은 브랜드 인지도보다 '${strongestPoint}'가 구매 결정을 더 강하게 이끄는 제품입니다. 그래서 브랜드 스토리를 앞세우기보다, 선택 기준 → 원료 정보 → 수치/품질 근거 순서로 신뢰를 쌓는 구성을 추천합니다. 특히 ${isGeneralFood ? "일반식품 표현 제한을 고려해 효능을 직접 말하지 않고, 원료·함량·섭취 편의성 중심으로 설득하는 흐름" : "인정 범위를 벗어나지 않으면서 기능성 정보와 원료 신뢰를 균형 있게 보여주는 흐름"}이 안전하고 전환에 유리합니다.`;
+  const designReason = `이 구성은 먼저 제품을 소개한 뒤, 고객의 고민을 열고, 그 다음 ${ingredient}와 ${strongestPoint}를 보여주는 순서입니다. 고객은 처음부터 성분 설명만 보면 이탈할 수 있으므로, 공감 → 제품 필요성 → 원료·차별점 → 신뢰 → 섭취 방법 순서로 설득하는 것이 구매 전환에 더 유리합니다.`;
 
   const recommendedDesign = {
-    name: hasPurity || isBerberine ? "Luxury White" : "Modern Premium",
+    name: hasPlantMood ? "Luxury White" : "Modern Premium",
     score: 5,
-    reason: hasPurity || isBerberine
-      ? "고순도 원료와 프리미엄 건강식품 이미지를 가장 깔끔하게 전달할 수 있는 스타일입니다."
-      : "정보 신뢰도와 현대적인 브랜드감을 동시에 보여주기 좋은 스타일입니다.",
+    reason: hasPlantMood
+      ? "식품·건강 제품의 신뢰감과 프리미엄 이미지를 가장 깔끔하게 전달할 수 있는 스타일입니다."
+      : "정보량이 많은 제품을 정돈된 카드와 여백으로 보여주기 좋은 스타일입니다.",
   };
 
   const alternativeDesigns = [
@@ -362,27 +364,30 @@ function buildMockPageDesign(product) {
   ];
 
   const recommendedImages = [
-    { label: "Hero", recommendation: `${ingredient} 또는 제품 패키지를 크게 보여주는 프리미엄 클로즈업`, reason: "첫 화면에서 원료 신뢰와 제품 존재감을 동시에 전달" },
-    { label: "원료", recommendation: isBerberine ? "고산지대 자연 배경과 베르베린 원료를 함께 보여주는 컷" : "주원료의 질감이 보이는 매크로 이미지", reason: "제품의 핵심 경쟁력이 원료라는 점을 빠르게 인지시킴" },
-    { label: "아이콘", recommendation: "얇은 선형 아이콘과 작은 인증 배지 스타일", reason: "건강식품 특유의 신뢰감과 가독성 유지" },
-    { label: "배경", recommendation: "아이보리 기반의 은은한 그라데이션 또는 종이 질감", reason: "과한 의료 느낌 없이 프리미엄 라이프스타일 무드 형성" },
+    { label: "Hero", recommendation: "제품 패키지와 핵심 원료가 함께 보이는 프리미엄 컷", reason: "첫 화면에서 제품 존재감과 원료 신뢰를 동시에 전달합니다." },
+    { label: "공감", recommendation: "식후 루틴이나 일상 관리 상황을 은은하게 보여주는 이미지", reason: "고객이 자신의 상황을 대입하기 쉽게 만듭니다." },
+    { label: "원료", recommendation: isBerberine ? "고산지대 자연 배경과 베르베린 원료를 함께 보여주는 컷" : "주원료의 질감이 보이는 깔끔한 클로즈업", reason: "제품의 핵심 경쟁력이 원료라는 점을 빠르게 인지시킵니다." },
+    { label: "신뢰", recommendation: "HACCP, 시험성적서, 제조시설 등을 아이콘 또는 배지로 정리", reason: "후기가 부족해도 품질 근거로 신뢰를 보완할 수 있습니다." },
   ];
 
   return {
     aiSummary,
-    productDiagnosis: {
-      productType,
-      strongestPoint,
-      weakPoint,
-      strategyName,
-    },
-    purchasePoints,
+    productFeatures,
+    persuasionPoints,
     recommendedTarget,
     pageStructure,
     designReason,
     recommendedDesign,
     alternativeDesigns,
     recommendedImages,
+    // 기존 UI/저장 데이터 호환용 필드
+    productDiagnosis: {
+      productType: productFeatures[0] || "제품 정보 중심 구성",
+      strongestPoint,
+      weakPoint: hasCerts ? "후기와 브랜드 스토리를 보강하면 더 좋습니다." : "인증·후기·제조 정보가 추가되면 신뢰도가 올라갑니다.",
+      strategyName: "공감 후 원료·차별성 중심 설계",
+    },
+    purchasePoints: persuasionPoints.map((p) => ({ point: p.label, stars: Math.max(1, Math.round(p.score / 20)), reason: p.reason })),
   };
 }
 
@@ -1485,157 +1490,6 @@ ${fontLink}
                 💾 프로젝트 저장
               </button>
 
-              {/* AI 상세페이지 설계 */}
-              {showPageDesign && pageDesign && (
-                <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "20px 18px", background: "linear-gradient(180deg, #FFFEFB 0%, #F8F4EC 100%)", borderRadius: 14, border: "1px solid #E3D8C9", marginBottom: 18, boxShadow: "0 18px 38px rgba(47,38,28,0.06)" }}>
-                  <div>
-                    <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 9px", borderRadius: 999, background: "#F2E8DA", color: "#9A672E", fontSize: 10.5, fontWeight: 900, letterSpacing: "0.04em", marginBottom: 10 }}>
-                      AI PLANNING
-                    </div>
-                    <div style={{ fontSize: 17, fontWeight: 900, color: "#241F19", letterSpacing: "-0.04em", marginBottom: 5 }}>🧠 AI 상세페이지 설계</div>
-                    <div style={{ fontSize: 11.5, color: "#8B8175", lineHeight: 1.55 }}>AI가 제품 정보를 먼저 진단하고, 구매로 이어지는 상세페이지 흐름을 설계했습니다.</div>
-                  </div>
-
-                  {/* AI 종합 의견 */}
-                  {pageDesign.aiSummary && (
-                    <div style={{ padding: "13px 14px", borderRadius: 12, background: "#2F261D", color: "#FFF8ED", boxShadow: "0 14px 28px rgba(47,38,28,0.14)" }}>
-                      <div style={{ fontSize: 10.5, fontWeight: 800, color: "#D8B57A", marginBottom: 6 }}>AI 종합 의견</div>
-                      <div style={{ fontSize: 12.5, lineHeight: 1.7, fontWeight: 500 }}>{pageDesign.aiSummary}</div>
-                    </div>
-                  )}
-
-                  {/* ① 제품 경쟁력 진단 */}
-                  {pageDesign.productDiagnosis && (
-                    <div style={{ paddingTop: 14, borderTop: "1px solid #E8E1D7" }}>
-                      <div style={{ fontSize: 11, fontWeight: 900, color: "#A87535", marginBottom: 10 }}>① 제품 경쟁력 진단</div>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 8 }}>
-                        {[
-                          ["제품 유형", pageDesign.productDiagnosis.productType],
-                          ["가장 강한 경쟁력", pageDesign.productDiagnosis.strongestPoint],
-                          ["보완이 필요한 요소", pageDesign.productDiagnosis.weakPoint],
-                          ["추천 판매 전략", pageDesign.productDiagnosis.strategyName],
-                        ].map(([label, value], i) => (
-                          <div key={i} style={{ padding: "10px 11px", borderRadius: 10, background: i === 3 ? "#F2E8DA" : "#FFFFFF", border: "1px solid #E8E1D7" }}>
-                            <div style={{ fontSize: 10.5, color: "#9D9183", marginBottom: 3, fontWeight: 700 }}>{label}</div>
-                            <div style={{ fontSize: 12.3, color: i === 3 ? "#8B5E2C" : "#2B2925", fontWeight: 800, lineHeight: 1.45 }}>{value}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* ② 핵심 구매 포인트 */}
-                  <div style={{ paddingTop: 14, borderTop: "1px solid #E8E1D7" }}>
-                    <div style={{ fontSize: 11, fontWeight: 900, color: "#A87535", marginBottom: 10 }}>② 핵심 구매 포인트</div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                      {pageDesign.purchasePoints?.map((item, i) => (
-                        <div key={i} style={{ padding: "9px 10px", borderRadius: 10, background: "#FFFFFF", border: "1px solid #ECE3D7" }}>
-                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 4 }}>
-                            <span style={{ fontSize: 12.2, color: "#2B2925", fontWeight: 800 }}>{item.point}</span>
-                            <span style={{ color: "#A87535", fontSize: 12.5, letterSpacing: 1 }}>{"★".repeat(item.stars)}{"☆".repeat(5 - item.stars)}</span>
-                          </div>
-                          {item.reason && <div style={{ fontSize: 10.7, color: "#8B8175", lineHeight: 1.45 }}>{item.reason}</div>}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* ③ 추천 타겟 */}
-                  <div style={{ paddingTop: 14, borderTop: "1px solid #E8E1D7" }}>
-                    <div style={{ fontSize: 11, fontWeight: 900, color: "#A87535", marginBottom: 9 }}>③ 추천 타겟</div>
-                    <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
-                      {pageDesign.recommendedTarget?.map((target, i) => (
-                        <span key={i} style={{ display: "inline-flex", padding: "7px 10px", borderRadius: 999, background: "#FFFFFF", border: "1px solid #E8E1D7", color: "#5F4B36", fontSize: 11.3, fontWeight: 700 }}>{target}</span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* ④ AI 추천 상세페이지 설계 */}
-                  <div style={{ paddingTop: 14, borderTop: "1px solid #E8E1D7" }}>
-                    <div style={{ fontSize: 11, fontWeight: 900, color: "#A87535", marginBottom: 10 }}>④ AI 추천 상세페이지 설계</div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 0, padding: "12px 10px", borderRadius: 12, background: "#FFFFFF", border: "1px solid #E8E1D7" }}>
-                      {pageDesign.pageStructure?.map((item, i) => (
-                        <div key={i} style={{ display: "grid", gridTemplateColumns: "42px 1fr", gap: 10, position: "relative", paddingBottom: i < pageDesign.pageStructure.length - 1 ? 15 : 0 }}>
-                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                            <div style={{ width: 30, height: 30, borderRadius: "50%", background: i === 0 ? "#A87535" : "#F2E8DA", color: i === 0 ? "#fff" : "#9A672E", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 900 }}>{item.step}</div>
-                            {i < pageDesign.pageStructure.length - 1 && <div style={{ width: 1, height: 28, background: "#E3D8C9", marginTop: 5 }} />}
-                          </div>
-                          <div style={{ paddingTop: 2 }}>
-                            <div style={{ fontSize: 12.8, fontWeight: 900, color: "#2B2925", marginBottom: 3 }}>{item.title}</div>
-                            <div style={{ fontSize: 11.2, color: "#8B8175", lineHeight: 1.5 }}>{item.description}</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* ⑤ 설계 이유 */}
-                  <div style={{ padding: "13px 14px", borderRadius: 12, background: "#FFF8EA", border: "1px solid #E9D8B8" }}>
-                    <div style={{ fontSize: 11, fontWeight: 900, color: "#8B7355", marginBottom: 7 }}>⑤ 설계 이유</div>
-                    <div style={{ fontSize: 11.7, color: "#5A4A47", lineHeight: 1.7 }}>{pageDesign.designReason}</div>
-                  </div>
-
-                  {/* ⑥ 추천 디자인 */}
-                  <div style={{ paddingTop: 14, borderTop: "1px solid #E8E1D7" }}>
-                    <div style={{ fontSize: 11, fontWeight: 900, color: "#A87535", marginBottom: 10 }}>⑥ 추천 디자인</div>
-                    {pageDesign.recommendedDesign && (
-                      <div style={{ padding: "12px 13px", background: "#FFFFFF", borderRadius: 12, border: "1.5px solid #D7B27A", boxShadow: "0 10px 22px rgba(168,117,53,0.08)", marginBottom: 8 }}>
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 5 }}>
-                          <div style={{ fontSize: 13, fontWeight: 900, color: "#2B2925" }}>⭐ {pageDesign.recommendedDesign.name}</div>
-                          <div style={{ color: "#A87535", fontSize: 12 }}>{"★".repeat(pageDesign.recommendedDesign.score || 5)}</div>
-                        </div>
-                        <div style={{ fontSize: 11, color: "#8B8175", lineHeight: 1.55 }}>{pageDesign.recommendedDesign.reason}</div>
-                      </div>
-                    )}
-                    {pageDesign.alternativeDesigns?.length > 0 && (
-                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                        {pageDesign.alternativeDesigns.map((style, i) => (
-                          <div key={i} style={{ padding: "8px 10px", background: "rgba(255,255,255,0.68)", borderRadius: 9, border: "1px solid #E8E1D7" }}>
-                            <div style={{ fontSize: 11.5, fontWeight: 800, color: "#5F4B36", marginBottom: 2 }}>{style.name}</div>
-                            <div style={{ fontSize: 10.5, color: "#8B8175" }}>{style.reason}</div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* ⑦ 추천 이미지 */}
-                  <div style={{ paddingTop: 14, borderTop: "1px solid #E8E1D7" }}>
-                    <div style={{ fontSize: 11, fontWeight: 900, color: "#A87535", marginBottom: 9 }}>⑦ 추천 이미지</div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                      {pageDesign.recommendedImages?.map((img, i) => (
-                        <div key={i} style={{ padding: "9px 10px", borderRadius: 10, background: "#FFFFFF", border: "1px solid #ECE3D7" }}>
-                          <div style={{ fontSize: 11.7, fontWeight: 900, color: "#A87535", marginBottom: 3 }}>{img.label}</div>
-                          <div style={{ fontSize: 11.2, color: "#2B2925", fontWeight: 700, lineHeight: 1.45, marginBottom: 3 }}>{img.recommendation}</div>
-                          <div style={{ fontSize: 10.5, color: "#8B8175", lineHeight: 1.45 }}>{img.reason}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* 설계로 생성 버튼 */}
-                  <button
-                    onClick={runPipeline}
-                    style={{
-                      marginTop: 8,
-                      padding: "13px 16px",
-                      borderRadius: 10,
-                      border: "none",
-                      background: "linear-gradient(135deg, #A87535 0%, #8B5E2C 100%)",
-                      color: "#fff",
-                      fontWeight: 900,
-                      fontSize: 13.5,
-                      cursor: "pointer",
-                      transition: "all 0.2s ease",
-                      width: "100%",
-                      boxShadow: "0 14px 24px rgba(168,117,53,0.22)",
-                    }}
-                  >
-                    ✨ 이 설계로 상세페이지 생성
-                  </button>
-                </div>
-              )}
-
               <div style={{ paddingBottom: 8, borderBottom: "1px solid #EEE7DD" }}>
                 <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.04em", marginBottom: 5 }}>1. 제품 정보 입력</div>
                 <div style={{ fontSize: 12.5, color: "#8B8175" }}>정확한 정보를 입력할수록 더 좋은 결과가 생성됩니다.</div>
@@ -1971,6 +1825,156 @@ ${fontLink}
 
         {/* RIGHT: preview / results */}
         <div style={{ padding: "30px 40px 48px", overflowY: "auto", background: "linear-gradient(180deg, #F8F5EF 0%, #F3EDE4 100%)" }}>
+
+          {/* AI 상세페이지 설계 - 오른쪽 즉시 미리보기 */}
+          {showPageDesign && pageDesign && !draft && (
+            <div style={{ maxWidth: 1080, margin: "0 auto 28px", display: "flex", flexDirection: "column", gap: 18 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 18, flexWrap: "wrap" }}>
+                <div>
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px", borderRadius: 999, background: "#F2E8DA", color: "#9A672E", fontSize: 11, fontWeight: 900, letterSpacing: "0.04em", marginBottom: 12 }}>
+                    AI PAGE PLAN
+                  </div>
+                  <div style={{ fontSize: 28, fontWeight: 950, color: "#241F19", letterSpacing: "-0.055em", marginBottom: 6 }}>🧠 AI 상세페이지 설계</div>
+                  <div style={{ fontSize: 13.5, color: "#8B8175", lineHeight: 1.6 }}>AI가 구매 전환을 높일 수 있는 상세페이지 구조를 먼저 설계했습니다.</div>
+                </div>
+                <button
+                  onClick={runPipeline}
+                  style={{
+                    padding: "12px 18px",
+                    borderRadius: 12,
+                    border: "none",
+                    background: "linear-gradient(135deg, #A87535 0%, #8B5E2C 100%)",
+                    color: "#fff",
+                    fontWeight: 900,
+                    fontSize: 13.5,
+                    cursor: "pointer",
+                    boxShadow: "0 14px 28px rgba(168,117,53,0.22)",
+                  }}
+                >
+                  ✨ 이 설계로 상세페이지 생성
+                </button>
+              </div>
+
+              {pageDesign.aiSummary && (
+                <div style={{ padding: "22px 24px", borderRadius: 18, background: "#2F261D", color: "#FFF8ED", boxShadow: "0 20px 42px rgba(47,38,28,0.16)" }}>
+                  <div style={{ fontSize: 12, fontWeight: 900, color: "#D8B57A", marginBottom: 9 }}>종합 진단</div>
+                  <div style={{ fontSize: 15.2, lineHeight: 1.85, fontWeight: 500, letterSpacing: "-0.015em" }}>{pageDesign.aiSummary}</div>
+                </div>
+              )}
+
+              <div style={{ display: "grid", gridTemplateColumns: "minmax(300px, 0.9fr) minmax(420px, 1.35fr)", gap: 18 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                  <div style={{ padding: 20, borderRadius: 16, background: "#FFFFFF", border: "1px solid #E8E1D7", boxShadow: "0 12px 26px rgba(47,38,28,0.05)" }}>
+                    <div style={{ fontSize: 12, fontWeight: 950, color: "#A87535", marginBottom: 14 }}>① 제품 핵심 특징</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+                      {pageDesign.productFeatures?.map((feature, i) => (
+                        <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: "9px 10px", borderRadius: 12, background: i === 0 ? "#FFF8EA" : "#FBFAF7", border: "1px solid #ECE3D7" }}>
+                          <span style={{ color: "#A87535", fontWeight: 950, fontSize: 12 }}>✓</span>
+                          <span style={{ fontSize: 13, lineHeight: 1.5, color: "#2B2925", fontWeight: 750 }}>{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={{ padding: 20, borderRadius: 16, background: "#FFFFFF", border: "1px solid #E8E1D7", boxShadow: "0 12px 26px rgba(47,38,28,0.05)" }}>
+                    <div style={{ fontSize: 12, fontWeight: 950, color: "#A87535", marginBottom: 14 }}>② 핵심 설득 포인트</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
+                      {pageDesign.persuasionPoints?.map((item, i) => (
+                        <div key={i}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                            <div style={{ fontSize: 13, fontWeight: 900, color: "#2B2925" }}>{i + 1}위 · {item.label}</div>
+                            <div style={{ fontSize: 12, fontWeight: 950, color: "#9A672E" }}>{item.score}%</div>
+                          </div>
+                          <div style={{ height: 7, borderRadius: 999, background: "#F1E9DE", overflow: "hidden", marginBottom: 5 }}>
+                            <div style={{ width: `${Math.min(100, Math.max(0, item.score || 0))}%`, height: "100%", borderRadius: 999, background: "linear-gradient(90deg, #A87535, #D1A56E)" }} />
+                          </div>
+                          <div style={{ fontSize: 11.5, color: "#8B8175", lineHeight: 1.45 }}>{item.reason}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={{ padding: 20, borderRadius: 16, background: "#FFFFFF", border: "1px solid #E8E1D7", boxShadow: "0 12px 26px rgba(47,38,28,0.05)" }}>
+                    <div style={{ fontSize: 12, fontWeight: 950, color: "#A87535", marginBottom: 12 }}>③ 추천 고객</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+                      {pageDesign.recommendedTarget?.map((target, i) => (
+                        <div key={i} style={{ padding: "10px 11px", borderRadius: 12, background: "#FBFAF7", border: "1px solid #ECE3D7" }}>
+                          <div style={{ fontSize: 13, fontWeight: 900, color: "#2B2925", marginBottom: 4 }}>{target.label || target}</div>
+                          {target.reason && <div style={{ fontSize: 11.5, color: "#8B8175", lineHeight: 1.45 }}>{target.reason}</div>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ padding: 22, borderRadius: 18, background: "#FFFFFF", border: "1px solid #E8E1D7", boxShadow: "0 16px 34px rgba(47,38,28,0.06)" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 18 }}>
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 950, color: "#A87535", marginBottom: 5 }}>④ 추천 상세페이지 구성</div>
+                      <div style={{ fontSize: 18, fontWeight: 950, color: "#241F19", letterSpacing: "-0.04em" }}>구매 흐름에 맞춘 페이지 목차</div>
+                    </div>
+                    <div style={{ padding: "6px 10px", borderRadius: 999, background: "#F2E8DA", color: "#9A672E", fontSize: 11, fontWeight: 900 }}>10 sections</div>
+                  </div>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+                    {pageDesign.pageStructure?.map((item, i) => (
+                      <div key={i} style={{ display: "grid", gridTemplateColumns: "48px 1fr", gap: 13, position: "relative", paddingBottom: i < pageDesign.pageStructure.length - 1 ? 17 : 0 }}>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                          <div style={{ width: 36, height: 36, borderRadius: 12, background: i === 0 ? "#A87535" : "#F2E8DA", color: i === 0 ? "#fff" : "#9A672E", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 950 }}>{item.step}</div>
+                          {i < pageDesign.pageStructure.length - 1 && <div style={{ width: 1, flex: 1, minHeight: 26, background: "#E3D8C9", marginTop: 6 }} />}
+                        </div>
+                        <div style={{ padding: "3px 0 16px", borderBottom: i < pageDesign.pageStructure.length - 1 ? "1px solid #F0E8DD" : "none" }}>
+                          <div style={{ fontSize: 14.5, fontWeight: 950, color: "#2B2925", marginBottom: 4 }}>{item.title}</div>
+                          <div style={{ fontSize: 12.3, color: "#8B8175", lineHeight: 1.55 }}>{item.description}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1.15fr 0.85fr", gap: 18 }}>
+                <div style={{ padding: "18px 20px", borderRadius: 16, background: "#FFF8EA", border: "1px solid #E9D8B8" }}>
+                  <div style={{ fontSize: 12, fontWeight: 950, color: "#8B7355", marginBottom: 8 }}>⑤ 설계 이유</div>
+                  <div style={{ fontSize: 13, color: "#5A4A47", lineHeight: 1.75 }}>{pageDesign.designReason}</div>
+                </div>
+
+                <div style={{ padding: 18, borderRadius: 16, background: "#FFFFFF", border: "1.5px solid #D7B27A", boxShadow: "0 12px 26px rgba(168,117,53,0.08)" }}>
+                  <div style={{ fontSize: 12, fontWeight: 950, color: "#A87535", marginBottom: 10 }}>⑥ 추천 디자인</div>
+                  {pageDesign.recommendedDesign && (
+                    <>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                        <div style={{ fontSize: 15, fontWeight: 950, color: "#2B2925" }}>⭐ {pageDesign.recommendedDesign.name}</div>
+                        <div style={{ color: "#A87535", fontSize: 12 }}>{"★".repeat(pageDesign.recommendedDesign.score || 5)}</div>
+                      </div>
+                      <div style={{ fontSize: 12, color: "#8B8175", lineHeight: 1.55 }}>{pageDesign.recommendedDesign.reason}</div>
+                    </>
+                  )}
+                  {pageDesign.alternativeDesigns?.length > 0 && (
+                    <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #EFE6DA", display: "flex", flexDirection: "column", gap: 7 }}>
+                      <div style={{ fontSize: 10.5, fontWeight: 900, color: "#9D9183" }}>다른 스타일 보기</div>
+                      {pageDesign.alternativeDesigns.map((style, i) => (
+                        <div key={i} style={{ fontSize: 11.5, color: "#5F4B36", lineHeight: 1.45 }}><b>{style.name}</b> · {style.reason}</div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div style={{ padding: 20, borderRadius: 16, background: "#FFFFFF", border: "1px solid #E8E1D7", boxShadow: "0 12px 26px rgba(47,38,28,0.05)" }}>
+                <div style={{ fontSize: 12, fontWeight: 950, color: "#A87535", marginBottom: 14 }}>⑦ 추천 이미지</div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 10 }}>
+                  {pageDesign.recommendedImages?.map((img, i) => (
+                    <div key={i} style={{ padding: "12px 12px", borderRadius: 14, background: "#FBFAF7", border: "1px solid #ECE3D7" }}>
+                      <div style={{ fontSize: 12.3, fontWeight: 950, color: "#A87535", marginBottom: 5 }}>{img.label}</div>
+                      <div style={{ fontSize: 12.1, color: "#2B2925", fontWeight: 800, lineHeight: 1.45, marginBottom: 5 }}>{img.recommendation}</div>
+                      <div style={{ fontSize: 11, color: "#8B8175", lineHeight: 1.45 }}>{img.reason}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
           {draft && (
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, marginBottom: 18, flexWrap: "wrap" }}><div><div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.04em" }}>2. 생성된 상세페이지 미리보기</div><div style={{ fontSize: 12.5, color: "#8B8175", marginTop: 4 }}>AI가 생성한 결과입니다. 내용은 수정할 수 있습니다.</div></div><div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               <button
@@ -2194,6 +2198,8 @@ ${fontLink}
               </button>
             </div>
           )}
+
+          {!draft && stage < 0 && !showPageDesign && (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "80%", color: "#8A897F", textAlign: "center" }}>
               <Sparkles size={28} style={{ marginBottom: 10, opacity: 0.5 }} />
               <div style={{ fontSize: 14 }}>왼쪽에 제품 정보를 입력하고 생성 버튼을 눌러주세요.</div>
