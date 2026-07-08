@@ -2,6 +2,18 @@ import { useState, useRef, useEffect } from "react";
 import { Image as ImageIcon, X, Sparkles, ShieldAlert, ShieldCheck, RotateCw, CheckCircle2, Circle, Loader2, Copy, RefreshCw, Check, MessageSquare, Code, Download } from "lucide-react";
 
 // ════════════════════════════════════════════════════════════════
+// 템플릿 상수
+// ════════════════════════════════════════════════════════════════
+const TEMPLATES = [
+  { id: "premium-story", label: "Premium Story", desc: "프리미엄 제품의 가치를 강조하는 스토리텔링" },
+  { id: "problem-solution", label: "Problem → Solution", desc: "고객의 문제 정의 후 해결책 제시" },
+  { id: "scientific", label: "Scientific", desc: "연구 결과와 과학적 근거 중심" },
+  { id: "lifestyle", label: "Lifestyle", desc: "생활 방식과의 통합, 라이프스타일 제시" },
+  { id: "brand-story", label: "Brand Story", desc: "브랜드의 철학과 스토리 강조" },
+  { id: "comparison", label: "Comparison", desc: "기존 제품 대비 우월성 강조" },
+];
+
+// ════════════════════════════════════════════════════════════════
 // localStorage 프로젝트 관리 유틸
 // ════════════════════════════════════════════════════════════════
 const PROJECTS_STORAGE_KEY = "dpg_projects";
@@ -234,6 +246,27 @@ function extractJsonBetween(prompt, startLabel, endLabel) {
   return extractFirstJsonFromText(raw);
 }
 
+function buildMockStrategyAnalysis(product) {
+  return {
+    targetAudience: `${product.target || "주요 타깃층"}, ${product.category === "건강기능식품" ? "건강 관리 필요자" : "제품 사용자"}`,
+    coreUSP: `${product.ingredientName || "핵심 원료"}${product.purity ? ` ${product.purity}%` : ""}${product.actualAmount ? ` + ${product.actualAmount}mg` : ""}`,
+    recommendedHeadline: `${product.name}로 시작하는 ${product.category === "건강기능식품" ? "건강한" : "스마트한"} 선택`,
+    appealPoints: [
+      `${product.ingredientName || "원료"} 기반의 신뢰성`,
+      `정확한 정보 공개와 투명성`,
+      `소비자가 직접 비교할 수 있는 수치`,
+    ],
+    suggestedFlow: "Product Insight → 핵심 정보 → 신뢰도 → CTA",
+    recommendedTemplate: "problem-solution",
+    recommendedConcept: "natural",
+    cautionaryNotes: [
+      "효능을 직접 명시하지 말고 정보 전달로 유도",
+      "수치의 의미를 명확하게 구분 (순도 vs 실제 함량)",
+      "의약품으로 오인할 수 있는 표현 금지",
+    ],
+  };
+}
+
 function buildMockDetailPage(prompt) {
   const text = String(prompt || "");
   const name = text.match(/제품명:\s*(.+)/)?.[1]?.split("\n")?.[0]?.trim() || "식물성 베르베린 88";
@@ -398,11 +431,16 @@ export default function DetailPageGenerator() {
   const isGenerating = stage >= 0 && stage < 4;
 
   // 프로젝트 관리 state
-  const [viewMode, setViewMode] = useState("main"); // "main" | "projects"
+  const [viewMode, setViewMode] = useState("main"); // "main" | "projects" | "templates"
   const [projectsList, setProjectsList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [projectName, setProjectName] = useState("");
   const [currentProjectId, setCurrentProjectId] = useState(null);
+
+  // 템플릿 및 전략 분석 state
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [strategyAnalysis, setStrategyAnalysis] = useState(null);
+  const [showStrategyResult, setShowStrategyResult] = useState(false);
 
   const update = (k, v) => setProduct((p) => ({ ...p, [k]: v }));
 
@@ -534,7 +572,44 @@ export default function DetailPageGenerator() {
     reader.readAsDataURL(f);
   };
 
+  // 전략 분석 실행
+  async function runStrategyAnalysis() {
+    setError("");
+    setShowStrategyResult(false);
+    setStrategyAnalysis(null);
+
+    // Mock 모드 또는 실제 분석 (현재는 Mock만 구현)
+    const analysis = buildMockStrategyAnalysis(product);
+    setStrategyAnalysis(analysis);
+    setShowStrategyResult(true);
+  }
+
+  // 템플릿 선택 화면 진입
+  const handleOpenTemplates = () => {
+    setViewMode("templates");
+  };
+
+  // 템플릿 선택
+  const handleSelectTemplate = (templateId) => {
+    setSelectedTemplate(templateId);
+    setViewMode("main");
+  };
+
+  // 템플릿 메뉴 돌아가기
+  const handleBackFromTemplates = () => {
+    setViewMode("main");
+  };
+
   async function runPipeline() {
+    // 전략 분석 결과가 없으면 먼저 분석 실행
+    if (!showStrategyResult) {
+      await runStrategyAnalysis();
+      return;
+    }
+
+    // 전략 분석 결과가 있으면 상세페이지 생성 실행
+    setShowStrategyResult(false);
+    setStrategyAnalysis(null);
     setError("");
     setAnalysis(null);
     setDraft(null);
@@ -564,8 +639,13 @@ export default function DetailPageGenerator() {
     try {
       const categoryConstraint = buildGenerationConstraint(product.category);
 
+      // 템플릿 정보 추가
+      const templateInfo = selectedTemplate 
+        ? `\n\n[추천 템플릿]\n템플릿: ${TEMPLATES.find(t => t.id === selectedTemplate)?.label || selectedTemplate}\n설명: ${TEMPLATES.find(t => t.id === selectedTemplate)?.desc || ""}`
+        : "";
+
       // 1+2단계 병합: 타깃 분석과 상세페이지 생성을 한 번의 호출로 처리
-      const genResult = await callClaude(`당신은 이커머스 소비자 심리 분석가이자 상세페이지 카피라이터입니다. 먼저 아래 제품의 타깃 고객이 구매 전 느끼는 pain_points와 의심(objections)을 머릿속으로 분석한 뒤, 그 분석을 근거로 진부하지 않고 타깃을 정확히 겨냥한 상세페이지 구성안을 작성하세요.\n\n[제품 정보]\n${productBlock}\n\n[제품 카테고리 제약 - ${product.category}]\n${categoryConstraint}\n\n${product.purity || product.actualAmount || product.epa || product.dha ? numericGuidance : ""}\n\n진부한 상투적 표현("이제는 ~해보세요", "여러분의 건강을 책임집니다" 등)을 쓰지 말고, 제공된 정보에 없는 성분·효능·인증은 지어내지 마세요.\n\n반드시 아래 JSON 형식으로만 답하세요. 설명 문구 없이 JSON만.\n{"hero_headline": "string", "hero_subcopy": "string", "sections": [{"type": "problem", "title": "string", "body": "string"}, {"type": "solution", "title": "string", "body": "string"}, {"type": "objection_handling", "title": "string", "body": "string"}, {"type": "benefit_list", "items": ["string"]}, {"type": "how_to_use", "body": "string"}, {"type": "trust_badges", "items": ["string"]}]}`, 3500);
+      const genResult = await callClaude(`당신은 이커머스 소비자 심리 분석가이자 상세페이지 카피라이터입니다. 먼저 아래 제품의 타깃 고객이 구매 전 느끼는 pain_points와 의심(objections)을 머릿속으로 분석한 뒤, 그 분석을 근거로 진부하지 않고 타깃을 정확히 겨냥한 상세페이지 구성안을 작성하세요.\n\n[제품 정보]\n${productBlock}\n\n[제품 카테고리 제약 - ${product.category}]\n${categoryConstraint}\n\n${product.purity || product.actualAmount || product.epa || product.dha ? numericGuidance : ""}${templateInfo}\n\n진부한 상투적 표현("이제는 ~해보세요", "여러분의 건강을 책임집니다" 등)을 쓰지 말고, 제공된 정보에 없는 성분·효능·인증은 지어내지 마세요.\n\n반드시 아래 JSON 형식으로만 답하세요. 설명 문구 없이 JSON만.\n{"hero_headline": "string", "hero_subcopy": "string", "sections": [{"type": "problem", "title": "string", "body": "string"}, {"type": "solution", "title": "string", "body": "string"}, {"type": "objection_handling", "title": "string", "body": "string"}, {"type": "benefit_list", "items": ["string"]}, {"type": "how_to_use", "body": "string"}, {"type": "trust_badges", "items": ["string"]}]}`, 3500);
       const finalContent = genResult;
       setDraft(finalContent);
       setStage(2);
@@ -929,14 +1009,15 @@ ${fontLink}
             </div>
             <nav style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {["상세페이지 생성", "내 프로젝트", "템플릿", "가이드", "설정"].map((item, idx) => {
-                const isActive = (idx === 0 && viewMode === "main") || (idx === 1 && viewMode === "projects");
-                const isClickable = idx === 0 || idx === 1;
+                const isActive = (idx === 0 && viewMode === "main") || (idx === 1 && viewMode === "projects") || (idx === 2 && viewMode === "templates");
+                const isClickable = idx === 0 || idx === 1 || idx === 2;
                 return (
                   <div
                     key={item}
                     onClick={() => {
                       if (idx === 0) setViewMode("main");
                       else if (idx === 1) handleOpenProjects();
+                      else if (idx === 2) handleOpenTemplates();
                     }}
                     style={{
                       display: "flex",
@@ -1006,6 +1087,88 @@ ${fontLink}
               >
                 💾 프로젝트 저장
               </button>
+
+              {/* AI 전략 분석 결과 */}
+              {showStrategyResult && strategyAnalysis && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 12, padding: "16px 14px", background: "#F9F6F1", borderRadius: 8, border: "1px solid #E3E1DA", marginBottom: 16 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#2B2925", marginBottom: 4 }}>📊 AI 전략 분석 결과</div>
+
+                  {/* 추천 타깃 */}
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 4 }}>🎯 추천 타깃 고객</div>
+                    <div style={{ fontSize: 12, color: "#2B2925", lineHeight: 1.6 }}>{strategyAnalysis.targetAudience}</div>
+                  </div>
+
+                  {/* 핵심 USP */}
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 4 }}>💎 핵심 USP</div>
+                    <div style={{ fontSize: 12, color: "#2B2925", lineHeight: 1.6 }}>{strategyAnalysis.coreUSP}</div>
+                  </div>
+
+                  {/* 추천 헤드라인 */}
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 4 }}>📝 추천 헤드라인</div>
+                    <div style={{ fontSize: 12, color: "#2B2925", lineHeight: 1.6, fontStyle: "italic" }}>{strategyAnalysis.recommendedHeadline}</div>
+                  </div>
+
+                  {/* 소구 포인트 */}
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 4 }}>🔑 주요 소구 포인트</div>
+                    <div style={{ fontSize: 12, color: "#2B2925", lineHeight: 1.6 }}>
+                      {strategyAnalysis.appealPoints.map((point, i) => (
+                        <div key={i}>• {point}</div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 추천 흐름 */}
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 4 }}>📊 추천 페이지 흐름</div>
+                    <div style={{ fontSize: 12, color: "#2B2925", lineHeight: 1.6 }}>{strategyAnalysis.suggestedFlow}</div>
+                  </div>
+
+                  {/* 추천 템플릿 & 컨셉 */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                    <div>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 4 }}>🎨 추천 템플릿</div>
+                      <div style={{ fontSize: 12, color: "#2B2925" }}>{TEMPLATES.find(t => t.id === strategyAnalysis.recommendedTemplate)?.label || strategyAnalysis.recommendedTemplate}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 4 }}>🎯 추천 컨셉</div>
+                      <div style={{ fontSize: 12, color: "#2B2925" }}>{strategyAnalysis.recommendedConcept}</div>
+                    </div>
+                  </div>
+
+                  {/* 주의 표현 */}
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#B5453A", marginBottom: 4 }}>⚠️ 주의할 표현</div>
+                    <div style={{ fontSize: 12, color: "#2B2925", lineHeight: 1.6 }}>
+                      {strategyAnalysis.cautionaryNotes.map((note, i) => (
+                        <div key={i}>• {note}</div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 이 전략으로 생성 버튼 */}
+                  <button
+                    onClick={runPipeline}
+                    style={{
+                      marginTop: 8,
+                      padding: "10px 16px",
+                      borderRadius: 8,
+                      border: "none",
+                      background: "#5A6E52",
+                      color: "#fff",
+                      fontWeight: 700,
+                      fontSize: 12.5,
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                    }}
+                  >
+                    ✨ 이 전략으로 생성
+                  </button>
+                </div>
+              )}
 
               <div style={{ paddingBottom: 8, borderBottom: "1px solid #EEE7DD" }}>
                 <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.04em", marginBottom: 5 }}>1. 제품 정보 입력</div>
@@ -1308,7 +1471,7 @@ ${fontLink}
             }}
           >
             {stage >= 0 && stage < 4 ? <Loader2 size={16} className="spin" /> : <Sparkles size={16} />}
-            {stage >= 0 && stage < 4 ? "생성 중..." : "상세페이지 생성"}
+            {stage >= 0 && stage < 4 ? "생성 중..." : showStrategyResult ? "다시 분석하기" : "📊 AI 전략 분석"}
           </button>
 
           {stage >= 0 && (
@@ -1531,6 +1694,81 @@ ${fontLink}
           )}
         </div>
           </>
+        ) : viewMode === "templates" ? (
+          // 템플릿 선택 화면
+          <div style={{ background: "#F4F3EE", color: "#2B2925", padding: "28px 30px", display: "flex", flexDirection: "column", gap: 18, borderRight: "1px solid #E8E1D7", overflowY: "auto", flex: 1 }}>
+            {/* 헤더 */}
+            <div style={{ paddingBottom: 8, borderBottom: "1px solid #EEE7DD" }}>
+              <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.04em", marginBottom: 5 }}>상세페이지 템플릿</div>
+              <div style={{ fontSize: 12.5, color: "#8B8175" }}>원하는 스타일을 선택하세요.</div>
+            </div>
+
+            {/* 템플릿 목록 */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, flex: 1, overflowY: "auto" }}>
+              {TEMPLATES.map((template) => (
+                <button
+                  key={template.id}
+                  onClick={() => handleSelectTemplate(template.id)}
+                  style={{
+                    border: selectedTemplate === template.id ? `2px solid #A87535` : "1px solid #E3E1DA",
+                    background: selectedTemplate === template.id ? "#FFF8F0" : "#FFFFFF",
+                    borderRadius: 8,
+                    padding: 16,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 6,
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                    textAlign: "left",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (selectedTemplate !== template.id) {
+                      e.target.style.borderColor = "#D4C4B0";
+                      e.target.style.backgroundColor = "#FAFAF8";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (selectedTemplate !== template.id) {
+                      e.target.style.borderColor = "#E3E1DA";
+                      e.target.style.backgroundColor = "#FFFFFF";
+                    }
+                  }}
+                >
+                  <div style={{ fontSize: 15, fontWeight: 700, color: "#2B2925" }}>
+                    {selectedTemplate === template.id && "✓ "}{template.label}
+                  </div>
+                  <div style={{ fontSize: 12, color: "#8B8175", lineHeight: 1.5 }}>
+                    {template.desc}
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* 돌아가기 버튼 */}
+            <button
+              onClick={handleBackFromTemplates}
+              style={{
+                marginTop: "auto",
+                padding: "12px 16px",
+                borderRadius: 10,
+                border: "none",
+                background: "#A87535",
+                color: "#fff",
+                fontWeight: 700,
+                fontSize: 14,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                width: "100%",
+                transition: "all 0.2s ease",
+                boxShadow: "0 2px 6px rgba(168,117,53,0.2)",
+              }}
+            >
+              ← 돌아가기
+            </button>
+          </div>
         ) : (
           // 내 프로젝트 화면
           <div style={{ background: "#F4F3EE", color: "#2B2925", padding: "28px 30px", display: "flex", flexDirection: "column", gap: 18, borderRight: "1px solid #E8E1D7", overflowY: "auto", flex: 1 }}>
