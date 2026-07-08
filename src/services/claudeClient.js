@@ -116,21 +116,23 @@ async function callClaudeApi(prompt, maxTokens = 2000) {
  * @param {string} prompt - 사용자 프롬프트
  * @param {number} maxTokens - 최대 출력 토큰
  * @param {object} context - Mock 모드용 컨텍스트 (product 등)
+ * @param {string} stage - Mock 모드 스테이지 ("generation" | "compliance" | "remediation" | "regenerate")
  * @returns {Promise<object>} 파싱된 JSON 객체
  */
-export async function callClaude(prompt, maxTokens = 2000, context = {}) {
+export async function callClaude(prompt, maxTokens = 2000, context = {}, stage = "generation") {
   // API 키 없으면 Mock 모드
   if (!API_KEY) {
     // 시뮬레이션 딜레이 (실제 API 호출처럼 보이도록)
     await new Promise((r) => setTimeout(r, 800 + Math.random() * 400));
 
-    if (prompt.includes("생성 제약") || prompt.includes("target_insight")) {
-      return generateMockDraft(context.product || {});
-    }
-    if (prompt.includes("컴플라이언스") || prompt.includes("overall_status")) {
+    // 스테이지별 Mock 응답
+    if (stage === "compliance") {
       return generateMockCompliance();
     }
-    // 기본 Mock 응답
+    if (stage === "remediation" || stage === "regenerate") {
+      return generateMockDraft(context.product || {});
+    }
+    // generation, 기타 스테이지
     return generateMockDraft(context.product || {});
   }
 
