@@ -786,23 +786,49 @@ async function generateDetailedComplianceReport(flags, category, callClaude) {
 // 다국어 번역 Mock 함수
 function translateDraft(draft, languageId) {
   const translationGuides = {
-    en: { name: "English", suffix: " (EN)" },
-    ja: { name: "日本語", suffix: " (JP)" },
-    "zh-cn": { name: "简体中文", suffix: " (CN)" },
-    "zh-tw": { name: "繁體中文", suffix: " (TW)" },
-    th: { name: "ไทย", suffix: " (TH)" },
+    en: { name: "English" },
+    ja: { name: "日本語" },
+    "zh-cn": { name: "简体中文" },
+    "zh-tw": { name: "繁體中文" },
+    th: { name: "ไทย" },
   };
 
   const guide = translationGuides[languageId] || translationGuides.en;
 
+  // Mock 번역: 실제 환경에서는 Claude API로 번역
+  const mockTranslations = {
+    en: {
+      hero_headline: "Simple, Clear, and Easy to Choose",
+      hero_subcopy: "Discover trusted health solutions with verified ingredients and transparent information.",
+    },
+    ja: {
+      hero_headline: "シンプルで、明確で、選びやすい",
+      hero_subcopy: "検証された成分と透明な情報を備えた信頼できる健康ソリューションをご発見ください。",
+    },
+    "zh-cn": {
+      hero_headline: "简单、清晰、容易选择",
+      hero_subcopy: "发现具有经过验证的成分和透明信息的可信健康解决方案。",
+    },
+    "zh-tw": {
+      hero_headline: "簡單、清晰、容易選擇",
+      hero_subcopy: "發現具有經過驗證的成分和透明信息的可信健康解決方案。",
+    },
+    th: {
+      hero_headline: "ง่าย ชัดเจน และเลือกง่าย",
+      hero_subcopy: "ค้นพบสารองค์ประกอบที่ได้รับการตรวจสอบและข้อมูลที่โปร่งใสด้วยโซลูชั่นสุขภาพที่เชื่อถือได้",
+    },
+  };
+
+  const translation = mockTranslations[languageId] || mockTranslations.en;
+
   return {
     ...draft,
-    hero_headline: `[${guide.name}] ${draft.hero_headline}`,
-    hero_subcopy: `${draft.hero_subcopy} (${guide.name} version)`,
+    hero_headline: translation.hero_headline,
+    hero_subcopy: translation.hero_subcopy,
     sections: draft.sections?.map((s) => ({
       ...s,
-      title: `${s.title} (${guide.name})`,
-      body: `${s.body} (번역됨)`,
+      title: `${s.title}`,
+      body: s.body,
     })),
   };
 }
@@ -823,8 +849,8 @@ function generateSeoOptimization(draft, product) {
     metaKeywords: keywords.slice(0, 5).join(", "),
     titleTag: `${product.name} | ${product.category} | 공식 상세페이지`,
     headingStructure: {
-      h1: draft.hero_headline,
-      h2_suggestions: draft.sections?.slice(0, 3).map((s) => s.title) || [],
+      h1: displayDraft.hero_headline,
+      h2_suggestions: displayDraft.sections?.slice(0, 3).map((s) => s.title) || [],
     },
     readabilityScore: 85,
     keywordDensity: {
@@ -898,10 +924,15 @@ export default function DetailPageGenerator() {
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [translatedVersions, setTranslatedVersions] = useState(null); // { en: {...}, ja: {...}, ... }
   const [translatingLanguages, setTranslatingLanguages] = useState([]);
+  const [translatedDraft, setTranslatedDraft] = useState(null); // 현재 표시되는 번역된 draft
+  const [activeLanguage, setActiveLanguage] = useState("ko"); // 현재 활성 언어 (ko, en, ja, etc)
   const [seoOptimization, setSeoOptimization] = useState(null);
   const [generatingSeo, setGeneratingSeo] = useState(false);
 
   const update = (k, v) => setProduct((p) => ({ ...p, [k]: v }));
+
+  // 표시할 draft 결정: 번역 버전이 있으면 그것, 아니면 원본
+  const displayDraft = translatedDraft || draft;
 
   // 폰트 선택 미리보기가 각자 폰트로 보이도록, 모든 구글폰트를 로드해둔다.
   useEffect(() => {
@@ -1111,20 +1142,20 @@ export default function DetailPageGenerator() {
 
   // 섹션별 재생성
   async function regenerateSection(sectionIndex, feedback = "") {
-    if (!draft || !draft.sections || sectionIndex < 0 || sectionIndex >= draft.sections.length) return;
+    if (!draft || !displayDraft.sections || sectionIndex < 0 || sectionIndex >= displayDraft.sections.length) return;
 
     setError("");
     setRegeneratingSectionIndex(sectionIndex);
     setStage(3); // 생성 중
 
     try {
-      const sectionData = draft.sections[sectionIndex];
+      const sectionData = displayDraft.sections[sectionIndex];
       const feedbackPart = feedback ? `\n\n사용자 피드백: ${feedback}` : "";
       const prompt = `다음 섹션을 더 나은 카피로 다시 작성해주세요:\n\n섹션 타입: ${sectionData.type}\n제목: ${sectionData.title}\n본문: ${sectionData.body}${feedbackPart}\n\n같은 JSON 형식으로 재작성된 섹션만 반환하세요.`;
 
       const regenerated = await callClaude(prompt, 1500);
 
-      const updatedSections = draft.sections.map((s, i) =>
+      const updatedSections = displayDraft.sections.map((s, i) =>
         i === sectionIndex ? { ...s, body: regenerated.body || s.body, title: regenerated.title || s.title } : s
       );
 
@@ -1184,6 +1215,12 @@ export default function DetailPageGenerator() {
     );
   };
 
+  // 원문(한국어) 보기
+  function showOriginalKorean() {
+    setTranslatedDraft(null);
+    setActiveLanguage("ko");
+  }
+
   // 다국어 번역 생성
   async function generateTranslations() {
     if (!draft || selectedLanguages.length === 0) return;
@@ -1201,6 +1238,12 @@ export default function DetailPageGenerator() {
       }
 
       setTranslatedVersions(translations);
+      
+      // 첫 번째 선택된 언어의 번역본으로 바로 전환
+      const firstLangId = selectedLanguages[0];
+      setTranslatedDraft(translations[firstLangId]);
+      setActiveLanguage(firstLangId);
+      
       setStage(4);
     } catch (err) {
       setError(err.message || "번역 생성 실패");
@@ -1311,7 +1354,7 @@ export default function DetailPageGenerator() {
     if (!draft) return;
     setRegenIndex(idx);
     try {
-      const target = idx === "hero" ? { hero_headline: draft.hero_headline, hero_subcopy: draft.hero_subcopy } : draft.sections[idx];
+      const target = idx === "hero" ? { hero_headline: displayDraft.hero_headline, hero_subcopy: displayDraft.hero_subcopy } : displayDraft.sections[idx];
       const categoryConstraint = buildGenerationConstraint(product.category);
       const feedbackLine = feedback
         ? `\n\n[사용자 수정 요청] 다음 요청을 반드시 반영해서 다시 쓰세요: "${feedback}"`
@@ -1437,8 +1480,8 @@ export default function DetailPageGenerator() {
 
   function copyResult() {
     if (!draft) return;
-    const lines = [draft.hero_headline, draft.hero_subcopy, ""];
-    draft.sections?.forEach((s) => {
+    const lines = [displayDraft.hero_headline, displayDraft.hero_subcopy, ""];
+    displayDraft.sections?.forEach((s) => {
       if (s.title) lines.push(s.title);
       if (s.body) lines.push(s.body);
       if (s.items) lines.push(...s.items.map((it) => "- " + it));
@@ -1460,7 +1503,7 @@ export default function DetailPageGenerator() {
         .replace(/>/g, "&gt;");
     const cs = conceptStyle;
 
-    const sectionsHtml = (draft.sections || [])
+    const sectionsHtml = (displayDraft.sections || [])
       .map((s, i) => {
         const label = sectionLabel(s.type);
         const num = String(i + 1).padStart(2, "0");
@@ -1490,7 +1533,7 @@ export default function DetailPageGenerator() {
       .join("\n");
 
     const imgHtml = image
-      ? `<img class="hero-img" src="${image}" alt="${esc(draft.hero_headline)}" />`
+      ? `<img class="hero-img" src="${image}" alt="${esc(displayDraft.hero_headline)}" />`
       : "";
 
     const overline = product.name ? `<div class="hero-overline">${esc(product.name)}</div>` : "";
@@ -1520,7 +1563,7 @@ export default function DetailPageGenerator() {
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>${esc(draft.hero_headline)}</title>
+<title>${esc(displayDraft.hero_headline)}</title>
 ${fontLink}
 <style>
   * { box-sizing: border-box; }
@@ -1595,9 +1638,9 @@ ${fontLink}
     <div class="hero">
       ${imgHtml}
       ${overline}
-      <h1 class="hero-headline">${emphasizeHtmlText(draft.hero_headline, accent1)}</h1>
+      <h1 class="hero-headline">${emphasizeHtmlText(displayDraft.hero_headline, accent1)}</h1>
       <div class="hero-rule"></div>
-      <p class="hero-sub">${emphasizeHtmlText(draft.hero_subcopy, accent1)}</p>
+      <p class="hero-sub">${emphasizeHtmlText(displayDraft.hero_subcopy, accent1)}</p>
     </div>
     ${sectionsHtml}
   </div>
@@ -2230,7 +2273,18 @@ ${fontLink}
             </div>
           ) : null}
           {draft && (
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, marginBottom: 18, flexWrap: "wrap" }}><div><div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}><div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.04em" }}>생성된 상세페이지</div><span style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 10px", borderRadius: 999, background: "#E8F4EA", color: "#2F7D4A", fontSize: 12, fontWeight: 900 }}>✓ 생성 완료</span></div><div style={{ fontSize: 12.5, color: "#8B8175", marginTop: 4 }}>AI가 생성한 최종 상세페이지입니다. 내용을 수정하거나 다운로드할 수 있습니다.</div></div><div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, marginBottom: 18, flexWrap: "wrap" }}><div><div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}><div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.04em" }}>생성된 상세페이지</div><span style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 10px", borderRadius: 999, background: "#E8F4EA", color: "#2F7D4A", fontSize: 12, fontWeight: 900 }}>✓ 생성 완료</span>{(() => {
+                const languageInfo = activeLanguage === "ko" 
+                  ? { flag: "🇰🇷", name: "한국어" }
+                  : LANGUAGES.find(l => l.id === activeLanguage) 
+                    ? { flag: LANGUAGES.find(l => l.id === activeLanguage).flag, name: LANGUAGES.find(l => l.id === activeLanguage).label }
+                    : { flag: "🇰🇷", name: "한국어" };
+                return (
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 10px", borderRadius: 999, background: "#E8E1D7", color: "#8B7355", fontSize: 11, fontWeight: 700 }}>
+                    {languageInfo.flag} {languageInfo.name}
+                  </span>
+                );
+              })()}</div><div style={{ fontSize: 12.5, color: "#8B8175", marginTop: 4 }}>AI가 생성한 최종 상세페이지입니다. 내용을 수정하거나 다운로드할 수 있습니다.</div></div><div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               <button
                 onClick={copyResult}
                 style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 12px", borderRadius: 8, border: "1px solid #DEDCD3", background: "#fff", color: "#4A4940", fontSize: 12.5, cursor: "pointer" }}
@@ -2341,6 +2395,28 @@ ${fontLink}
               >
                 🌍 다국어 번역
               </button>
+
+              {/* 원문 보기 버튼 (번역된 상태일 때만 표시) */}
+              {translatedDraft && (
+                <button
+                  onClick={showOriginalKorean}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "7px 12px",
+                    borderRadius: 8,
+                    border: "1px solid #D4A574",
+                    background: "#FFF8F0",
+                    color: "#A87535",
+                    fontSize: 12.5,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  📄 원문 보기
+                </button>
+              )}
 
               {/* SEO 최적화 */}
               <button
@@ -2533,9 +2609,9 @@ ${fontLink}
                 <div key={vIdx} style={{ padding: "16px", background: "#F5F3EF", borderRadius: 10, border: "1px solid #E8E1D7" }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: "#2B2925", marginBottom: 12 }}>{version.title}</div>
                   <div style={{ background: "#fff", padding: "12px", borderRadius: 6, border: "1px solid #E3E1DA", fontSize: 12, color: "#2B2925", lineHeight: 1.6 }}>
-                    <div style={{ fontWeight: 700, marginBottom: 8, fontSize: 13 }}>{version.draft.hero_headline}</div>
-                    <div style={{ fontSize: 11.5, color: "#5A4A47", marginBottom: 10 }}>{version.draft.hero_subcopy?.slice(0, 80)}...</div>
-                    {version.draft.sections?.slice(0, 1).map((s, i) => (
+                    <div style={{ fontWeight: 700, marginBottom: 8, fontSize: 13 }}>{version.displayDraft.hero_headline}</div>
+                    <div style={{ fontSize: 11.5, color: "#5A4A47", marginBottom: 10 }}>{version.displayDraft.hero_subcopy?.slice(0, 80)}...</div>
+                    {version.displayDraft.sections?.slice(0, 1).map((s, i) => (
                       <div key={i} style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid #E8E1D7" }}>
                         <div style={{ fontWeight: 600, fontSize: 11.5, marginBottom: 3 }}>{s.title}</div>
                         <div style={{ fontSize: 11, color: "#5A4A47" }}>{s.body?.slice(0, 60)}...</div>
@@ -2567,35 +2643,6 @@ ${fontLink}
           )}
 
           {/* 다국어 번역 결과 */}
-          {translatedVersions && (
-            <div style={{ marginBottom: 28, padding: "16px", background: "#F5F3EF", borderRadius: 10, border: "1px solid #E8E1D7" }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#2B2925", marginBottom: 14 }}>🌍 다국어 번역 완료</div>
-              
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                {Object.entries(translatedVersions).map(([langId, translated]) => {
-                  const lang = LANGUAGES.find((l) => l.id === langId);
-                  return (
-                    <div key={langId} style={{ padding: "12px", background: "#fff", borderRadius: 6, border: "1px solid #E3E1DA" }}>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: "#2B2925", marginBottom: 8 }}>
-                        {lang?.flag} {lang?.label}
-                      </div>
-                      <div style={{ fontSize: 11, color: "#5A4A47", lineHeight: 1.6 }}>
-                        <div style={{ marginBottom: 6, fontWeight: 600 }}>{translated.hero_headline}</div>
-                        <div style={{ fontSize: 10, color: "#8B8175", marginBottom: 6 }}>{translated.hero_subcopy?.slice(0, 50)}...</div>
-                        {translated.sections?.[0] && (
-                          <div style={{ padding: "6px", background: "#F9F6F1", borderRadius: 4, fontSize: 10 }}>
-                            <strong>{translated.sections[0].title}</strong>
-                            <div>{translated.sections[0].body?.slice(0, 40)}...</div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
           {draft && (
             <div style={{ maxWidth: 940, margin: "0 auto", fontFamily: bodyFamily }}>
               <PreviewSection idx="hero" onRegen={regenerateSection} loading={regenIndex === "hero"} accent={themeColor}>
@@ -2619,16 +2666,16 @@ ${fontLink}
                     </div>
                   )}
                   <div style={{ fontFamily: conceptStyle.headFont, fontWeight: conceptStyle.headWeight, fontSize: 44, lineHeight: 1.16, color: "#1F2A24", marginBottom: 22, letterSpacing: "-0.035em", maxWidth: 560 }}>
-                    <EmphasizedText text={draft.hero_headline} accent={accent1} />
+                    <EmphasizedText text={displayDraft.hero_headline} accent={accent1} />
                   </div>
                   <div style={{ width: 72, height: 1, background: accent1, marginBottom: 22, opacity: 0.8 }} />
                   <div style={{ fontSize: 16, color: "#5D5B52", lineHeight: 1.85, maxWidth: 560, letterSpacing: "-0.01em" }}>
-                    <EmphasizedText text={draft.hero_subcopy} accent={accent1} />
+                    <EmphasizedText text={displayDraft.hero_subcopy} accent={accent1} />
                   </div>
                 </div>
               </PreviewSection>
 
-              {draft.sections?.map((s, i) => {
+              {displayDraft.sections?.map((s, i) => {
                 const isHighlight = s.type === "benefit_list" || s.type === "solution";
                 const isBadges = s.type === "trust_badges";
                 const isList = s.type === "benefit_list";
@@ -2792,9 +2839,9 @@ ${fontLink}
                     {draft ? (
                       <PreviewSection
                         idx="hero"
-                        title={draft.hero_headline}
-                        subtitle={draft.hero_subcopy}
-                        sections={draft.sections || []}
+                        title={displayDraft.hero_headline}
+                        subtitle={displayDraft.hero_subcopy}
+                        sections={displayDraft.sections || []}
                         accent={themeColor}
                         headingFont={headingFamily}
                         bodyFont={bodyFamily}
