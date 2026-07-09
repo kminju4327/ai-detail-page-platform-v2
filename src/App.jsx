@@ -2230,33 +2230,64 @@ ${fontLink}
             </div>
           ) : null}
           {draft && (
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, marginBottom: 18, flexWrap: "wrap" }}><div><div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.04em" }}>2. 생성된 상세페이지 미리보기</div><div style={{ fontSize: 12.5, color: "#8B8175", marginTop: 4 }}>AI가 생성한 결과입니다. 내용은 수정할 수 있습니다.</div></div><div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <button
-                onClick={copyResult}
-                style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 12px", borderRadius: 8, border: "1px solid #DEDCD3", background: "#fff", color: "#4A4940", fontSize: 12.5, cursor: "pointer" }}
-              >
-                {copied ? <Check size={13} color="#2F6F45" /> : <Copy size={13} />}
-                {copied ? "복사됨" : "텍스트 복사"}
-              </button>
-              <button
-                onClick={copyHtml}
-                style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 12px", borderRadius: 8, border: "1px solid #DEDCD3", background: "#fff", color: "#4A4940", fontSize: 12.5, cursor: "pointer" }}
-              >
-                {htmlCopied ? <Check size={13} color="#2F6F45" /> : <Code size={13} />}
-                {htmlCopied ? "복사됨" : "HTML 복사"}
-              </button>
-              <button
-                onClick={downloadHtml}
-                style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 12px", borderRadius: 8, border: "none", background: themeColor, color: "#fff", fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}
-              >
-                <Download size={13} /> HTML 다운로드
-              </button>
-              <button
-                onClick={resetAll}
-                style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 12px", borderRadius: 8, border: "1px solid #DEDCD3", background: "#fff", color: "#4A4940", fontSize: 12.5, cursor: "pointer" }}
-              >
-                <RefreshCw size={13} /> 새로 만들기
-              </button>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                gap: 18,
+                marginBottom: 18,
+                flexWrap: "wrap",
+              }}
+            >
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, flexWrap: "wrap" }}>
+                  <div style={{ fontSize: 28, fontWeight: 950, letterSpacing: "-0.055em", color: "#1F2A24" }}>
+                    생성된 상세페이지
+                  </div>
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 5,
+                      padding: "5px 10px",
+                      borderRadius: 999,
+                      background: "#E4F2E8",
+                      color: "#2F6F45",
+                      fontSize: 12,
+                      fontWeight: 800,
+                    }}
+                  >
+                    ✓ 생성 완료
+                  </span>
+                </div>
+                <div style={{ fontSize: 13.5, color: "#8B8175", lineHeight: 1.65 }}>
+                  AI가 생성한 최종 상세페이지입니다.
+                  <br />
+                  내용을 수정하거나 다운로드할 수 있습니다.
+                </div>
+              </div>
+
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                <button
+                  onClick={copyResult}
+                  style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 14px", borderRadius: 10, border: "1px solid #DEDCD3", background: "#fff", color: "#4A4940", fontSize: 12.5, fontWeight: 650, cursor: "pointer", boxShadow: "0 4px 12px rgba(47,38,28,0.04)" }}
+                >
+                  {copied ? <Check size={14} color="#2F6F45" /> : <Copy size={14} />}
+                  {copied ? "복사됨" : "텍스트 복사"}
+                </button>
+                <button
+                  onClick={downloadHtml}
+                  style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 15px", borderRadius: 10, border: "none", background: themeColor, color: "#fff", fontSize: 12.5, fontWeight: 800, cursor: "pointer", boxShadow: "0 8px 20px rgba(168,117,53,0.22)" }}
+                >
+                  <Download size={14} /> HTML 다운로드
+                </button>
+                <button
+                  onClick={resetAll}
+                  style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 14px", borderRadius: 10, border: "1px solid #DEDCD3", background: "#fff", color: "#4A4940", fontSize: 12.5, fontWeight: 650, cursor: "pointer", boxShadow: "0 4px 12px rgba(47,38,28,0.04)" }}
+                >
+                  <RefreshCw size={14} /> 새 프로젝트 만들기
+                </button>
               </div>
             </div>
           )}
@@ -2443,20 +2474,49 @@ ${fontLink}
           {compliance && (
             <div
               style={{
-                marginBottom: 24,
-                padding: "14px 18px",
-                borderRadius: 10,
+                marginBottom: 26,
+                padding: "16px 18px",
+                borderRadius: 14,
                 display: "flex",
                 alignItems: "center",
-                gap: 10,
-                background: compliance.overall_status === "pass" ? "#E9F1EC" : "#FBEAE7",
+                justifyContent: "space-between",
+                gap: 14,
+                background: compliance.overall_status === "pass" ? "#E7F2EB" : "#FBEAE7",
+                border: compliance.overall_status === "pass" ? "1px solid #D0E6D7" : "1px solid #F0C9C2",
                 color: compliance.overall_status === "pass" ? "#2F6F45" : "#B5453A",
-                fontSize: 13.5,
-                fontWeight: 600,
+                boxShadow: "0 8px 20px rgba(47,38,28,0.035)",
               }}
             >
-              {compliance.overall_status === "pass" ? <ShieldCheck size={18} /> : <ShieldAlert size={18} />}
-              {compliance.overall_status === "pass" ? "컴플라이언스 체크 통과" : `${compliance.flags.length}건의 표시광고 리스크가 발견됐어요`}
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                {compliance.overall_status === "pass" ? <ShieldCheck size={22} /> : <ShieldAlert size={22} />}
+                <div>
+                  <div style={{ fontSize: 14.5, fontWeight: 900, marginBottom: 2 }}>
+                    {compliance.overall_status === "pass" ? "컴플라이언스 검토 완료" : `${compliance.flags.length}건의 표시광고 리스크가 발견됐어요`}
+                  </div>
+                  <div style={{ fontSize: 12.5, opacity: 0.9, lineHeight: 1.5 }}>
+                    {compliance.overall_status === "pass" ? "법적 표현 및 광고 가이드를 검토했습니다." : "표시광고 리스크 항목을 확인하고 수정이 필요합니다."}
+                  </div>
+                </div>
+              </div>
+              {compliance.overall_status === "pass" && (
+                <button
+                  onClick={generateDetailedReport}
+                  disabled={isGenerating}
+                  style={{
+                    padding: "8px 12px",
+                    borderRadius: 10,
+                    border: "1px solid rgba(47,111,69,0.22)",
+                    background: "rgba(255,255,255,0.8)",
+                    color: "#2F6F45",
+                    fontSize: 12.5,
+                    fontWeight: 800,
+                    cursor: isGenerating ? "not-allowed" : "pointer",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  검토 결과 보기 ›
+                </button>
+              )}
             </div>
           )}
 
@@ -2713,9 +2773,9 @@ ${fontLink}
         </div>
           </>
         ) : viewMode === "templates" ? (
-          <div style={{ gridColumn: "2 / 4", display: "grid", gridTemplateColumns: "390px minmax(720px, 1fr)", minWidth: 0, minHeight: "100vh" }}>
+          <div style={{ display: "flex", flex: 1 }}>
             {/* LEFT: Template Gallery */}
-            <div style={{ background: "#FFFEFB", color: "#26231F", borderRight: "1px solid #E8E1D7", overflowY: "auto", minWidth: 0 }}>
+            <div style={{ background: "#FFFEFB", color: "#26231F", padding: "28px 30px", display: "flex", flexDirection: "column", gap: 18, borderRight: "1px solid #E8E1D7", overflowY: "auto", width: "390px", minWidth: "390px" }}>
               <TemplateGallery
                 selectedTemplate={selectedTemplate}
                 onSelectTemplate={handleSelectTemplate}
@@ -2773,7 +2833,7 @@ ${fontLink}
                           whiteSpace: "nowrap",
                         }}
                       >
-                        이 템플릿으로 생성
+                        이 탬플릿으로 생성
                       </button>
                     </div>
                   </div>
@@ -3140,43 +3200,47 @@ function PreviewSection({ idx, onRegen, loading, accent, children }) {
   return (
     <div style={{ position: "relative", marginBottom: 18 }}>
       {children}
-      <div style={{ position: "absolute", top: 10, right: 10, display: "flex", gap: 6 }}>
+      <div style={{ position: "absolute", top: 14, right: 14, display: "flex", gap: 8 }}>
         <button
           onClick={() => setOpen((o) => !o)}
           title="수정 요청해서 다시 생성"
           style={{
-            width: 26,
-            height: 26,
-            borderRadius: "50%",
-            border: "none",
-            background: open ? accent : "rgba(0,0,0,0.05)",
+            padding: "7px 11px",
+            borderRadius: 10,
+            border: "1px solid rgba(168,117,53,0.24)",
+            background: open ? accent : "rgba(255,255,255,0.84)",
             color: open ? "#fff" : accent,
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
+            gap: 5,
             cursor: "pointer",
+            fontSize: 12.5,
+            fontWeight: 800,
+            boxShadow: "0 6px 16px rgba(47,38,28,0.06)",
           }}
         >
-          <MessageSquare size={13} />
+          ✎ 수정
         </button>
         <button
           onClick={() => onRegen(idx, "")}
           disabled={loading}
           title="그대로 다시 생성"
           style={{
-            width: 26,
-            height: 26,
-            borderRadius: "50%",
-            border: "none",
-            background: "rgba(0,0,0,0.05)",
+            padding: "7px 11px",
+            borderRadius: 10,
+            border: "1px solid rgba(168,117,53,0.18)",
+            background: "rgba(255,255,255,0.84)",
             color: accent,
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
+            gap: 5,
+            cursor: loading ? "not-allowed" : "pointer",
+            fontSize: 12.5,
+            fontWeight: 800,
+            boxShadow: "0 6px 16px rgba(47,38,28,0.06)",
           }}
         >
-          <RotateCw size={13} className={loading ? "spin" : ""} />
+          <RotateCw size={13} className={loading ? "spin" : ""} /> 다시 생성
         </button>
       </div>
 
