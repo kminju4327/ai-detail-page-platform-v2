@@ -2261,9 +2261,12 @@ ${fontLink}
             </div>
           )}
 
-          {/* 톤 조정 드롭다운 */}
+
+          {/* 고급 기능 버튼들 (톤 포함) */}
           {draft && (
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 18 }}>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 18, paddingBottom: 16, borderBottom: "1px solid #E8E1D7" }}>
+
+              {/* 톤 조정 드롭다운 */}
               <select
                 value={selectedCopyTone}
                 onChange={(e) => applyTone(e.target.value)}
@@ -2286,13 +2289,6 @@ ${fontLink}
                 <option value="trust">🛡️ 신뢰감 있게</option>
                 <option value="concise">✂️ 간결하게</option>
               </select>
-            </div>
-          )}
-
-          {/* 고급 기능 버튼들 */}
-          {draft && (
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 18, paddingBottom: 16, borderBottom: "1px solid #E8E1D7" }}>
-
 
               {/* 상세 컴플라이언스 레포트 */}
               {compliance && (
@@ -2734,7 +2730,7 @@ ${fontLink}
             <div style={{ padding: "30px 40px 48px", overflowY: "auto", background: "linear-gradient(180deg, #F8F5EF 0%, #F3EDE4 100%)", flex: 1 }}>
               {pageDesign && selectedTemplate ? (
                 <div style={{ maxWidth: 1080, margin: "0 auto 28px", display: "flex", flexDirection: "column", gap: 18 }}>
-                  {/* 미리보기 헤더 */}
+                  {/* 미리보기 헤더 + 버튼 */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 18, flexWrap: "wrap" }}>
                     <div>
                       <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px", borderRadius: 999, background: "#E8D5BC", color: "#8B5E2C", fontSize: 11, fontWeight: 900, letterSpacing: "0.04em", marginBottom: 12 }}>
@@ -2744,6 +2740,39 @@ ${fontLink}
                       <div style={{ fontSize: 13.5, color: "#8B8175", lineHeight: 1.6 }}>
                         선택된 템플릿 '{DESIGN_TEMPLATES.find(t => t.id === selectedTemplate)?.label || ""}' 스타일로 상세페이지가 표현됩니다.
                       </div>
+                    </div>
+                    <div style={{ display: "flex", gap: 10 }}>
+                      <button
+                        onClick={() => setViewMode("main")}
+                        style={{
+                          padding: "10px 16px",
+                          borderRadius: 10,
+                          border: "1px solid #D4A574",
+                          background: "#fff",
+                          color: "#A87535",
+                          fontWeight: 600,
+                          fontSize: 13,
+                          cursor: "pointer",
+                        }}
+                      >
+                        이전 단계로
+                      </button>
+                      <button
+                        onClick={handleGenerateWithTemplate}
+                        style={{
+                          padding: "10px 16px",
+                          borderRadius: 10,
+                          border: "none",
+                          background: "linear-gradient(135deg, #5A6E52 0%, #4A5E42 100%)",
+                          color: "#fff",
+                          fontWeight: 600,
+                          fontSize: 13,
+                          cursor: "pointer",
+                          boxShadow: "0 8px 16px rgba(90,110,82,0.25)",
+                        }}
+                      >
+                        상세페이지 생성
+                      </button>
                     </div>
                   </div>
 
