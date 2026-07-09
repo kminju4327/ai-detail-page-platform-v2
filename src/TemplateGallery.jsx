@@ -178,7 +178,7 @@ export default function TemplateGallery({ selectedTemplate, onSelectTemplate, on
 
       {/* 생성 버튼 (템플릿 선택 후에만 표시) */}
       {selectedTemplate && (
-        <div style={{ display: "flex", gap: 12, paddingTop: 16, borderTop: "1px solid #E6DED2" }}>
+        <div style={{ display: "flex", gap: 8, paddingTop: 12, borderTop: "1px solid #E6DED2" }}>
           <button
             onClick={onBack}
             style={{
@@ -188,8 +188,8 @@ export default function TemplateGallery({ selectedTemplate, onSelectTemplate, on
               border: "1px solid #D4A574",
               background: "#fff",
               color: "#A87535",
-              fontWeight: 700,
-              fontSize: 13.5,
+              fontWeight: 600,
+              fontSize: 12,
               cursor: "pointer",
               transition: "all 0.2s ease",
             }}
@@ -206,13 +206,13 @@ export default function TemplateGallery({ selectedTemplate, onSelectTemplate, on
             onClick={onGenerate}
             style={{
               flex: 1,
-              padding: "14px 18px",
-              borderRadius: 10,
+              padding: "8px 12px",
+              borderRadius: 8,
               border: "none",
               background: "linear-gradient(135deg, #5A6E52 0%, #4A5E42 100%)",
               color: "#fff",
-              fontWeight: 700,
-              fontSize: 13.5,
+              fontWeight: 600,
+              fontSize: 12,
               cursor: "pointer",
               boxShadow: "0 8px 20px rgba(90,110,82,0.25)",
               transition: "all 0.2s ease",
@@ -224,7 +224,7 @@ export default function TemplateGallery({ selectedTemplate, onSelectTemplate, on
               e.target.style.boxShadow = "0 8px 20px rgba(90,110,82,0.25)";
             }}
           >
-            이 템플릿으로 상세페이지 생성
+            이 템플릿으로 생성
           </button>
         </div>
       )}
