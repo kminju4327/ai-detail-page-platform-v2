@@ -2768,14 +2768,75 @@ ${fontLink}
         </div>
           </>
         ) : viewMode === "templates" ? (
-          <TemplateGallery
-            selectedTemplate={selectedTemplate}
-            onSelectTemplate={handleSelectTemplate}
-            onBack={() => setViewMode("main")}
-            onGenerate={handleGenerateWithTemplate}
-            themeColor={themeColor}
-            pointColors={pointColors}
-          />
+          <>
+            {/* LEFT: Template Gallery */}
+            <div style={{ background: "#FFFEFB", color: "#26231F", padding: "28px 30px", display: "flex", flexDirection: "column", gap: 18, borderRight: "1px solid #E8E1D7", overflowY: "auto", width: "390px", minWidth: "390px" }}>
+              <TemplateGallery
+                selectedTemplate={selectedTemplate}
+                onSelectTemplate={handleSelectTemplate}
+                onBack={() => setViewMode("main")}
+                onGenerate={handleGenerateWithTemplate}
+                themeColor={themeColor}
+                pointColors={pointColors}
+              />
+            </div>
+
+            {/* RIGHT: Preview with selected template style */}
+            <div style={{ padding: "30px 40px 48px", overflowY: "auto", background: "linear-gradient(180deg, #F8F5EF 0%, #F3EDE4 100%)", flex: 1 }}>
+              {pageDesign && selectedTemplate ? (
+                <div style={{ maxWidth: 1080, margin: "0 auto 28px", display: "flex", flexDirection: "column", gap: 18 }}>
+                  {/* 미리보기 헤더 */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 18, flexWrap: "wrap" }}>
+                    <div>
+                      <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px", borderRadius: 999, background: "#E8D5BC", color: "#8B5E2C", fontSize: 11, fontWeight: 900, letterSpacing: "0.04em", marginBottom: 12 }}>
+                        TEMPLATE PREVIEW
+                      </div>
+                      <div style={{ fontSize: 28, fontWeight: 950, color: "#241F19", letterSpacing: "-0.055em", marginBottom: 6 }}>📋 템플릿 미리보기</div>
+                      <div style={{ fontSize: 13.5, color: "#8B8175", lineHeight: 1.6 }}>
+                        선택된 템플릿 '{DESIGN_TEMPLATES.find(t => t.id === selectedTemplate)?.label || ""}' 스타일로 상세페이지가 표현됩니다.
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 설계 정보 미리보기 */}
+                  {pageDesign.aiSummary && (
+                    <div style={{ padding: "22px 24px", borderRadius: 18, background: "#2F261D", color: "#FFF8ED", boxShadow: "0 20px 42px rgba(47,38,28,0.16)" }}>
+                      <div style={{ fontSize: 12, fontWeight: 900, color: "#D8B57A", marginBottom: 9 }}>종합 진단</div>
+                      <div style={{ fontSize: 15.2, lineHeight: 1.85, fontWeight: 500, letterSpacing: "-0.015em" }}>{pageDesign.aiSummary}</div>
+                    </div>
+                  )}
+
+                  {/* PreviewSection으로 최종 결과 표시 */}
+                  <div>
+                    <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.04em", marginBottom: 18 }}>최종 상세페이지 미리보기</div>
+                    {draft ? (
+                      <PreviewSection
+                        idx="hero"
+                        title={draft.hero_headline}
+                        subtitle={draft.hero_subcopy}
+                        sections={draft.sections || []}
+                        accent={themeColor}
+                        headingFont={headingFamily}
+                        bodyFont={bodyFamily}
+                        concept={concept}
+                        onRegen={(idx, feedback) => regenerateSection(idx, feedback)}
+                        loading={regeneratingSectionIndex === idx}
+                      />
+                    ) : (
+                      <div style={{ padding: 24, borderRadius: 12, background: "#fff", border: "1px solid #E8E1D7", textAlign: "center", color: "#8B8175" }}>
+                        상세페이지가 생성되면 미리보기가 표시됩니다.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div style={{ padding: 40, textAlign: "center", color: "#8B8175" }}>
+                  <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>템플릿을 선택해주세요</div>
+                  <div style={{ fontSize: 13 }}>왼쪽에서 템플릿을 선택하면 미리보기가 표시됩니다.</div>
+                </div>
+              )}
+            </div>
+          </>
         ) : (
           // 내 프로젝트 화면
           <div style={{ background: "#F4F3EE", color: "#2B2925", padding: "28px 30px", display: "flex", flexDirection: "column", gap: 18, borderRight: "1px solid #E8E1D7", overflowY: "auto", flex: 1 }}>
