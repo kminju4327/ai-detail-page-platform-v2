@@ -790,60 +790,60 @@ function translateDraft(draft, languageId) {
       hero_headline: "Simple, Clear, and Easy to Choose",
       hero_subcopy: "Discover trusted health solutions with verified ingredients and transparent information.",
       sections: [
-        { title: "Why Choose This Product", body: "Trusted formula with verified ingredients. We ensure quality and safety.", items: ["Verified", "Quality", "Transparent", "Trusted"] },
-        { title: "Key Benefits", body: "Scientifically proven benefits with transparent information.", items: ["Proven", "Benefits", "Safe", "Solution"] },
-        { title: "Quality Assurance", body: "Every product meets the highest quality standards.", items: ["Certified", "Tested", "Commitment", "Excellence"] },
-        { title: "Customer Reviews", body: "Thousands of satisfied customers trust our products.", items: ["Positive", "Results", "Satisfaction", "Verified"] },
-        { title: "Product Details", body: "Each product is carefully formulated with finest ingredients.", items: ["Premium", "Dosage", "Safe", "Control"] },
-        { title: "How to Use", body: "Easy to use and integrate into your daily routine.", items: ["Simple", "Daily", "Easy", "Clear"] },
+        { title: "Why Choose This Product", body: "Trusted formula with verified ingredients ensuring quality and safety for every customer.", items: ["Verified ingredients", "Quality guaranteed", "Transparent information", "Customer trust"] },
+        { title: "Key Benefits", body: "Scientifically proven benefits with clear documentation and transparent ingredient information.", items: ["Proven effectiveness", "Clear benefits", "Safe choice", "Trusted solution"] },
+        { title: "Quality Assurance", body: "Every product meets the highest quality standards. We stand behind our commitment to excellence.", items: ["Certified quality", "Tested formula", "Quality commitment", "Excellence standard"] },
+        { title: "Customer Reviews", body: "Thousands of satisfied customers trust our products. Real results from real people.", items: ["Positive reviews", "Proven results", "Customer satisfaction", "Trust verified"] },
+        { title: "Product Details", body: "Each product is carefully formulated with the finest ingredients. See detailed specifications.", items: ["Premium ingredients", "Exact dosage", "Safe formula", "Quality control"] },
+        { title: "How to Use", body: "Easy to use and integrate into your daily routine. Follow our simple guidelines.", items: ["Simple instructions", "Daily usage", "Easy routine", "Clear directions"] },
       ],
     },
     ja: {
       hero_headline: "シンプルで、明確で、選びやすい",
       hero_subcopy: "検証された成分と透明な情報を備えた信頼できる健康ソリューション。",
       sections: [
-        { title: "なぜこの製品を選ぶのか", body: "検証された成分を含む信頼できる処方。", items: ["検証済み", "品質", "透明", "信頼"] },
-        { title: "主な利点", body: "科学的に証明された利点と透明な情報。", items: ["実証済み", "利点", "安全", "解決"] },
-        { title: "品質保証", body: "すべての製品が最高の品質基準を満たしています。", items: ["認定", "テスト済み", "承諾", "優秀"] },
-        { title: "顧客レビュー", body: "数千人の満足した顧客が信頼しています。", items: ["肯定的", "結果", "満足", "検証"] },
-        { title: "製品詳細", body: "各製品は最高の成分で慎重に配合。", items: ["プレミアム", "用量", "安全", "管理"] },
-        { title: "使用方法", body: "簡単に使用でき、毎日のルーティンに統合。", items: ["簡単", "毎日", "簡便", "明確"] },
+        { title: "なぜこの製品を選ぶのか", body: "検証された成分を含む信頼できる処方。すべての顧客に品質と安全性を保証します。", items: ["検証済み成分", "品質保証", "透明な情報", "顧客信頼"] },
+        { title: "主な利点", body: "科学的に証明された利点と透明な情報。自信を持って選択してください。", items: ["実証済み効果", "明確な利点", "安全な選択", "信頼できる解決策"] },
+        { title: "品質保証", body: "すべての製品が最高の品質基準を満たしています。卓越性へのコミットメント。", items: ["認定品質", "テスト済み処方", "品質へのコミットメント", "優秀性基準"] },
+        { title: "顧客の声", body: "数千人の満足した顧客が私たちの製品を信頼しています。本物の結果。", items: ["肯定的なレビュー", "実証済みの効果", "顧客満足度", "信頼検証済み"] },
+        { title: "製品仕様", body: "各製品は最高の成分を使用して慎重に配合されています。詳細をご覧ください。", items: ["プレミアム成分", "正確な用量", "安全な処方", "品質管理"] },
+        { title: "使用方法", body: "簡単に使用でき、毎日のルーティンに統合できます。当社の簡単なガイドラインに従ってください。", items: ["簡単な説明書", "毎日の使用", "簡単なルーティン", "明確な指示"] },
       ],
     },
     "zh-cn": {
       hero_headline: "简单、清晰、容易选择",
       hero_subcopy: "发现具有经过验证的成分和透明信息的可信健康解决方案。",
       sections: [
-        { title: "为什么选择此产品", body: "具有经过验证的成分的值得信赖的配方。", items: ["验证", "品质", "透明", "信任"] },
-        { title: "关键益处", body: "科学证明的益处和透明信息。", items: ["实证", "益处", "安全", "方案"] },
-        { title: "质量保证", body: "所有产品均符合最高质量标准。", items: ["认证", "测试", "承诺", "标准"] },
-        { title: "客户评论", body: "数千名满意的客户信任我们。", items: ["正面", "结果", "满意", "验证"] },
-        { title: "产品详情", body: "每种产品均用最优质的成分精心配制。", items: ["优质", "剂量", "安全", "控制"] },
-        { title: "使用方法", body: "易于使用并融入日常生活。", items: ["简单", "日常", "便利", "清晰"] },
+        { title: "为什么选择此产品", body: "具有经过验证的成分的值得信赖的配方。我们为每位客户确保品质和安全。", items: ["验证成分", "品质保证", "透明信息", "客户信任"] },
+        { title: "关键益处", body: "科学证明的益处和透明信息。放心选择。", items: ["实证效果", "明确益处", "安全选择", "可信方案"] },
+        { title: "质量保证", body: "所有产品均符合最高质量标准。我们为卓越承诺而自豪。", items: ["认证质量", "测试配方", "质量承诺", "卓越标准"] },
+        { title: "客户评价", body: "数千名满意的客户信任我们的产品。真实的结果来自真实的人。", items: ["正面评价", "实证效果", "客户满意度", "信任认证"] },
+        { title: "产品规格", body: "每种产品均用最优质的成分精心配制。查看我们的详细规格。", items: ["优质成分", "精确剂量", "安全配方", "质量控制"] },
+        { title: "使用方法", body: "易于使用并融入日常生活。遵循我们简单的指南。", items: ["简单说明", "日常使用", "简便常规", "清晰指示"] },
       ],
     },
     "zh-tw": {
       hero_headline: "簡單、清晰、容易選擇",
       hero_subcopy: "發現具有經過驗證的成分和透明信息的可信健康解決方案。",
       sections: [
-        { title: "為什麼選擇此產品", body: "具有經過驗證的成分的值得信賴的配方。", items: ["驗證", "品質", "透明", "信任"] },
-        { title: "關鍵益處", body: "科學證明的益處和透明信息。", items: ["實證", "益處", "安全", "方案"] },
-        { title: "質量保證", body: "所有產品均符合最高質量標準。", items: ["認證", "測試", "承諾", "標準"] },
-        { title: "客戶評論", body: "數千名滿意的客戶信任我們。", items: ["正面", "結果", "滿意", "驗證"] },
-        { title: "產品詳情", body: "每種產品均用最優質的成分精心配製。", items: ["優質", "劑量", "安全", "控制"] },
-        { title: "使用方法", body: "易於使用並融入日常生活。", items: ["簡單", "日常", "便利", "清晰"] },
+        { title: "為什麼選擇此產品", body: "具有經過驗證的成分的值得信賴的配方。我們為每位客戶確保品質和安全。", items: ["驗證成分", "品質保證", "透明信息", "客戶信任"] },
+        { title: "關鍵益處", body: "科學證明的益處和透明信息。放心選擇。", items: ["實證效果", "明確益處", "安全選擇", "可信方案"] },
+        { title: "質量保證", body: "所有產品均符合最高質量標準。我們為卓越承諾而自豪。", items: ["認證質量", "測試配方", "質量承諾", "卓越標準"] },
+        { title: "客戶評價", body: "數千名滿意的客戶信任我們的產品。真實的結果來自真實的人。", items: ["正面評價", "實證效果", "客戶滿意度", "信任認證"] },
+        { title: "產品規格", body: "每種產品均用最優質的成分精心配製。查看我們的詳細規格。", items: ["優質成分", "精確劑量", "安全配方", "質量控制"] },
+        { title: "使用方法", body: "易於使用並融入日常生活。遵循我們簡單的指南。", items: ["簡單說明", "日常使用", "簡便常規", "清晰指示"] },
       ],
     },
     th: {
       hero_headline: "ง่าย ชัดเจน และเลือกง่าย",
-      hero_subcopy: "ค้นพบสารองค์ประกอบที่ได้รับการตรวจสอบและข้อมูลที่โปร่งใส",
+      hero_subcopy: "ค้นพบสารองค์ประกอบที่ได้รับการตรวจสอบและข้อมูลที่โปร่งใสด้วยโซลูชั่นสุขภาพที่เชื่อถือได้",
       sections: [
-        { title: "ทำไมถึงเลือกผลิตภัณฑ์นี้", body: "สูตรที่น่าเชื่อถือพร้อมส่วนประกอบที่ตรวจสอบ", items: ["ตรวจสอบ", "คุณภาพ", "โปร่งใส", "ความเชื่อ"] },
-        { title: "ประโยชน์หลัก", body: "ประโยชน์ที่พิสูจน์ทางวิทยาศาสตร์", items: ["พิสูจน์", "ประโยชน์", "ปลอดภัย", "วิธีแก้"] },
-        { title: "การรับประกันคุณภาพ", body: "ผลิตภัณฑ์ทั้งหมดตรงตามมาตรฐาน", items: ["รับรอง", "ทดสอบ", "สัญญา", "มาตรฐาน"] },
-        { title: "รีวิวจากลูกค้า", body: "ลูกค้าหลายพันคนเชื่อใจผลิตภัณฑ์ของเรา", items: ["เชิงบวก", "ผล", "พอใจ", "ยืนยัน"] },
-        { title: "รายละเอียดผลิตภัณฑ์", body: "สูตรแต่ละชนิดด้วยส่วนประกอบที่ดีที่สุด", items: ["พรีเมียม", "ปริมาณ", "ปลอดภัย", "ควบคุม"] },
-        { title: "วิธีการใช้", body: "ใช้ง่ายและรวมเข้ากับประจำวัน", items: ["ง่าย", "ทุกวัน", "สะดวก", "ชัดเจน"] },
+        { title: "ทำไมถึงเลือกผลิตภัณฑ์นี้", body: "สูตรที่น่าเชื่อถือพร้อมส่วนประกอบที่ได้รับการตรวจสอบ เรารับประกันคุณภาพและความปลอดภัย", items: ["ส่วนประกอบที่ตรวจสอบแล้ว", "รับประกันคุณภาพ", "ข้อมูลที่โปร่งใส", "ความเชื่อใจของลูกค้า"] },
+        { title: "ประโยชน์หลัก", body: "ประโยชน์ที่พิสูจน์ทางวิทยาศาสตร์และข้อมูลที่โปร่งใส เลือกด้วยความมั่นใจ", items: ["ประสิทธิภาพที่พิสูจน์", "ประโยชน์ที่ชัดเจน", "การเลือกที่ปลอดภัย", "วิธีแก้ปัญหาที่น่าเชื่อถือ"] },
+        { title: "การรับประกันคุณภาพ", body: "ผลิตภัณฑ์ทั้งหมดตรงตามมาตรฐานคุณภาพสูงสุด เรายืนยันความมุ่งมั่นต่อความเป็นเลิศ", items: ["คุณภาพที่ได้รับการรับรอง", "สูตรทดสอบแล้ว", "ความมุ่งมั่นต่อคุณภาพ", "มาตรฐานความเป็นเลิศ"] },
+        { title: "ความเห็นของลูกค้า", body: "ลูกค้าหลายพันคนเชื่อใจผลิตภัณฑ์ของเรา ผลลัพธ์จริงจากผู้คนจริง", items: ["รีวิวเชิงบวก", "ผลลัพธ์ที่พิสูจน์", "ความพึงพอใจของลูกค้า", "ความเชื่อถือที่ตรวจสอบ"] },
+        { title: "ข้อมูลจำเพาะของผลิตภัณฑ์", body: "แต่ละผลิตภัณฑ์ได้รับการสูตรด้วยส่วนประกอบที่ดีที่สุด ดูข้อมูลจำเพาะของเรา", items: ["ส่วนประกอบพรีเมียม", "ปริมาณที่แม่นยำ", "สูตรที่ปลอดภัย", "การควบคุมคุณภาพ"] },
+        { title: "วิธีการใช้", body: "ใช้ง่ายและสามารถรวมเข้ากับประจำวันของคุณ ปฏิบัติตามคำแนะนำง่ายๆของเรา", items: ["คำแนะนำง่าย", "การใช้รายวัน", "กิจวัตรง่าย", "ทิศทางที่ชัดเจน"] },
       ],
     },
   };
@@ -857,10 +857,20 @@ function translateDraft(draft, languageId) {
     sections: draft.sections?.map((s, idx) => {
       const predefinedSection = translation.sections?.[idx];
       if (predefinedSection) {
-        return { ...s, title: predefinedSection.title, body: predefinedSection.body, items: predefinedSection.items || s.items };
+        return {
+          ...s,
+          title: predefinedSection.title,
+          body: predefinedSection.body,
+          items: predefinedSection.items || s.items,
+        };
       } else {
         const lastDefined = translation.sections?.[translation.sections.length - 1];
-        return { ...s, title: lastDefined?.title || s.title, body: lastDefined?.body || s.body, items: lastDefined?.items || s.items };
+        return {
+          ...s,
+          title: lastDefined?.title || s.title,
+          body: lastDefined?.body || s.body,
+          items: lastDefined?.items || s.items,
+        };
       }
     }) || [],
   };
@@ -954,7 +964,7 @@ export default function DetailPageGenerator() {
   const [detailedComplianceReport, setDetailedComplianceReport] = useState(null);
 
   // 다국어 번역 & SEO state
-  const [selectedLanguage, setSelectedLanguage] = useState(""); // 단일 선택
+  const [selectedLanguage, setSelectedLanguage] = useState("");
   const [translatedDraft, setTranslatedDraft] = useState(null);
   const [activeLanguage, setActiveLanguage] = useState("ko");
   const [translatedVersions, setTranslatedVersions] = useState(null); // { en: {...}, ja: {...}, ... }
@@ -963,7 +973,7 @@ export default function DetailPageGenerator() {
   const [generatingSeo, setGeneratingSeo] = useState(false);
 
   const update = (k, v) => setProduct((p) => ({ ...p, [k]: v }));
-  const displayDraft = translatedDraft || draft;
+n  const displayDraft = translatedDraft || draft;
 
   // 폰트 선택 미리보기가 각자 폰트로 보이도록, 모든 구글폰트를 로드해둔다.
   useEffect(() => {
@@ -1241,25 +1251,38 @@ export default function DetailPageGenerator() {
 
   // 다국어 번역 토글
   const toggleLanguage = (langId) => {
+
     setSelectedLanguage(selectedLanguage === langId ? "" : langId);
+
   };
 
-  // 다국어 번역 생성 (단일 언어)
+  // 다국어 번역 생성
   async function generateTranslations() {
+
     if (!draft || !selectedLanguage) return;
 
     setError("");
+
     setStage(3);
 
     try {
+
       const translated = translateDraft(draft, selectedLanguage);
+
       setTranslatedDraft(translated);
+
       setActiveLanguage(selectedLanguage);
+
       setStage(4);
+
     } catch (err) {
+
       setError(err.message || "번역 생성 실패");
+
       setStage(-1);
+
     }
+
   }
 
   // SEO 최적화 생성
@@ -2434,7 +2457,7 @@ ${fontLink}
               }}
             >
               <div style={{ fontSize: 12, fontWeight: 700, color: "#2B2925", marginBottom: 6 }}>
-                🌍 번역할 언어 선택 (다중선택 가능)
+                🌍 번역할 언어 선택
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {LANGUAGES.map((lang) => (
@@ -2445,9 +2468,9 @@ ${fontLink}
                       alignItems: "center",
                       gap: 8,
                       padding: "8px 10px",
-                      background: selectedLanguage === lang.id ? "#FFF8F0" : "#fff",
+                      background: selectedLanguage ===(lang.id) ? "#FFF8F0" : "#fff",
                       borderRadius: 6,
-                      border: selectedLanguage === lang.id ? "1.5px solid #A87535" : "1px solid #E3E1DA",
+                      border: selectedLanguage ===(lang.id) ? "1.5px solid #A87535" : "1px solid #E3E1DA",
                       cursor: "pointer",
                       transition: "all 0.2s ease",
                     }}
@@ -2466,21 +2489,21 @@ ${fontLink}
               </div>
               <button
                 onClick={generateTranslations}
-                disabled={selectedLanguages.length === 0 || isGenerating}
+                disabled={!selectedLanguage || isGenerating}
                 style={{
                   marginTop: 8,
                   padding: "8px 14px",
                   borderRadius: 6,
                   border: "none",
-                  background: selectedLanguages.length > 0 && !isGenerating ? "#A87535" : "#E8E1D7",
+                  background: selectedLanguage && !isGenerating ? "#A87535" : "#E8E1D7",
                   color: "#fff",
                   fontWeight: 600,
                   fontSize: 12.5,
-                  cursor: selectedLanguages.length > 0 && !isGenerating ? "pointer" : "not-allowed",
+                  cursor: selectedLanguage && !isGenerating ? "pointer" : "not-allowed",
                   transition: "all 0.2s ease",
                 }}
               >
-                ✅ {selectedLanguages.length}개 언어 번역 생성
+                ✅ {LANGUAGES.find(l => l.id === selectedLanguage)?.label || "언어"} 번역 생성
               </button>
             </div>
           )}
@@ -2619,6 +2642,7 @@ ${fontLink}
           )}
 
           {/* 다국어 번역 결과 */}
+
           {draft && (
             <div style={{ maxWidth: 940, margin: "0 auto", fontFamily: bodyFamily }}>
               <PreviewSection idx="hero" onRegen={regenerateSection} loading={regenIndex === "hero"} accent={themeColor}>
