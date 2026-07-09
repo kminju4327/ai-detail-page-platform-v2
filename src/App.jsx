@@ -857,20 +857,10 @@ function translateDraft(draft, languageId) {
     sections: draft.sections?.map((s, idx) => {
       const predefinedSection = translation.sections?.[idx];
       if (predefinedSection) {
-        return {
-          ...s,
-          title: predefinedSection.title,
-          body: predefinedSection.body,
-          items: predefinedSection.items || s.items,
-        };
+        return { ...s, title: predefinedSection.title, body: predefinedSection.body, items: predefinedSection.items || s.items };
       } else {
         const lastDefined = translation.sections?.[translation.sections.length - 1];
-        return {
-          ...s,
-          title: lastDefined?.title || s.title,
-          body: lastDefined?.body || s.body,
-          items: lastDefined?.items || s.items,
-        };
+        return { ...s, title: lastDefined?.title || s.title, body: lastDefined?.body || s.body, items: lastDefined?.items || s.items };
       }
     }) || [],
   };
@@ -964,17 +954,15 @@ export default function DetailPageGenerator() {
   const [detailedComplianceReport, setDetailedComplianceReport] = useState(null);
 
   // 다국어 번역 & SEO state
-  const [selectedLanguage, setSelectedLanguage] = useState(""); // 단일 언어 선택
-  const [translatedDraft, setTranslatedDraft] = useState(null); // 현재 표시되는 번역본
-  const [activeLanguage, setActiveLanguage] = useState("ko"); // 현재 활성 언어
+  const [selectedLanguage, setSelectedLanguage] = useState(""); // 단일 선택
+  const [translatedDraft, setTranslatedDraft] = useState(null);
+  const [activeLanguage, setActiveLanguage] = useState("ko");
   const [translatedVersions, setTranslatedVersions] = useState(null); // { en: {...}, ja: {...}, ... }
   const [translatingLanguages, setTranslatingLanguages] = useState([]);
   const [seoOptimization, setSeoOptimization] = useState(null);
   const [generatingSeo, setGeneratingSeo] = useState(false);
 
   const update = (k, v) => setProduct((p) => ({ ...p, [k]: v }));
-
-  // 표시할 draft: 번역본이 있으면 그것, 아니면 원본
   const displayDraft = translatedDraft || draft;
 
   // 폰트 선택 미리보기가 각자 폰트로 보이도록, 모든 구글폰트를 로드해둔다.
@@ -1153,21 +1141,13 @@ export default function DetailPageGenerator() {
       return;
     }
     
-    // pageDesign이 있으면 showPageDesign = true로 유지
-    if (pageDesign) {
-      setShowPageDesign(true);
-    }
-    
     // 메인 화면으로 이동
     setViewMode("main");
     
     // 상세페이지 생성 실행 (설계는 이미 있으므로 바로 생성)
-    try {
-      await runPipeline();
-    } catch (err) {
-      setError(`생성 오류: ${err.message}`);
-      setStage(-1);
-    }
+    setTimeout(() => {
+      runPipeline();
+    }, 100);
   };
 
   // 템플릿 메뉴 돌아가기
@@ -1269,24 +1249,17 @@ export default function DetailPageGenerator() {
     if (!draft || !selectedLanguage) return;
 
     setError("");
-    setTranslatingLanguages([selectedLanguage]);
     setStage(3);
 
     try {
-      // 선택된 언어로 번역
       const translated = translateDraft(draft, selectedLanguage);
-      
-      setTranslatedVersions({ [selectedLanguage]: translated });
       setTranslatedDraft(translated);
       setActiveLanguage(selectedLanguage);
-      
       setStage(4);
     } catch (err) {
       setError(err.message || "번역 생성 실패");
       setStage(-1);
     }
-
-    setTranslatingLanguages([]);
   }
 
   // SEO 최적화 생성
@@ -1311,7 +1284,7 @@ export default function DetailPageGenerator() {
 
   async function runPipeline() {
     // 설계가 없으면 먼저 설계 실행
-    if (!pageDesign) {
+    if (!showPageDesign) {
       await runStrategyAnalysis();
       return;
     }
@@ -2678,7 +2651,7 @@ ${fontLink}
                 </div>
               </PreviewSection>
 
-              { displayDraft.sections?.map((s, i) => {
+              {displayDraft.sections?.map((s, i) => {
                 const isHighlight = s.type === "benefit_list" || s.type === "solution";
                 const isBadges = s.type === "trust_badges";
                 const isList = s.type === "benefit_list";
@@ -2842,9 +2815,9 @@ ${fontLink}
                     {draft ? (
                       <PreviewSection
                         idx="hero"
-                        title={draft.hero_headline}
-                        subtitle={draft.hero_subcopy}
-                        sections={draft.sections || []}
+                        title={displayDraft.hero_headline}
+                        subtitle={displayDraft.hero_subcopy}
+                        sections={displayDraft.sections || []}
                         accent={themeColor}
                         headingFont={headingFamily}
                         bodyFont={bodyFamily}
