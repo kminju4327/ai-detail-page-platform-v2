@@ -2713,9 +2713,9 @@ ${fontLink}
         </div>
           </>
         ) : viewMode === "templates" ? (
-          <div style={{ display: "flex", flex: 1 }}>
+          <div style={{ gridColumn: "2 / 4", display: "grid", gridTemplateColumns: "390px minmax(720px, 1fr)", minWidth: 0, minHeight: "100vh" }}>
             {/* LEFT: Template Gallery */}
-            <div style={{ background: "#FFFEFB", color: "#26231F", padding: "28px 30px", display: "flex", flexDirection: "column", gap: 18, borderRight: "1px solid #E8E1D7", overflowY: "auto", width: "390px", minWidth: "390px" }}>
+            <div style={{ background: "#FFFEFB", color: "#26231F", borderRight: "1px solid #E8E1D7", overflowY: "auto", minWidth: 0 }}>
               <TemplateGallery
                 selectedTemplate={selectedTemplate}
                 onSelectTemplate={handleSelectTemplate}
@@ -2773,7 +2773,7 @@ ${fontLink}
                           whiteSpace: "nowrap",
                         }}
                       >
-                        이 탬플릿으로 생성
+                        이 템플릿으로 생성
                       </button>
                     </div>
                   </div>
