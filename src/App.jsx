@@ -1153,6 +1153,11 @@ export default function DetailPageGenerator() {
       return;
     }
     
+    // pageDesign이 있으면 showPageDesign = true로 유지
+    if (pageDesign) {
+      setShowPageDesign(true);
+    }
+    
     // 메인 화면으로 이동
     setViewMode("main");
     
@@ -1306,7 +1311,7 @@ export default function DetailPageGenerator() {
 
   async function runPipeline() {
     // 설계가 없으면 먼저 설계 실행
-    if (!showPageDesign) {
+    if (!pageDesign) {
       await runStrategyAnalysis();
       return;
     }
