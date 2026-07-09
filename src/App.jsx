@@ -973,7 +973,7 @@ export default function DetailPageGenerator() {
   const [generatingSeo, setGeneratingSeo] = useState(false);
 
   const update = (k, v) => setProduct((p) => ({ ...p, [k]: v }));
-n  const displayDraft = translatedDraft || draft;
+  const displayDraft = translatedDraft || draft;
 
   // 폰트 선택 미리보기가 각자 폰트로 보이도록, 모든 구글폰트를 로드해둔다.
   useEffect(() => {
