@@ -2264,27 +2264,6 @@ ${fontLink}
           {/* 고급 기능 버튼들 */}
           {draft && (
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 18, paddingBottom: 16, borderBottom: "1px solid #E8E1D7" }}>
-              {/* A/B 테스트 생성 */}
-              <button
-                onClick={generateAbTest}
-                disabled={isGenerating}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  padding: "7px 12px",
-                  borderRadius: 8,
-                  border: "1px solid #D4A574",
-                  background: "#FFF8F0",
-                  color: "#A87535",
-                  fontSize: 12.5,
-                  fontWeight: 600,
-                  cursor: isGenerating ? "not-allowed" : "pointer",
-                  opacity: isGenerating ? 0.6 : 1,
-                }}
-              >
-                🔄 A/B 테스트
-              </button>
 
               {/* 톤 조정 드롭다운 */}
               <select
@@ -2572,49 +2551,14 @@ ${fontLink}
             <div style={{ marginBottom: 28, padding: "16px", background: "#F5F3EF", borderRadius: 10, border: "1px solid #E8E1D7" }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: "#2B2925", marginBottom: 14 }}>🔍 SEO 최적화</div>
 
-              {/* 추천 키워드 */}
-              <div style={{ marginBottom: 14, padding: "12px", background: "#fff", borderRadius: 6, border: "1px solid #E3E1DA" }}>
+              {/* 추천 키워드만 표시 */}
+              <div style={{ padding: "12px", background: "#fff", borderRadius: 6, border: "1px solid #E3E1DA" }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 8 }}>🔑 추천 키워드</div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                   {seoOptimization.recommendedKeywords?.map((kw, i) => (
                     <span key={i} style={{ padding: "4px 10px", background: "#FFF8F0", borderRadius: 4, fontSize: 11, color: "#A87535", fontWeight: 600 }}>
                       {kw}
                     </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Meta 정보 */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
-                <div style={{ padding: "10px", background: "#fff", borderRadius: 6, border: "1px solid #E3E1DA" }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "#8B7355", marginBottom: 4 }}>Title Tag</div>
-                  <div style={{ fontSize: 11, color: "#2B2925", lineHeight: 1.5 }}>{seoOptimization.titleTag}</div>
-                </div>
-                <div style={{ padding: "10px", background: "#fff", borderRadius: 6, border: "1px solid #E3E1DA" }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "#8B7355", marginBottom: 4 }}>Meta Description</div>
-                  <div style={{ fontSize: 11, color: "#2B2925", lineHeight: 1.5 }}>{seoOptimization.metaDescription}</div>
-                </div>
-              </div>
-
-              {/* H태그 구조 */}
-              <div style={{ marginBottom: 14, padding: "10px", background: "#fff", borderRadius: 6, border: "1px solid #E3E1DA" }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 8 }}>📊 Heading 구조</div>
-                <div style={{ fontSize: 10, color: "#2B2925" }}>
-                  <div style={{ marginBottom: 6 }}>
-                    <strong style={{ color: "#A87535" }}>H1:</strong> {seoOptimization.headingStructure?.h1}
-                  </div>
-                  <div>
-                    <strong style={{ color: "#A87535" }}>H2:</strong> {seoOptimization.headingStructure?.h2_suggestions?.join(" / ")}
-                  </div>
-                </div>
-              </div>
-
-              {/* SEO 팁 */}
-              <div style={{ padding: "10px", background: "#FFFCF0", borderRadius: 6, borderLeft: "3px solid #A87535" }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#8B7355", marginBottom: 8 }}>💡 SEO 개선 팁</div>
-                <div style={{ fontSize: 10, color: "#5A4A47", lineHeight: 1.7 }}>
-                  {seoOptimization.seoTips?.map((tip, i) => (
-                    <div key={i} style={{ marginBottom: 4 }}>• {tip}</div>
                   ))}
                 </div>
               </div>
