@@ -1157,9 +1157,12 @@ export default function DetailPageGenerator() {
     setViewMode("main");
     
     // 상세페이지 생성 실행 (설계는 이미 있으므로 바로 생성)
-    setTimeout(() => {
-      runPipeline();
-    }, 100);
+    try {
+      await runPipeline();
+    } catch (err) {
+      setError(`생성 오류: ${err.message}`);
+      setStage(-1);
+    }
   };
 
   // 템플릿 메뉴 돌아가기
