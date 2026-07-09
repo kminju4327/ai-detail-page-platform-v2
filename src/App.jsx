@@ -1083,7 +1083,6 @@ export default function DetailPageGenerator() {
     setViewMode("main");
     
     // 상세페이지 생성 실행 (설계는 이미 있으므로 바로 생성)
-    // runPipeline()의 로직을 따름: showPageDesign이 true면 생성 실행
     setTimeout(() => {
       runPipeline();
     }, 100);
@@ -2073,7 +2072,7 @@ ${fontLink}
         {/* RIGHT: preview / results */}
         <div style={{ padding: "30px 40px 48px", overflowY: "auto", background: "linear-gradient(180deg, #F8F5EF 0%, #F3EDE4 100%)" }}>
 
-          {/* AI 상세페이지 설계 또는 템플릿 선택 화면 - 오른쪽에 미리보기 */}
+          {/* AI 상세페이지 설계 - 오른쪽 즉시 미리보기 */}
           {(showPageDesign && pageDesign && !draft) || (viewMode === "templates" && pageDesign && selectedTemplate) ? (
             <div style={{ maxWidth: 1080, margin: "0 auto 28px", display: "flex", flexDirection: "column", gap: 18 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 18, flexWrap: "wrap" }}>
@@ -2086,7 +2085,7 @@ ${fontLink}
                   </div>
                   <div style={{ fontSize: 13.5, color: "#8B8175", lineHeight: 1.6 }}>
                     {viewMode === "templates" 
-                      ? `선택된 템플릿 "${DESIGN_TEMPLATES.find(t => t.id === selectedTemplate)?.label || ""}"의 스타일로 상세페이지가 표현됩니다.`
+                      ? `선택된 템플릿 '${DESIGN_TEMPLATES.find(t => t.id === selectedTemplate)?.label || ""}' 스타일로 상세페이지가 표현됩니다.`
                       : "AI가 구매 전환을 높일 수 있는 상세페이지 구조를 먼저 설계했습니다."}
                   </div>
                 </div>
@@ -2229,7 +2228,7 @@ ${fontLink}
                 </div>
               </div>
             </div>
-          )}
+          ) : null}
           {draft && (
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, marginBottom: 18, flexWrap: "wrap" }}><div><div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.04em" }}>2. 생성된 상세페이지 미리보기</div><div style={{ fontSize: 12.5, color: "#8B8175", marginTop: 4 }}>AI가 생성한 결과입니다. 내용은 수정할 수 있습니다.</div></div><div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               <button
