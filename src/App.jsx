@@ -306,8 +306,8 @@ const TONE_GUIDES = {
   default: "현재 톤 유지",
   professional: "전문적이고 신뢰도 높은 톤. 학술적 근거를 강조하고 정확한 수치와 데이터 중심으로.",
   friendly: "친근하고 대화체의 톤. '우리 함께'라는 느낌으로 고객을 동반자로 취급하고 따뜻한 표현 사용.",
-  mysterious: "신비롭고 프리미엄한 톤. 제품의 특별함과 희소성을 강조하고 감각적 표현 사용.",
-  fun: "가볍고 재미있는 톤. 위트 있는 표현과 현대적 감각으로 밀레니얼/Z세대에 어필.",
+  trust: "신뢰감 있게. 검증된 정보와 명확한 근거로 고객의 불안감을 해소하고 신뢰를 구축하는 톤.",
+  concise: "간결하게. 핵심만 명확하게 정리해 불필요한 복잡함을 제거하고 쉽게 이해할 수 있도록 하는 톤.",
 };
 
 function buildMockPageDesign(product) {
@@ -2230,7 +2230,30 @@ ${fontLink}
             </div>
           ) : null}
           {draft && (
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, marginBottom: 18, flexWrap: "wrap" }}><div><div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.04em" }}>2. 생성된 상세페이지 미리보기</div><div style={{ fontSize: 12.5, color: "#8B8175", marginTop: 4 }}>AI가 생성한 결과입니다. 내용은 수정할 수 있습니다.</div></div><div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, marginBottom: 18, flexWrap: "wrap" }}><div><div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.04em" }}>2. 생성된 상세페이지 미리보기</div><div style={{ fontSize: 12.5, color: "#8B8175", marginTop: 4 }}>AI가 생성한 결과입니다. 내용은 수정할 수 있습니다.</div></div><div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+              {/* 톤 조정 드롭다운 */}
+              <select
+                value={selectedCopyTone}
+                onChange={(e) => applyTone(e.target.value)}
+                disabled={isGenerating}
+                style={{
+                  padding: "7px 10px",
+                  borderRadius: 8,
+                  border: "1px solid #D4A574",
+                  background: "#FFF8F0",
+                  color: "#A87535",
+                  fontSize: 12.5,
+                  fontWeight: 600,
+                  cursor: isGenerating ? "not-allowed" : "pointer",
+                  opacity: isGenerating ? 0.6 : 1,
+                }}
+              >
+                <option value="default">📝 톤 유지</option>
+                <option value="professional">🎓 전문적</option>
+                <option value="friendly">😊 친근함</option>
+                <option value="trust">🛡️ 신뢰감 있게</option>
+                <option value="concise">✂️ 간결하게</option>
+              </select>
               <button
                 onClick={copyResult}
                 style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 12px", borderRadius: 8, border: "1px solid #DEDCD3", background: "#fff", color: "#4A4940", fontSize: 12.5, cursor: "pointer" }}
@@ -2265,29 +2288,6 @@ ${fontLink}
           {draft && (
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 18, paddingBottom: 16, borderBottom: "1px solid #E8E1D7" }}>
 
-              {/* 톤 조정 드롭다운 */}
-              <select
-                value={selectedCopyTone}
-                onChange={(e) => applyTone(e.target.value)}
-                disabled={isGenerating}
-                style={{
-                  padding: "7px 10px",
-                  borderRadius: 8,
-                  border: "1px solid #D4A574",
-                  background: "#FFF8F0",
-                  color: "#A87535",
-                  fontSize: 12.5,
-                  fontWeight: 600,
-                  cursor: isGenerating ? "not-allowed" : "pointer",
-                  opacity: isGenerating ? 0.6 : 1,
-                }}
-              >
-                <option value="default">📝 톤 유지</option>
-                <option value="professional">🎓 전문적</option>
-                <option value="friendly">😊 친근함</option>
-                <option value="mysterious">✨ 신비로움</option>
-                <option value="fun">🎉 재미있음</option>
-              </select>
 
               {/* 상세 컴플라이언스 레포트 */}
               {compliance && (
