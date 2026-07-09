@@ -785,37 +785,52 @@ async function generateDetailedComplianceReport(flags, category, callClaude) {
 
 // 다국어 번역 Mock 함수
 function translateDraft(draft, languageId) {
-  const translationGuides = {
-    en: { name: "English" },
-    ja: { name: "日本語" },
-    "zh-cn": { name: "简体中文" },
-    "zh-tw": { name: "繁體中文" },
-    th: { name: "ไทย" },
-  };
-
-  const guide = translationGuides[languageId] || translationGuides.en;
-
   // Mock 번역: 실제 환경에서는 Claude API로 번역
   const mockTranslations = {
     en: {
       hero_headline: "Simple, Clear, and Easy to Choose",
       hero_subcopy: "Discover trusted health solutions with verified ingredients and transparent information.",
+      sections: [
+        { title: "Why Choose This Product", body: "Trusted formula with verified ingredients. We ensure quality and safety for every customer." },
+        { title: "Key Benefits", body: "Scientifically proven benefits with transparent information. Choose with confidence." },
+        { title: "Quality Assurance", body: "Every product meets the highest quality standards. We stand behind our commitment to excellence." },
+      ],
     },
     ja: {
       hero_headline: "シンプルで、明確で、選びやすい",
       hero_subcopy: "検証された成分と透明な情報を備えた信頼できる健康ソリューションをご発見ください。",
+      sections: [
+        { title: "なぜこの製品を選ぶのか", body: "検証された成分を含む信頼できる処方。すべての顧客に品質と安全性を保証します。" },
+        { title: "主な利点", body: "科学的に証明された利点と透明な情報。自信を持って選択してください。" },
+        { title: "品質保証", body: "すべての製品が最高の品質基準を満たしています。私たちは卓越性へのコミットメントを保証します。" },
+      ],
     },
     "zh-cn": {
       hero_headline: "简单、清晰、容易选择",
       hero_subcopy: "发现具有经过验证的成分和透明信息的可信健康解决方案。",
+      sections: [
+        { title: "为什么选择此产品", body: "具有经过验证的成分的值得信赖的配方。我们为每位客户确保品质和安全。" },
+        { title: "关键益处", body: "科学证明的益处和透明信息。放心选择。" },
+        { title: "质量保证", body: "所有产品均符合最高质量标准。我们为卓越承诺而自豪。" },
+      ],
     },
     "zh-tw": {
       hero_headline: "簡單、清晰、容易選擇",
       hero_subcopy: "發現具有經過驗證的成分和透明信息的可信健康解決方案。",
+      sections: [
+        { title: "為什麼選擇此產品", body: "具有經過驗證的成分的值得信賴的配方。我們為每位客戶確保品質和安全。" },
+        { title: "關鍵益處", body: "科學證明的益處和透明信息。放心選擇。" },
+        { title: "質量保證", body: "所有產品均符合最高質量標準。我們為卓越承諾而自豪。" },
+      ],
     },
     th: {
       hero_headline: "ง่าย ชัดเจน และเลือกง่าย",
       hero_subcopy: "ค้นพบสารองค์ประกอบที่ได้รับการตรวจสอบและข้อมูลที่โปร่งใสด้วยโซลูชั่นสุขภาพที่เชื่อถือได้",
+      sections: [
+        { title: "ทำไมถึงเลือกผลิตภัณฑ์นี้", body: "สูตรที่น่าเชื่อถือพร้อมส่วนประกอบที่ได้รับการตรวจสอบ เรารับประกันคุณภาพและความปลอดภัยสำหรับลูกค้าทุกคน" },
+        { title: "ประโยชน์หลัก", body: "ประโยชน์ที่พิสูจน์ทางวิทยาศาสตร์และข้อมูลที่โปร่งใส เลือกด้วยความมั่นใจ" },
+        { title: "การรับประกันคุณภาพ", body: "ผลิตภัณฑ์ทั้งหมดตรงตามมาตรฐานคุณภาพสูงสุด เรายืนยันความมุ่งมั่นต่อความเป็นเลิศ" },
+      ],
     },
   };
 
@@ -825,11 +840,12 @@ function translateDraft(draft, languageId) {
     ...draft,
     hero_headline: translation.hero_headline,
     hero_subcopy: translation.hero_subcopy,
-    sections: draft.sections?.map((s) => ({
+    sections: draft.sections?.map((s, idx) => ({
       ...s,
-      title: `${s.title}`,
-      body: s.body,
-    })),
+      title: translation.sections?.[idx]?.title || s.title,
+      body: translation.sections?.[idx]?.body || s.body,
+      items: s.items, // items는 그대로 유지
+    })) || [],
   };
 }
 
@@ -921,7 +937,7 @@ export default function DetailPageGenerator() {
   const [detailedComplianceReport, setDetailedComplianceReport] = useState(null);
 
   // 다국어 번역 & SEO state
-  const [selectedLanguages, setSelectedLanguages] = useState([]);
+  const [selectedLanguage, setSelectedLanguage] = useState(""); // 단일 언어 선택
   const [translatedVersions, setTranslatedVersions] = useState(null); // { en: {...}, ja: {...}, ... }
   const [translatingLanguages, setTranslatingLanguages] = useState([]);
   const [translatedDraft, setTranslatedDraft] = useState(null); // 현재 표시되는 번역된 draft
@@ -1208,11 +1224,9 @@ export default function DetailPageGenerator() {
     }
   }
 
-  // 다국어 번역 토글
+  // 다국어 번역 단일 선택
   const toggleLanguage = (langId) => {
-    setSelectedLanguages((prev) =>
-      prev.includes(langId) ? prev.filter((l) => l !== langId) : [...prev, langId]
-    );
+    setSelectedLanguage(selectedLanguage === langId ? "" : langId);
   };
 
   // 원문(한국어) 보기
@@ -1221,28 +1235,21 @@ export default function DetailPageGenerator() {
     setActiveLanguage("ko");
   }
 
-  // 다국어 번역 생성
+  // 다국어 번역 생성 (단일 언어)
   async function generateTranslations() {
-    if (!draft || selectedLanguages.length === 0) return;
+    if (!draft || !selectedLanguage) return;
 
     setError("");
-    setTranslatingLanguages(selectedLanguages);
+    setTranslatingLanguages([selectedLanguage]);
     setStage(3);
 
     try {
-      const translations = {};
+      // 선택된 언어로 번역
+      const translated = translateDraft(draft, selectedLanguage);
       
-      // Mock: 각 언어별로 번역된 버전 생성
-      for (const langId of selectedLanguages) {
-        translations[langId] = translateDraft(draft, langId);
-      }
-
-      setTranslatedVersions(translations);
-      
-      // 첫 번째 선택된 언어의 번역본으로 바로 전환
-      const firstLangId = selectedLanguages[0];
-      setTranslatedDraft(translations[firstLangId]);
-      setActiveLanguage(firstLangId);
+      setTranslatedVersions({ [selectedLanguage]: translated });
+      setTranslatedDraft(translated);
+      setActiveLanguage(selectedLanguage);
       
       setStage(4);
     } catch (err) {
@@ -2469,16 +2476,16 @@ ${fontLink}
                       alignItems: "center",
                       gap: 8,
                       padding: "8px 10px",
-                      background: selectedLanguages.includes(lang.id) ? "#FFF8F0" : "#fff",
+                      background: selectedLanguage === lang.id ? "#FFF8F0" : "#fff",
                       borderRadius: 6,
-                      border: selectedLanguages.includes(lang.id) ? "1.5px solid #A87535" : "1px solid #E3E1DA",
+                      border: selectedLanguage === lang.id ? "1.5px solid #A87535" : "1px solid #E3E1DA",
                       cursor: "pointer",
                       transition: "all 0.2s ease",
                     }}
                   >
                     <input
                       type="checkbox"
-                      checked={selectedLanguages.includes(lang.id)}
+                      checked={selectedLanguage === lang.id}
                       onChange={() => toggleLanguage(lang.id)}
                       style={{ cursor: "pointer", width: 16, height: 16 }}
                     />
@@ -2490,21 +2497,21 @@ ${fontLink}
               </div>
               <button
                 onClick={generateTranslations}
-                disabled={selectedLanguages.length === 0 || isGenerating}
+                disabled={!selectedLanguage || isGenerating}
                 style={{
                   marginTop: 8,
                   padding: "8px 14px",
                   borderRadius: 6,
                   border: "none",
-                  background: selectedLanguages.length > 0 && !isGenerating ? "#A87535" : "#E8E1D7",
+                  background: selectedLanguage && !isGenerating ? "#A87535" : "#E8E1D7",
                   color: "#fff",
                   fontWeight: 600,
                   fontSize: 12.5,
-                  cursor: selectedLanguages.length > 0 && !isGenerating ? "pointer" : "not-allowed",
+                  cursor: selectedLanguage && !isGenerating ? "pointer" : "not-allowed",
                   transition: "all 0.2s ease",
                 }}
               >
-                ✅ {selectedLanguages.length}개 언어 번역 생성
+                ✅ {LANGUAGES.find(l => l.id === selectedLanguage)?.label || "언어"} 번역 생성
               </button>
             </div>
           )}
