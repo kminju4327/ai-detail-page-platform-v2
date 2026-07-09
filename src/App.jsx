@@ -785,7 +785,6 @@ async function generateDetailedComplianceReport(flags, category, callClaude) {
 
 // 다국어 번역 Mock 함수
 function translateDraft(draft, languageId) {
-  // Mock 번역: 실제 환경에서는 Claude API로 번역
   const mockTranslations = {
     en: {
       hero_headline: "Simple, Clear, and Easy to Choose",
@@ -805,6 +804,21 @@ function translateDraft(draft, languageId) {
           title: "Quality Assurance", 
           body: "Every product meets the highest quality standards. We stand behind our commitment to excellence.",
           items: ["Certified quality", "Tested formula", "Quality commitment", "Excellence standard"]
+        },
+        {
+          title: "Customer Testimonials",
+          body: "Thousands of satisfied customers trust our products. Real results from real people.",
+          items: ["Positive reviews", "Proven results", "Customer satisfaction", "Trust verified"]
+        },
+        {
+          title: "Product Specifications",
+          body: "Each product is carefully formulated with the finest ingredients. See our detailed specifications.",
+          items: ["Premium ingredients", "Exact dosage", "Safe formula", "Quality control"]
+        },
+        {
+          title: "How to Use",
+          body: "Easy to use and integrate into your daily routine. Follow our simple guidelines.",
+          items: ["Simple instructions", "Daily usage", "Easy routine", "Clear directions"]
         },
       ],
     },
@@ -827,6 +841,21 @@ function translateDraft(draft, languageId) {
           body: "すべての製品が最高の品質基準を満たしています。私たちは卓越性へのコミットメントを保証します。",
           items: ["認定品質", "テスト済み処方", "品質へのコミットメント", "優秀性基準"]
         },
+        {
+          title: "顧客の声",
+          body: "数千人の満足した顧客が私たちの製品を信頼しています。本物の結果です。",
+          items: ["肯定的なレビュー", "実証済みの効果", "顧客満足度", "信頼検証済み"]
+        },
+        {
+          title: "製品仕様",
+          body: "各製品は最高の成分を使用して慎重に配合されています。詳細な仕様をご覧ください。",
+          items: ["プレミアム成分", "正確な用量", "安全な処方", "品質管理"]
+        },
+        {
+          title: "使用方法",
+          body: "簡単に使用でき、毎日のルーティンに統合できます。当社の簡単なガイドラインに従ってください。",
+          items: ["簡単な説明書", "毎日の使用", "簡単なルーティン", "明確な指示"]
+        },
       ],
     },
     "zh-cn": {
@@ -847,6 +876,21 @@ function translateDraft(draft, languageId) {
           title: "质量保证", 
           body: "所有产品均符合最高质量标准。我们为卓越承诺而自豪。",
           items: ["认证质量", "测试配方", "质量承诺", "卓越标准"]
+        },
+        {
+          title: "客户评价",
+          body: "数千名满意的客户信任我们的产品。真实的结果来自真实的人。",
+          items: ["正面评价", "实证效果", "客户满意度", "信任认证"]
+        },
+        {
+          title: "产品规格",
+          body: "每种产品均用最优质的成分精心配制。查看我们的详细规格。",
+          items: ["优质成分", "精确剂量", "安全配方", "质量控制"]
+        },
+        {
+          title: "使用方法",
+          body: "易于使用并融入日常生活。遵循我们简单的指南。",
+          items: ["简单说明", "日常使用", "简便常规", "清晰指示"]
         },
       ],
     },
@@ -869,6 +913,21 @@ function translateDraft(draft, languageId) {
           body: "所有產品均符合最高質量標準。我們為卓越承諾而自豪。",
           items: ["認證質量", "測試配方", "質量承諾", "卓越標準"]
         },
+        {
+          title: "客戶評價",
+          body: "數千名滿意的客戶信任我們的產品。真實的結果來自真實的人。",
+          items: ["正面評價", "實證效果", "客戶滿意度", "信任認證"]
+        },
+        {
+          title: "產品規格",
+          body: "每種產品均用最優質的成分精心配製。查看我們的詳細規格。",
+          items: ["優質成分", "精確劑量", "安全配方", "質量控制"]
+        },
+        {
+          title: "使用方法",
+          body: "易於使用並融入日常生活。遵循我們簡單的指南。",
+          items: ["簡單說明", "日常使用", "簡便常規", "清晰指示"]
+        },
       ],
     },
     th: {
@@ -890,6 +949,21 @@ function translateDraft(draft, languageId) {
           body: "ผลิตภัณฑ์ทั้งหมดตรงตามมาตรฐานคุณภาพสูงสุด เรายืนยันความมุ่งมั่นต่อความเป็นเลิศ",
           items: ["คุณภาพที่ได้รับการรับรอง", "สูตรทดสอบแล้ว", "ความมุ่งมั่นต่อคุณภาพ", "มาตรฐานความเป็นเลิศ"]
         },
+        {
+          title: "ความเห็นของลูกค้า",
+          body: "ลูกค้าหลายพันคนเชื่อใจผลิตภัณฑ์ของเรา ผลลัพธ์จริงจากผู้คนจริง",
+          items: ["รีวิวเชิงบวก", "ผลลัพธ์ที่พิสูจน์", "ความพึงพอใจของลูกค้า", "ความเชื่อถือที่ตรวจสอบ"]
+        },
+        {
+          title: "ข้อมูลจำเพาะของผลิตภัณฑ์",
+          body: "แต่ละผลิตภัณฑ์ได้รับการสูตรด้วยส่วนประกอบที่ดีที่สุด ดูข้อมูลจำเพาะของเรา",
+          items: ["ส่วนประกอบพรีเมียม", "ปริมาณที่แม่นยำ", "สูตรที่ปลอดภัย", "การควบคุมคุณภาพ"]
+        },
+        {
+          title: "วิธีการใช้",
+          body: "ใช้ง่ายและสามารถรวมเข้ากับประจำวันของคุณ ปฏิบัติตามคำแนะนำง่ายๆของเรา",
+          items: ["คำแนะนำง่าย", "การใช้รายวัน", "กิจวัตรง่าย", "ทิศทางที่ชัดเจน"]
+        },
       ],
     },
   };
@@ -900,12 +974,27 @@ function translateDraft(draft, languageId) {
     ...draft,
     hero_headline: translation.hero_headline,
     hero_subcopy: translation.hero_subcopy,
-    sections: draft.sections?.map((s, idx) => ({
-      ...s,
-      title: translation.sections?.[idx]?.title || s.title,
-      body: translation.sections?.[idx]?.body || s.body,
-      items: translation.sections?.[idx]?.items || s.items, // 번역된 items 적용
-    })) || [],
+    sections: draft.sections?.map((s, idx) => {
+      const predefinedSection = translation.sections?.[idx];
+      
+      if (predefinedSection) {
+        return {
+          ...s,
+          title: predefinedSection.title,
+          body: predefinedSection.body,
+          items: predefinedSection.items || s.items,
+        };
+      } else {
+        // 정의되지 않은 섹션: 마지막 정의된 섹션을 기본으로 사용
+        const lastDefined = translation.sections?.[translation.sections.length - 1];
+        return {
+          ...s,
+          title: lastDefined?.title || s.title,
+          body: lastDefined?.body || s.body,
+          items: lastDefined?.items || s.items,
+        };
+      }
+    }) || [],
   };
 }
 
@@ -925,8 +1014,8 @@ function generateSeoOptimization(draft, product) {
     metaKeywords: keywords.slice(0, 5).join(", "),
     titleTag: `${product.name} | ${product.category} | 공식 상세페이지`,
     headingStructure: {
-      h1: displayDraft.hero_headline,
-      h2_suggestions: displayDraft.sections?.slice(0, 3).map((s) => s.title) || [],
+      h1: draft.hero_headline,
+      h2_suggestions: draft.sections?.slice(0, 3).map((s) => s.title) || [],
     },
     readabilityScore: 85,
     keywordDensity: {
@@ -997,18 +1086,13 @@ export default function DetailPageGenerator() {
   const [detailedComplianceReport, setDetailedComplianceReport] = useState(null);
 
   // 다국어 번역 & SEO state
-  const [selectedLanguage, setSelectedLanguage] = useState(""); // 단일 언어 선택
+  const [selectedLanguage, setSelectedLanguage] = useState([]);
   const [translatedVersions, setTranslatedVersions] = useState(null); // { en: {...}, ja: {...}, ... }
   const [translatingLanguages, setTranslatingLanguages] = useState([]);
-  const [translatedDraft, setTranslatedDraft] = useState(null); // 현재 표시되는 번역된 draft
-  const [activeLanguage, setActiveLanguage] = useState("ko"); // 현재 활성 언어 (ko, en, ja, etc)
   const [seoOptimization, setSeoOptimization] = useState(null);
   const [generatingSeo, setGeneratingSeo] = useState(false);
 
   const update = (k, v) => setProduct((p) => ({ ...p, [k]: v }));
-
-  // 표시할 draft 결정: 번역 버전이 있으면 그것, 아니면 원본
-  const displayDraft = translatedDraft || draft;
 
   // 폰트 선택 미리보기가 각자 폰트로 보이도록, 모든 구글폰트를 로드해둔다.
   useEffect(() => {
@@ -1218,20 +1302,20 @@ export default function DetailPageGenerator() {
 
   // 섹션별 재생성
   async function regenerateSection(sectionIndex, feedback = "") {
-    if (!draft || !displayDraft.sections || sectionIndex < 0 || sectionIndex >= displayDraft.sections.length) return;
+    if (!draft || !draft.sections || sectionIndex < 0 || sectionIndex >= draft.sections.length) return;
 
     setError("");
     setRegeneratingSectionIndex(sectionIndex);
     setStage(3); // 생성 중
 
     try {
-      const sectionData = displayDraft.sections[sectionIndex];
+      const sectionData = draft.sections[sectionIndex];
       const feedbackPart = feedback ? `\n\n사용자 피드백: ${feedback}` : "";
       const prompt = `다음 섹션을 더 나은 카피로 다시 작성해주세요:\n\n섹션 타입: ${sectionData.type}\n제목: ${sectionData.title}\n본문: ${sectionData.body}${feedbackPart}\n\n같은 JSON 형식으로 재작성된 섹션만 반환하세요.`;
 
       const regenerated = await callClaude(prompt, 1500);
 
-      const updatedSections = displayDraft.sections.map((s, i) =>
+      const updatedSections = draft.sections.map((s, i) =>
         i === sectionIndex ? { ...s, body: regenerated.body || s.body, title: regenerated.title || s.title } : s
       );
 
@@ -1284,33 +1368,30 @@ export default function DetailPageGenerator() {
     }
   }
 
-  // 다국어 번역 단일 선택
+  // 다국어 번역 토글
   const toggleLanguage = (langId) => {
-    setSelectedLanguage(selectedLanguage === langId ? "" : langId);
+    setSelectedLanguage((prev) =>
+      prev.includes(langId) ? prev.filter((l) => l !== langId) : [...prev, langId]
+    );
   };
 
-  // 원문(한국어) 보기
-  function showOriginalKorean() {
-    setTranslatedDraft(null);
-    setActiveLanguage("ko");
-  }
-
-  // 다국어 번역 생성 (단일 언어)
+  // 다국어 번역 생성
   async function generateTranslations() {
-    if (!draft || !selectedLanguage) return;
+    if (!draft || selectedLanguage?.length === 0) return;
 
     setError("");
-    setTranslatingLanguages([selectedLanguage]);
+    setTranslatingLanguages(selectedLanguages);
     setStage(3);
 
     try {
-      // 선택된 언어로 번역
-      const translated = translateDraft(draft, selectedLanguage);
+      const translations = {};
       
-      setTranslatedVersions({ [selectedLanguage]: translated });
-      setTranslatedDraft(translated);
-      setActiveLanguage(selectedLanguage);
-      
+      // Mock: 각 언어별로 번역된 버전 생성
+      for (const langId of selectedLanguages) {
+        translations[langId] = translateDraft(draft, langId);
+      }
+
+      setTranslatedVersions(translations);
       setStage(4);
     } catch (err) {
       setError(err.message || "번역 생성 실패");
@@ -1421,7 +1502,7 @@ export default function DetailPageGenerator() {
     if (!draft) return;
     setRegenIndex(idx);
     try {
-      const target = idx === "hero" ? { hero_headline: displayDraft.hero_headline, hero_subcopy: displayDraft.hero_subcopy } : displayDraft.sections[idx];
+      const target = idx === "hero" ? { hero_headline: draft.hero_headline, hero_subcopy: draft.hero_subcopy } : draft.sections[idx];
       const categoryConstraint = buildGenerationConstraint(product.category);
       const feedbackLine = feedback
         ? `\n\n[사용자 수정 요청] 다음 요청을 반드시 반영해서 다시 쓰세요: "${feedback}"`
@@ -1547,8 +1628,8 @@ export default function DetailPageGenerator() {
 
   function copyResult() {
     if (!draft) return;
-    const lines = [displayDraft.hero_headline, displayDraft.hero_subcopy, ""];
-    displayDraft.sections?.forEach((s) => {
+    const lines = [draft.hero_headline, draft.hero_subcopy, ""];
+    draft.sections?.forEach((s) => {
       if (s.title) lines.push(s.title);
       if (s.body) lines.push(s.body);
       if (s.items) lines.push(...s.items.map((it) => "- " + it));
@@ -1570,7 +1651,7 @@ export default function DetailPageGenerator() {
         .replace(/>/g, "&gt;");
     const cs = conceptStyle;
 
-    const sectionsHtml = (displayDraft.sections || [])
+    const sectionsHtml = (draft.sections || [])
       .map((s, i) => {
         const label = sectionLabel(s.type);
         const num = String(i + 1).padStart(2, "0");
@@ -1600,7 +1681,7 @@ export default function DetailPageGenerator() {
       .join("\n");
 
     const imgHtml = image
-      ? `<img class="hero-img" src="${image}" alt="${esc(displayDraft.hero_headline)}" />`
+      ? `<img class="hero-img" src="${image}" alt="${esc(draft.hero_headline)}" />`
       : "";
 
     const overline = product.name ? `<div class="hero-overline">${esc(product.name)}</div>` : "";
@@ -1630,7 +1711,7 @@ export default function DetailPageGenerator() {
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>${esc(displayDraft.hero_headline)}</title>
+<title>${esc(draft.hero_headline)}</title>
 ${fontLink}
 <style>
   * { box-sizing: border-box; }
@@ -1705,9 +1786,9 @@ ${fontLink}
     <div class="hero">
       ${imgHtml}
       ${overline}
-      <h1 class="hero-headline">${emphasizeHtmlText(displayDraft.hero_headline, accent1)}</h1>
+      <h1 class="hero-headline">${emphasizeHtmlText(draft.hero_headline, accent1)}</h1>
       <div class="hero-rule"></div>
-      <p class="hero-sub">${emphasizeHtmlText(displayDraft.hero_subcopy, accent1)}</p>
+      <p class="hero-sub">${emphasizeHtmlText(draft.hero_subcopy, accent1)}</p>
     </div>
     ${sectionsHtml}
   </div>
@@ -2340,18 +2421,7 @@ ${fontLink}
             </div>
           ) : null}
           {draft && (
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, marginBottom: 18, flexWrap: "wrap" }}><div><div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}><div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.04em" }}>생성된 상세페이지</div><span style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 10px", borderRadius: 999, background: "#E8F4EA", color: "#2F7D4A", fontSize: 12, fontWeight: 900 }}>✓ 생성 완료</span>{(() => {
-                const languageInfo = activeLanguage === "ko" 
-                  ? { flag: "🇰🇷", name: "한국어" }
-                  : LANGUAGES.find(l => l.id === activeLanguage) 
-                    ? { flag: LANGUAGES.find(l => l.id === activeLanguage).flag, name: LANGUAGES.find(l => l.id === activeLanguage).label }
-                    : { flag: "🇰🇷", name: "한국어" };
-                return (
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 10px", borderRadius: 999, background: "#E8E1D7", color: "#8B7355", fontSize: 11, fontWeight: 700 }}>
-                    {languageInfo.flag} {languageInfo.name}
-                  </span>
-                );
-              })()}</div><div style={{ fontSize: 12.5, color: "#8B8175", marginTop: 4 }}>AI가 생성한 최종 상세페이지입니다. 내용을 수정하거나 다운로드할 수 있습니다.</div></div><div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, marginBottom: 18, flexWrap: "wrap" }}><div><div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}><div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.04em" }}>생성된 상세페이지</div><span style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 10px", borderRadius: 999, background: "#E8F4EA", color: "#2F7D4A", fontSize: 12, fontWeight: 900 }}>✓ 생성 완료</span></div><div style={{ fontSize: 12.5, color: "#8B8175", marginTop: 4 }}>AI가 생성한 최종 상세페이지입니다. 내용을 수정하거나 다운로드할 수 있습니다.</div></div><div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               <button
                 onClick={copyResult}
                 style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 12px", borderRadius: 8, border: "1px solid #DEDCD3", background: "#fff", color: "#4A4940", fontSize: 12.5, cursor: "pointer" }}
@@ -2463,28 +2533,6 @@ ${fontLink}
                 🌍 다국어 번역
               </button>
 
-              {/* 원문 보기 버튼 (번역된 상태일 때만 표시) */}
-              {translatedDraft && (
-                <button
-                  onClick={showOriginalKorean}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    padding: "7px 12px",
-                    borderRadius: 8,
-                    border: "1px solid #D4A574",
-                    background: "#FFF8F0",
-                    color: "#A87535",
-                    fontSize: 12.5,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                  }}
-                >
-                  📄 원문 보기
-                </button>
-              )}
-
               {/* SEO 최적화 */}
               <button
                 onClick={generateSeoOptimizations}
@@ -2536,16 +2584,16 @@ ${fontLink}
                       alignItems: "center",
                       gap: 8,
                       padding: "8px 10px",
-                      background: selectedLanguage === lang.id ? "#FFF8F0" : "#fff",
+                      background: selectedLanguage ===(lang.id) ? "#FFF8F0" : "#fff",
                       borderRadius: 6,
-                      border: selectedLanguage === lang.id ? "1.5px solid #A87535" : "1px solid #E3E1DA",
+                      border: selectedLanguage ===(lang.id) ? "1.5px solid #A87535" : "1px solid #E3E1DA",
                       cursor: "pointer",
                       transition: "all 0.2s ease",
                     }}
                   >
                     <input
                       type="checkbox"
-                      checked={selectedLanguage === lang.id}
+                      checked={selectedLanguage ===(lang.id)}
                       onChange={() => toggleLanguage(lang.id)}
                       style={{ cursor: "pointer", width: 16, height: 16 }}
                     />
@@ -2557,21 +2605,21 @@ ${fontLink}
               </div>
               <button
                 onClick={generateTranslations}
-                disabled={!selectedLanguage || isGenerating}
+                disabled={selectedLanguage?.length === 0 || isGenerating}
                 style={{
                   marginTop: 8,
                   padding: "8px 14px",
                   borderRadius: 6,
                   border: "none",
-                  background: selectedLanguage && !isGenerating ? "#A87535" : "#E8E1D7",
+                  background: selectedLanguage?.length > 0 && !isGenerating ? "#A87535" : "#E8E1D7",
                   color: "#fff",
                   fontWeight: 600,
                   fontSize: 12.5,
-                  cursor: selectedLanguage && !isGenerating ? "pointer" : "not-allowed",
+                  cursor: selectedLanguage?.length > 0 && !isGenerating ? "pointer" : "not-allowed",
                   transition: "all 0.2s ease",
                 }}
               >
-                ✅ {LANGUAGES.find(l => l.id === selectedLanguage)?.label || "언어"} 번역 생성
+                ✅ {selectedLanguage?.length}개 언어 번역 생성
               </button>
             </div>
           )}
@@ -2676,9 +2724,9 @@ ${fontLink}
                 <div key={vIdx} style={{ padding: "16px", background: "#F5F3EF", borderRadius: 10, border: "1px solid #E8E1D7" }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: "#2B2925", marginBottom: 12 }}>{version.title}</div>
                   <div style={{ background: "#fff", padding: "12px", borderRadius: 6, border: "1px solid #E3E1DA", fontSize: 12, color: "#2B2925", lineHeight: 1.6 }}>
-                    <div style={{ fontWeight: 700, marginBottom: 8, fontSize: 13 }}>{version.displayDraft.hero_headline}</div>
-                    <div style={{ fontSize: 11.5, color: "#5A4A47", marginBottom: 10 }}>{version.displayDraft.hero_subcopy?.slice(0, 80)}...</div>
-                    {version.displayDraft.sections?.slice(0, 1).map((s, i) => (
+                    <div style={{ fontWeight: 700, marginBottom: 8, fontSize: 13 }}>{version.draft.hero_headline}</div>
+                    <div style={{ fontSize: 11.5, color: "#5A4A47", marginBottom: 10 }}>{version.draft.hero_subcopy?.slice(0, 80)}...</div>
+                    {version.draft.sections?.slice(0, 1).map((s, i) => (
                       <div key={i} style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid #E8E1D7" }}>
                         <div style={{ fontWeight: 600, fontSize: 11.5, marginBottom: 3 }}>{s.title}</div>
                         <div style={{ fontSize: 11, color: "#5A4A47" }}>{s.body?.slice(0, 60)}...</div>
@@ -2710,6 +2758,35 @@ ${fontLink}
           )}
 
           {/* 다국어 번역 결과 */}
+          {translatedVersions && (
+            <div style={{ marginBottom: 28, padding: "16px", background: "#F5F3EF", borderRadius: 10, border: "1px solid #E8E1D7" }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#2B2925", marginBottom: 14 }}>🌍 다국어 번역 완료</div>
+              
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                {Object.entries(translatedVersions).map(([langId, translated]) => {
+                  const lang = LANGUAGES.find((l) => l.id === langId);
+                  return (
+                    <div key={langId} style={{ padding: "12px", background: "#fff", borderRadius: 6, border: "1px solid #E3E1DA" }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#2B2925", marginBottom: 8 }}>
+                        {lang?.flag} {lang?.label}
+                      </div>
+                      <div style={{ fontSize: 11, color: "#5A4A47", lineHeight: 1.6 }}>
+                        <div style={{ marginBottom: 6, fontWeight: 600 }}>{translated.hero_headline}</div>
+                        <div style={{ fontSize: 10, color: "#8B8175", marginBottom: 6 }}>{translated.hero_subcopy?.slice(0, 50)}...</div>
+                        {translated.sections?.[0] && (
+                          <div style={{ padding: "6px", background: "#F9F6F1", borderRadius: 4, fontSize: 10 }}>
+                            <strong>{translated.sections[0].title}</strong>
+                            <div>{translated.sections[0].body?.slice(0, 40)}...</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {draft && (
             <div style={{ maxWidth: 940, margin: "0 auto", fontFamily: bodyFamily }}>
               <PreviewSection idx="hero" onRegen={regenerateSection} loading={regenIndex === "hero"} accent={themeColor}>
@@ -2733,16 +2810,16 @@ ${fontLink}
                     </div>
                   )}
                   <div style={{ fontFamily: conceptStyle.headFont, fontWeight: conceptStyle.headWeight, fontSize: 44, lineHeight: 1.16, color: "#1F2A24", marginBottom: 22, letterSpacing: "-0.035em", maxWidth: 560 }}>
-                    <EmphasizedText text={displayDraft.hero_headline} accent={accent1} />
+                    <EmphasizedText text={draft.hero_headline} accent={accent1} />
                   </div>
                   <div style={{ width: 72, height: 1, background: accent1, marginBottom: 22, opacity: 0.8 }} />
                   <div style={{ fontSize: 16, color: "#5D5B52", lineHeight: 1.85, maxWidth: 560, letterSpacing: "-0.01em" }}>
-                    <EmphasizedText text={displayDraft.hero_subcopy} accent={accent1} />
+                    <EmphasizedText text={draft.hero_subcopy} accent={accent1} />
                   </div>
                 </div>
               </PreviewSection>
 
-              {displayDraft.sections?.map((s, i) => {
+              {draft.sections?.map((s, i) => {
                 const isHighlight = s.type === "benefit_list" || s.type === "solution";
                 const isBadges = s.type === "trust_badges";
                 const isList = s.type === "benefit_list";
@@ -2906,9 +2983,9 @@ ${fontLink}
                     {draft ? (
                       <PreviewSection
                         idx="hero"
-                        title={displayDraft.hero_headline}
-                        subtitle={displayDraft.hero_subcopy}
-                        sections={displayDraft.sections || []}
+                        title={draft.hero_headline}
+                        subtitle={draft.hero_subcopy}
+                        sections={draft.sections || []}
                         accent={themeColor}
                         headingFont={headingFamily}
                         bodyFont={bodyFamily}
