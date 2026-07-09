@@ -2731,28 +2731,29 @@ ${fontLink}
               {pageDesign && selectedTemplate ? (
                 <div style={{ maxWidth: 1080, margin: "0 auto 28px", display: "flex", flexDirection: "column", gap: 18 }}>
                   {/* 미리보기 헤더 + 버튼 */}
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 18, flexWrap: "wrap" }}>
-                    <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 18 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px", borderRadius: 999, background: "#E8D5BC", color: "#8B5E2C", fontSize: 11, fontWeight: 900, letterSpacing: "0.04em", marginBottom: 12 }}>
                         TEMPLATE PREVIEW
                       </div>
-                      <div style={{ fontSize: 28, fontWeight: 950, color: "#241F19", letterSpacing: "-0.055em", marginBottom: 6 }}>📋 템플릿 미리보기</div>
-                      <div style={{ fontSize: 13.5, color: "#8B8175", lineHeight: 1.6 }}>
+                      <div style={{ fontSize: 22, fontWeight: 950, color: "#241F19", letterSpacing: "-0.055em", marginBottom: 4 }}>📋 템플릿 미리보기</div>
+                      <div style={{ fontSize: 13, color: "#8B8175", lineHeight: 1.6 }}>
                         선택된 템플릿 '{DESIGN_TEMPLATES.find(t => t.id === selectedTemplate)?.label || ""}' 스타일로 상세페이지가 표현됩니다.
                       </div>
                     </div>
-                    <div style={{ display: "flex", gap: 10 }}>
+                    <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
                       <button
                         onClick={() => setViewMode("main")}
                         style={{
-                          padding: "10px 16px",
-                          borderRadius: 10,
+                          padding: "8px 12px",
+                          borderRadius: 8,
                           border: "1px solid #D4A574",
                           background: "#fff",
                           color: "#A87535",
                           fontWeight: 600,
-                          fontSize: 13,
+                          fontSize: 12,
                           cursor: "pointer",
+                          whiteSpace: "nowrap",
                         }}
                       >
                         이전 단계로
@@ -2760,18 +2761,19 @@ ${fontLink}
                       <button
                         onClick={handleGenerateWithTemplate}
                         style={{
-                          padding: "10px 16px",
-                          borderRadius: 10,
+                          padding: "8px 12px",
+                          borderRadius: 8,
                           border: "none",
                           background: "linear-gradient(135deg, #5A6E52 0%, #4A5E42 100%)",
                           color: "#fff",
                           fontWeight: 600,
-                          fontSize: 13,
+                          fontSize: 12,
                           cursor: "pointer",
                           boxShadow: "0 8px 16px rgba(90,110,82,0.25)",
+                          whiteSpace: "nowrap",
                         }}
                       >
-                        상세페이지 생성
+                        이 탬플릿으로 생성
                       </button>
                     </div>
                   </div>
