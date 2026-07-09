@@ -1370,28 +1370,25 @@ export default function DetailPageGenerator() {
 
   // 다국어 번역 토글
   const toggleLanguage = (langId) => {
-    setSelectedLanguage((prev) =>
-      prev.includes(langId) ? prev.filter((l) => l !== langId) : [...prev, langId]
-    );
+    setSelectedLanguage(selectedLanguage === langId ? "" : langId);
   };
 
-  // 다국어 번역 생성
+  // 다국어 번역 생성 (단일 언어)
   async function generateTranslations() {
-    if (!draft || selectedLanguage?.length === 0) return;
+    if (!draft || !selectedLanguage) return;
 
     setError("");
-    setTranslatingLanguages(selectedLanguages);
+    setTranslatingLanguages([selectedLanguage]);
     setStage(3);
 
     try {
-      const translations = {};
+      // 선택된 언어로 번역
+      const translated = translateDraft(draft, selectedLanguage);
       
-      // Mock: 각 언어별로 번역된 버전 생성
-      for (const langId of selectedLanguages) {
-        translations[langId] = translateDraft(draft, langId);
-      }
-
-      setTranslatedVersions(translations);
+      setTranslatedVersions({ [selectedLanguage]: translated });
+      setTranslatedDraft(translated);
+      setActiveLanguage(selectedLanguage);
+      
       setStage(4);
     } catch (err) {
       setError(err.message || "번역 생성 실패");
@@ -2605,21 +2602,21 @@ ${fontLink}
               </div>
               <button
                 onClick={generateTranslations}
-                disabled={selectedLanguage?.length === 0 || isGenerating}
+                disabled={!selectedLanguage || isGenerating}
                 style={{
                   marginTop: 8,
                   padding: "8px 14px",
                   borderRadius: 6,
                   border: "none",
-                  background: selectedLanguage?.length > 0 && !isGenerating ? "#A87535" : "#E8E1D7",
+                  background: selectedLanguage && !isGenerating ? "#A87535" : "#E8E1D7",
                   color: "#fff",
                   fontWeight: 600,
                   fontSize: 12.5,
-                  cursor: selectedLanguage?.length > 0 && !isGenerating ? "pointer" : "not-allowed",
+                  cursor: selectedLanguage && !isGenerating ? "pointer" : "not-allowed",
                   transition: "all 0.2s ease",
                 }}
               >
-                ✅ {selectedLanguage?.length}개 언어 번역 생성
+                ✅ {LANGUAGES.find(l => l.id === selectedLanguage)?.label || "언어"} 번역 생성
               </button>
             </div>
           )}
