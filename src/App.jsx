@@ -2073,17 +2073,24 @@ ${fontLink}
         {/* RIGHT: preview / results */}
         <div style={{ padding: "30px 40px 48px", overflowY: "auto", background: "linear-gradient(180deg, #F8F5EF 0%, #F3EDE4 100%)" }}>
 
-          {/* AI 상세페이지 설계 - 오른쪽 즉시 미리보기 */}
-          {showPageDesign && pageDesign && !draft && (
+          {/* AI 상세페이지 설계 또는 템플릿 선택 화면 - 오른쪽에 미리보기 */}
+          {(showPageDesign && pageDesign && !draft) || (viewMode === "templates" && pageDesign && selectedTemplate) ? (
             <div style={{ maxWidth: 1080, margin: "0 auto 28px", display: "flex", flexDirection: "column", gap: 18 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 18, flexWrap: "wrap" }}>
                 <div>
-                  <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px", borderRadius: 999, background: "#F2E8DA", color: "#9A672E", fontSize: 11, fontWeight: 900, letterSpacing: "0.04em", marginBottom: 12 }}>
-                    AI PAGE PLAN
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px", borderRadius: 999, background: viewMode === "templates" ? "#E8D5BC" : "#F2E8DA", color: viewMode === "templates" ? "#8B5E2C" : "#9A672E", fontSize: 11, fontWeight: 900, letterSpacing: "0.04em", marginBottom: 12 }}>
+                    {viewMode === "templates" ? "TEMPLATE PREVIEW" : "AI PAGE PLAN"}
                   </div>
-                  <div style={{ fontSize: 28, fontWeight: 950, color: "#241F19", letterSpacing: "-0.055em", marginBottom: 6 }}>🧠 AI 상세페이지 설계</div>
-                  <div style={{ fontSize: 13.5, color: "#8B8175", lineHeight: 1.6 }}>AI가 구매 전환을 높일 수 있는 상세페이지 구조를 먼저 설계했습니다.</div>
+                  <div style={{ fontSize: 28, fontWeight: 950, color: "#241F19", letterSpacing: "-0.055em", marginBottom: 6 }}>
+                    {viewMode === "templates" ? "📋 템플릿 미리보기" : "🧠 AI 상세페이지 설계"}
+                  </div>
+                  <div style={{ fontSize: 13.5, color: "#8B8175", lineHeight: 1.6 }}>
+                    {viewMode === "templates" 
+                      ? `선택된 템플릿 "${DESIGN_TEMPLATES.find(t => t.id === selectedTemplate)?.label || ""}"의 스타일로 상세페이지가 표현됩니다.`
+                      : "AI가 구매 전환을 높일 수 있는 상세페이지 구조를 먼저 설계했습니다."}
+                  </div>
                 </div>
+                {viewMode !== "templates" && (
                 <button
                   onClick={() => setViewMode("templates")}
                   style={{
@@ -2100,6 +2107,7 @@ ${fontLink}
                 >
                   다음 단계 : 템플릿 선택 →
                 </button>
+                )}
               </div>
 
               {pageDesign.aiSummary && (
