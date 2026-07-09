@@ -1094,6 +1094,9 @@ export default function DetailPageGenerator() {
 
   const update = (k, v) => setProduct((p) => ({ ...p, [k]: v }));
 
+  // 표시할 draft 결정: 번역 버전이 있으면 그것, 아니면 원본
+  const displayDraft = translatedDraft || draft;
+
   // 폰트 선택 미리보기가 각자 폰트로 보이도록, 모든 구글폰트를 로드해둔다.
   useEffect(() => {
     const url = buildGoogleFontsUrl(FONTS.map((f) => f.id));
@@ -2721,9 +2724,9 @@ ${fontLink}
                 <div key={vIdx} style={{ padding: "16px", background: "#F5F3EF", borderRadius: 10, border: "1px solid #E8E1D7" }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: "#2B2925", marginBottom: 12 }}>{version.title}</div>
                   <div style={{ background: "#fff", padding: "12px", borderRadius: 6, border: "1px solid #E3E1DA", fontSize: 12, color: "#2B2925", lineHeight: 1.6 }}>
-                    <div style={{ fontWeight: 700, marginBottom: 8, fontSize: 13 }}>{version.draft.hero_headline}</div>
-                    <div style={{ fontSize: 11.5, color: "#5A4A47", marginBottom: 10 }}>{version.draft.hero_subcopy?.slice(0, 80)}...</div>
-                    {version.draft.sections?.slice(0, 1).map((s, i) => (
+                    <div style={{ fontWeight: 700, marginBottom: 8, fontSize: 13 }}>{version.displayDraft.hero_headline}</div>
+                    <div style={{ fontSize: 11.5, color: "#5A4A47", marginBottom: 10 }}>{version.displayDraft.hero_subcopy?.slice(0, 80)}...</div>
+                    {version.displayDraft.sections?.slice(0, 1).map((s, i) => (
                       <div key={i} style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid #E8E1D7" }}>
                         <div style={{ fontWeight: 600, fontSize: 11.5, marginBottom: 3 }}>{s.title}</div>
                         <div style={{ fontSize: 11, color: "#5A4A47" }}>{s.body?.slice(0, 60)}...</div>
@@ -2754,36 +2757,6 @@ ${fontLink}
             </div>
           )}
 
-          {/* 다국어 번역 결과 */}
-          {translatedVersions && (
-            <div style={{ marginBottom: 28, padding: "16px", background: "#F5F3EF", borderRadius: 10, border: "1px solid #E8E1D7" }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#2B2925", marginBottom: 14 }}>🌍 다국어 번역 완료</div>
-              
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                {Object.entries(translatedVersions).map(([langId, translated]) => {
-                  const lang = LANGUAGES.find((l) => l.id === langId);
-                  return (
-                    <div key={langId} style={{ padding: "12px", background: "#fff", borderRadius: 6, border: "1px solid #E3E1DA" }}>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: "#2B2925", marginBottom: 8 }}>
-                        {lang?.flag} {lang?.label}
-                      </div>
-                      <div style={{ fontSize: 11, color: "#5A4A47", lineHeight: 1.6 }}>
-                        <div style={{ marginBottom: 6, fontWeight: 600 }}>{translated.hero_headline}</div>
-                        <div style={{ fontSize: 10, color: "#8B8175", marginBottom: 6 }}>{translated.hero_subcopy?.slice(0, 50)}...</div>
-                        {translated.sections?.[0] && (
-                          <div style={{ padding: "6px", background: "#F9F6F1", borderRadius: 4, fontSize: 10 }}>
-                            <strong>{translated.sections[0].title}</strong>
-                            <div>{translated.sections[0].body?.slice(0, 40)}...</div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
           {draft && (
             <div style={{ maxWidth: 940, margin: "0 auto", fontFamily: bodyFamily }}>
               <PreviewSection idx="hero" onRegen={regenerateSection} loading={regenIndex === "hero"} accent={themeColor}>
@@ -2807,16 +2780,16 @@ ${fontLink}
                     </div>
                   )}
                   <div style={{ fontFamily: conceptStyle.headFont, fontWeight: conceptStyle.headWeight, fontSize: 44, lineHeight: 1.16, color: "#1F2A24", marginBottom: 22, letterSpacing: "-0.035em", maxWidth: 560 }}>
-                    <EmphasizedText text={draft.hero_headline} accent={accent1} />
+                    <EmphasizedText text={displayDraft.hero_headline} accent={accent1} />
                   </div>
                   <div style={{ width: 72, height: 1, background: accent1, marginBottom: 22, opacity: 0.8 }} />
                   <div style={{ fontSize: 16, color: "#5D5B52", lineHeight: 1.85, maxWidth: 560, letterSpacing: "-0.01em" }}>
-                    <EmphasizedText text={draft.hero_subcopy} accent={accent1} />
+                    <EmphasizedText text={displayDraft.hero_subcopy} accent={accent1} />
                   </div>
                 </div>
               </PreviewSection>
 
-              {draft.sections?.map((s, i) => {
+              {displayDraft.sections?.map((s, i) => {
                 const isHighlight = s.type === "benefit_list" || s.type === "solution";
                 const isBadges = s.type === "trust_badges";
                 const isList = s.type === "benefit_list";
