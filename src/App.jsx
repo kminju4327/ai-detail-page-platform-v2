@@ -2230,30 +2230,7 @@ ${fontLink}
             </div>
           ) : null}
           {draft && (
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, marginBottom: 18, flexWrap: "wrap" }}><div><div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.04em" }}>2. 생성된 상세페이지 미리보기</div><div style={{ fontSize: 12.5, color: "#8B8175", marginTop: 4 }}>AI가 생성한 결과입니다. 내용은 수정할 수 있습니다.</div></div><div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-              {/* 톤 조정 드롭다운 */}
-              <select
-                value={selectedCopyTone}
-                onChange={(e) => applyTone(e.target.value)}
-                disabled={isGenerating}
-                style={{
-                  padding: "7px 10px",
-                  borderRadius: 8,
-                  border: "1px solid #D4A574",
-                  background: "#FFF8F0",
-                  color: "#A87535",
-                  fontSize: 12.5,
-                  fontWeight: 600,
-                  cursor: isGenerating ? "not-allowed" : "pointer",
-                  opacity: isGenerating ? 0.6 : 1,
-                }}
-              >
-                <option value="default">📝 톤 유지</option>
-                <option value="professional">🎓 전문적</option>
-                <option value="friendly">😊 친근함</option>
-                <option value="trust">🛡️ 신뢰감 있게</option>
-                <option value="concise">✂️ 간결하게</option>
-              </select>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, marginBottom: 18, flexWrap: "wrap" }}><div><div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.04em" }}>2. 생성된 상세페이지 미리보기</div><div style={{ fontSize: 12.5, color: "#8B8175", marginTop: 4 }}>AI가 생성한 결과입니다. 내용은 수정할 수 있습니다.</div></div><div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               <button
                 onClick={copyResult}
                 style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 12px", borderRadius: 8, border: "1px solid #DEDCD3", background: "#fff", color: "#4A4940", fontSize: 12.5, cursor: "pointer" }}
@@ -2281,6 +2258,34 @@ ${fontLink}
                 <RefreshCw size={13} /> 새로 만들기
               </button>
               </div>
+            </div>
+          )}
+
+          {/* 톤 조정 드롭다운 */}
+          {draft && (
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 18 }}>
+              <select
+                value={selectedCopyTone}
+                onChange={(e) => applyTone(e.target.value)}
+                disabled={isGenerating}
+                style={{
+                  padding: "7px 10px",
+                  borderRadius: 8,
+                  border: "1px solid #D4A574",
+                  background: "#FFF8F0",
+                  color: "#A87535",
+                  fontSize: 12.5,
+                  fontWeight: 600,
+                  cursor: isGenerating ? "not-allowed" : "pointer",
+                  opacity: isGenerating ? 0.6 : 1,
+                }}
+              >
+                <option value="default">📝 톤 유지</option>
+                <option value="professional">🎓 전문적</option>
+                <option value="friendly">😊 친근함</option>
+                <option value="trust">🛡️ 신뢰감 있게</option>
+                <option value="concise">✂️ 간결하게</option>
+              </select>
             </div>
           )}
 
@@ -2712,7 +2717,7 @@ ${fontLink}
         </div>
           </>
         ) : viewMode === "templates" ? (
-          <>
+          <div style={{ display: "flex", flex: 1 }}>
             {/* LEFT: Template Gallery */}
             <div style={{ background: "#FFFEFB", color: "#26231F", padding: "28px 30px", display: "flex", flexDirection: "column", gap: 18, borderRight: "1px solid #E8E1D7", overflowY: "auto", width: "390px", minWidth: "390px" }}>
               <TemplateGallery
@@ -2780,7 +2785,7 @@ ${fontLink}
                 </div>
               )}
             </div>
-          </>
+          </div>
         ) : (
           // 내 프로젝트 화면
           <div style={{ background: "#F4F3EE", color: "#2B2925", padding: "28px 30px", display: "flex", flexDirection: "column", gap: 18, borderRight: "1px solid #E8E1D7", overflowY: "auto", flex: 1 }}>
