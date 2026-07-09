@@ -16,34 +16,25 @@ export const DESIGN_TEMPLATES = [
   { id: "warm-story", label: "Warm Story", category: "Natural", desc: "따뜻하고 감정적인 스토리텔링 중심의 스타일", tags: ["스토리", "감정", "따뜻함"] },
 ];
 
-function Thumbnail({ template, main, accent }) {
+function MiniPreview({ template, main, accent }) {
   const isDark = template.id === "dark-luxury";
   const isScience = template.id === "science-lab";
-  const isEditorial = template.id === "editorial";
-  const isBold = template.id === "bold-impact";
   const isNatural = template.id === "natural-green";
-  const bg = isDark ? "#1F211C" : template.id === "soft-beige" || template.id === "warm-story" ? "#F5EADC" : isScience ? "#EEF5F7" : isNatural ? "#EEF4EA" : "#FBFAF6";
-  const title = isDark ? "#F8E7C4" : isScience ? "#2F5D69" : isNatural ? "#426447" : main;
-  const line = isDark ? "#B88A46" : accent;
+  const isBold = template.id === "bold-impact";
+  const isBeige = template.id === "soft-beige" || template.id === "warm-story";
+
+  const bg = isDark ? "#2B2118" : isScience ? "#EFF6F8" : isNatural ? "#EEF5EA" : isBeige ? "#F6EBDD" : "#FBFAF7";
+  const line = isDark ? "#D6A95E" : isScience ? "#5F92A5" : isNatural ? "#7A9C6D" : accent;
+  const text = isDark ? "#F8E7C4" : "#3A332B";
 
   return (
-    <div style={{ height: 118, borderRadius: 14, background: bg, border: "1px solid rgba(31,42,36,.08)", overflow: "hidden", position: "relative", padding: 14 }}>
-      {isBold && <div style={{ position: "absolute", inset: 0, background: `linear-gradient(135deg, ${main} 0%, #F7EFE5 72%)`, opacity: .28 }} />}
-      {isDark && <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 24, background: "#2F3028" }} />}
-      {isScience && <div style={{ position: "absolute", top: 12, right: 12, width: 36, height: 36, borderRadius: 12, background: "#D7E7EC" }} />}
-      {isNatural && <div style={{ position: "absolute", top: 14, right: 18, width: 28, height: 28, borderRadius: "60% 40% 60% 40%", background: "#B9CDA9", transform: "rotate(-22deg)" }} />}
-
-      <div style={{ position: "relative", zIndex: 1 }}>
-        <div style={{ width: isEditorial ? 86 : 50, height: 6, borderRadius: 99, background: line, opacity: .9, marginBottom: 10 }} />
-        <div style={{ width: isEditorial ? 110 : 82, height: isEditorial ? 12 : 10, borderRadius: 4, background: title, opacity: .95, marginBottom: 8 }} />
-        <div style={{ width: 130, height: 5, borderRadius: 99, background: isDark ? "#E8D7B8" : "#CFC7BA", opacity: .8, marginBottom: 5 }} />
-        <div style={{ width: 96, height: 5, borderRadius: 99, background: isDark ? "#E8D7B8" : "#DCD5CA", opacity: .75 }} />
-      </div>
-
-      <div style={{ position: "absolute", left: 14, right: 14, bottom: 12, display: "flex", gap: 6 }}>
-        <div style={{ flex: 1, height: 20, borderRadius: 7, background: isDark ? "#35362D" : "#FFFFFF", border: isDark ? "1px solid #5D543E" : "1px solid #E6DED2" }} />
-        <div style={{ flex: 1, height: 20, borderRadius: 7, background: isScience ? "#DCEBF0" : isDark ? "#B88A46" : `${main}22`, border: isDark ? "none" : `1px solid ${main}22` }} />
-      </div>
+    <div style={{ width: 62, height: 48, borderRadius: 10, background: bg, border: "1px solid rgba(47,38,28,0.08)", position: "relative", overflow: "hidden", flexShrink: 0 }}>
+      {isBold && <div style={{ position: "absolute", inset: 0, background: `linear-gradient(135deg, ${main} 0%, #fff 72%)`, opacity: 0.35 }} />}
+      <div style={{ position: "absolute", left: 8, top: 9, width: 22, height: 4, borderRadius: 99, background: line }} />
+      <div style={{ position: "absolute", left: 8, top: 18, width: 38, height: 5, borderRadius: 99, background: text, opacity: 0.9 }} />
+      <div style={{ position: "absolute", left: 8, top: 28, width: 45, height: 3, borderRadius: 99, background: isDark ? "#6A5435" : "#D9D0C5" }} />
+      <div style={{ position: "absolute", left: 8, top: 35, width: 28, height: 3, borderRadius: 99, background: isDark ? "#6A5435" : "#E3DAD0" }} />
+      {isScience && <div style={{ position: "absolute", right: 7, top: 7, width: 14, height: 14, borderRadius: 5, background: "#D2E5EC" }} />}
     </div>
   );
 }
@@ -51,80 +42,81 @@ function Thumbnail({ template, main, accent }) {
 export default function TemplateGallery({
   selectedTemplate,
   onSelectTemplate,
-  onBack,
-  onGenerate,
   themeColor = DEFAULT_MAIN,
   pointColors = [DEFAULT_ACCENT],
 }) {
   const accent = pointColors?.[0] || DEFAULT_ACCENT;
-  const selected = DESIGN_TEMPLATES.find((t) => t.id === selectedTemplate);
+  const grouped = DESIGN_TEMPLATES.reduce((acc, template) => {
+    acc[template.category] = acc[template.category] || [];
+    acc[template.category].push(template);
+    return acc;
+  }, {});
+
+  const orderedCategories = ["Premium", "Natural", "Modern", "Bold"];
 
   return (
-    <div style={{ background: "#F6F3EC", color: "#2B2925", padding: "30px 32px", display: "flex", flexDirection: "column", gap: 22, overflowY: "auto", flex: 1, minHeight: "100vh" }}>
-      <style>{`
-        .template-gallery-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; width: 100%; }
-        @media (max-width: 760px) { .template-gallery-grid { grid-template-columns: 1fr; } }
-      `}</style>
-
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 18, paddingBottom: 18, borderBottom: "1px solid #E6DED2" }}>
-        <div>
-          <div style={{ fontSize: 28, fontWeight: 1000, letterSpacing: "-0.06em", marginBottom: 8 }}>상세페이지 템플릿</div>
-          <div style={{ fontSize: 13.5, color: "#8B8175", lineHeight: 1.6 }}>AI가 설계한 상세페이지 구조를 어떤 디자인 스타일로 표현할지 선택하세요.</div>
-          {selected && <div style={{ marginTop: 8, fontSize: 12, color: "#7A6A56" }}>선택됨: <b>{selected.label}</b></div>}
-        </div>
-
-        <div style={{ display: "flex", gap: 8, alignItems: "center", flexShrink: 0 }}>
-          <button onClick={onBack} style={{ padding: "9px 13px", borderRadius: 9, border: "1px solid #D4A574", background: "#fff", color: "#A87535", fontWeight: 800, fontSize: 12, cursor: "pointer" }}>
-            이전 단계로
-          </button>
-          <button onClick={onGenerate} disabled={!selectedTemplate} style={{ padding: "10px 15px", borderRadius: 9, border: "none", background: selectedTemplate ? "linear-gradient(135deg, #5A6E52 0%, #4A5E42 100%)" : "#CFC7BA", color: "#fff", fontWeight: 900, fontSize: 12, cursor: selectedTemplate ? "pointer" : "not-allowed", boxShadow: selectedTemplate ? "0 8px 18px rgba(90,110,82,0.22)" : "none" }}>
-            이 템플릿으로 생성
-          </button>
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "#FFFEFB" }}>
+      <div style={{ padding: "28px 24px 18px", borderBottom: "1px solid #EEE7DD", flexShrink: 0 }}>
+        <div style={{ fontSize: 13, color: "#9A672E", fontWeight: 900, letterSpacing: "0.04em", marginBottom: 8 }}>템플릿 목록</div>
+        <div style={{ fontSize: 22, color: "#241F19", fontWeight: 950, letterSpacing: "-0.05em", marginBottom: 6 }}>디자인 선택</div>
+        <div style={{ fontSize: 12.5, color: "#8B8175", lineHeight: 1.55 }}>
+          AI가 설계한 구조를 어떤 스타일로 표현할지 선택하세요.
         </div>
       </div>
 
-      {!selectedTemplate && (
-        <div style={{ padding: "13px 16px", borderRadius: 12, background: "#FFFCF0", border: "1px solid #E8D5BC", color: "#8B7355", fontSize: 13 }}>
-          템플릿을 선택한 뒤 우측 상단의 <b>이 템플릿으로 생성</b> 버튼을 눌러주세요.
-        </div>
-      )}
-
-      <div className="template-gallery-grid">
-        {DESIGN_TEMPLATES.map((template) => {
-          const active = selectedTemplate === template.id;
+      <div style={{ padding: "18px 20px 28px", overflowY: "auto", display: "flex", flexDirection: "column", gap: 18 }}>
+        {orderedCategories.map((category) => {
+          const list = grouped[category] || [];
+          if (!list.length) return null;
           return (
-            <button
-              key={template.id}
-              type="button"
-              onClick={() => onSelectTemplate(template.id)}
-              style={{
-                textAlign: "left",
-                padding: 14,
-                borderRadius: 18,
-                background: active ? "#FFF8F0" : "#FFFFFF",
-                border: active ? "2px solid #A87535" : "1px solid #E3E1DA",
-                cursor: "pointer",
-                transition: "all 0.2s ease",
-                boxShadow: active ? "0 10px 28px rgba(168,117,53,0.16)" : "0 3px 12px rgba(0,0,0,0.04)",
-              }}
-            >
-              <Thumbnail template={template} main={themeColor} accent={accent} />
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginTop: 12, gap: 8 }}>
-                <div>
-                  <div style={{ fontSize: 11, fontWeight: 900, color: "#8B7355", marginBottom: 4 }}>{template.category}</div>
-                  <div style={{ fontSize: 16, fontWeight: 950, color: "#2B2925", letterSpacing: "-0.03em" }}>{template.label}</div>
-                </div>
-                {active && <span style={{ width: 24, height: 24, borderRadius: 999, background: "#5A6E52", color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 900 }}>✓</span>}
+            <section key={category}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                <div style={{ fontSize: 11, fontWeight: 950, color: "#8B7355", letterSpacing: "0.04em" }}>{category}</div>
+                <div style={{ height: 1, background: "#EEE7DD", flex: 1 }} />
               </div>
-              <div style={{ fontSize: 12, color: "#8B8175", lineHeight: 1.45, marginTop: 7, minHeight: 34 }}>{template.desc}</div>
-              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 10 }}>
-                {template.tags?.map((tag, i) => (
-                  <span key={i} style={{ fontSize: 10, padding: "3px 7px", borderRadius: 99, background: active ? "#E8D5BC" : "#F1E9DE", color: active ? "#8B5E2C" : "#8B7355", fontWeight: 700 }}>
-                    {tag}
-                  </span>
-                ))}
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {list.map((template) => {
+                  const active = selectedTemplate === template.id;
+                  return (
+                    <button
+                      key={template.id}
+                      type="button"
+                      onClick={() => onSelectTemplate(template.id)}
+                      style={{
+                        width: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 12,
+                        textAlign: "left",
+                        padding: 12,
+                        borderRadius: 14,
+                        background: active ? "#FFF8F0" : "#FFFFFF",
+                        border: active ? "1.8px solid #B87932" : "1px solid #E7DED3",
+                        boxShadow: active ? "0 10px 22px rgba(168,117,53,0.14)" : "0 3px 10px rgba(47,38,28,0.04)",
+                        cursor: "pointer",
+                        transition: "all .18s ease",
+                      }}
+                    >
+                      <MiniPreview template={template} main={themeColor} accent={accent} />
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                          {active && <span style={{ color: "#A87535", fontWeight: 950 }}>✓</span>}
+                          <span style={{ fontSize: 14.5, fontWeight: 900, color: "#2B2925", letterSpacing: "-0.03em" }}>{template.label}</span>
+                        </div>
+                        <div style={{ fontSize: 11.5, color: "#8B8175", lineHeight: 1.4, whiteSpace: "normal" }}>{template.desc}</div>
+                        <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginTop: 7 }}>
+                          {template.tags.slice(0, 3).map((tag) => (
+                            <span key={tag} style={{ fontSize: 10, padding: "2px 6px", borderRadius: 99, background: active ? "#E8D5BC" : "#F1E9DE", color: active ? "#8B5E2C" : "#8B7355", fontWeight: 700 }}>
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
-            </button>
+            </section>
           );
         })}
       </div>
