@@ -791,45 +791,105 @@ function translateDraft(draft, languageId) {
       hero_headline: "Simple, Clear, and Easy to Choose",
       hero_subcopy: "Discover trusted health solutions with verified ingredients and transparent information.",
       sections: [
-        { title: "Why Choose This Product", body: "Trusted formula with verified ingredients. We ensure quality and safety for every customer." },
-        { title: "Key Benefits", body: "Scientifically proven benefits with transparent information. Choose with confidence." },
-        { title: "Quality Assurance", body: "Every product meets the highest quality standards. We stand behind our commitment to excellence." },
+        { 
+          title: "Why Choose This Product", 
+          body: "Trusted formula with verified ingredients. We ensure quality and safety for every customer.",
+          items: ["Verified ingredients", "Quality guaranteed", "Transparent information", "Customer trust"]
+        },
+        { 
+          title: "Key Benefits", 
+          body: "Scientifically proven benefits with transparent information. Choose with confidence.",
+          items: ["Proven effectiveness", "Clear benefits", "Safe choice", "Trusted solution"]
+        },
+        { 
+          title: "Quality Assurance", 
+          body: "Every product meets the highest quality standards. We stand behind our commitment to excellence.",
+          items: ["Certified quality", "Tested formula", "Quality commitment", "Excellence standard"]
+        },
       ],
     },
     ja: {
       hero_headline: "シンプルで、明確で、選びやすい",
       hero_subcopy: "検証された成分と透明な情報を備えた信頼できる健康ソリューションをご発見ください。",
       sections: [
-        { title: "なぜこの製品を選ぶのか", body: "検証された成分を含む信頼できる処方。すべての顧客に品質と安全性を保証します。" },
-        { title: "主な利点", body: "科学的に証明された利点と透明な情報。自信を持って選択してください。" },
-        { title: "品質保証", body: "すべての製品が最高の品質基準を満たしています。私たちは卓越性へのコミットメントを保証します。" },
+        { 
+          title: "なぜこの製品を選ぶのか", 
+          body: "検証された成分を含む信頼できる処方。すべての顧客に品質と安全性を保証します。",
+          items: ["検証済み成分", "品質保証", "透明な情報", "顧客信頼"]
+        },
+        { 
+          title: "主な利点", 
+          body: "科学的に証明された利点と透明な情報。自信を持って選択してください。",
+          items: ["実証済み効果", "明確な利点", "安全な選択", "信頼できる解決策"]
+        },
+        { 
+          title: "品質保証", 
+          body: "すべての製品が最高の品質基準を満たしています。私たちは卓越性へのコミットメントを保証します。",
+          items: ["認定品質", "テスト済み処方", "品質へのコミットメント", "優秀性基準"]
+        },
       ],
     },
     "zh-cn": {
       hero_headline: "简单、清晰、容易选择",
       hero_subcopy: "发现具有经过验证的成分和透明信息的可信健康解决方案。",
       sections: [
-        { title: "为什么选择此产品", body: "具有经过验证的成分的值得信赖的配方。我们为每位客户确保品质和安全。" },
-        { title: "关键益处", body: "科学证明的益处和透明信息。放心选择。" },
-        { title: "质量保证", body: "所有产品均符合最高质量标准。我们为卓越承诺而自豪。" },
+        { 
+          title: "为什么选择此产品", 
+          body: "具有经过验证的成分的值得信赖的配方。我们为每位客户确保品质和安全。",
+          items: ["验证成分", "品质保证", "透明信息", "客户信任"]
+        },
+        { 
+          title: "关键益处", 
+          body: "科学证明的益处和透明信息。放心选择。",
+          items: ["实证效果", "明确益处", "安全选择", "可信方案"]
+        },
+        { 
+          title: "质量保证", 
+          body: "所有产品均符合最高质量标准。我们为卓越承诺而自豪。",
+          items: ["认证质量", "测试配方", "质量承诺", "卓越标准"]
+        },
       ],
     },
     "zh-tw": {
       hero_headline: "簡單、清晰、容易選擇",
       hero_subcopy: "發現具有經過驗證的成分和透明信息的可信健康解決方案。",
       sections: [
-        { title: "為什麼選擇此產品", body: "具有經過驗證的成分的值得信賴的配方。我們為每位客戶確保品質和安全。" },
-        { title: "關鍵益處", body: "科學證明的益處和透明信息。放心選擇。" },
-        { title: "質量保證", body: "所有產品均符合最高質量標準。我們為卓越承諾而自豪。" },
+        { 
+          title: "為什麼選擇此產品", 
+          body: "具有經過驗證的成分的值得信賴的配方。我們為每位客戶確保品質和安全。",
+          items: ["驗證成分", "品質保證", "透明信息", "客戶信任"]
+        },
+        { 
+          title: "關鍵益處", 
+          body: "科學證明的益處和透明信息。放心選擇。",
+          items: ["實證效果", "明確益處", "安全選擇", "可信方案"]
+        },
+        { 
+          title: "質量保證", 
+          body: "所有產品均符合最高質量標準。我們為卓越承諾而自豪。",
+          items: ["認證質量", "測試配方", "質量承諾", "卓越標準"]
+        },
       ],
     },
     th: {
       hero_headline: "ง่าย ชัดเจน และเลือกง่าย",
       hero_subcopy: "ค้นพบสารองค์ประกอบที่ได้รับการตรวจสอบและข้อมูลที่โปร่งใสด้วยโซลูชั่นสุขภาพที่เชื่อถือได้",
       sections: [
-        { title: "ทำไมถึงเลือกผลิตภัณฑ์นี้", body: "สูตรที่น่าเชื่อถือพร้อมส่วนประกอบที่ได้รับการตรวจสอบ เรารับประกันคุณภาพและความปลอดภัยสำหรับลูกค้าทุกคน" },
-        { title: "ประโยชน์หลัก", body: "ประโยชน์ที่พิสูจน์ทางวิทยาศาสตร์และข้อมูลที่โปร่งใส เลือกด้วยความมั่นใจ" },
-        { title: "การรับประกันคุณภาพ", body: "ผลิตภัณฑ์ทั้งหมดตรงตามมาตรฐานคุณภาพสูงสุด เรายืนยันความมุ่งมั่นต่อความเป็นเลิศ" },
+        { 
+          title: "ทำไมถึงเลือกผลิตภัณฑ์นี้", 
+          body: "สูตรที่น่าเชื่อถือพร้อมส่วนประกอบที่ได้รับการตรวจสอบ เรารับประกันคุณภาพและความปลอดภัยสำหรับลูกค้าทุกคน",
+          items: ["ส่วนประกอบที่ตรวจสอบแล้ว", "รับประกันคุณภาพ", "ข้อมูลที่โปร่งใส", "ความเชื่อใจของลูกค้า"]
+        },
+        { 
+          title: "ประโยชน์หลัก", 
+          body: "ประโยชน์ที่พิสูจน์ทางวิทยาศาสตร์และข้อมูลที่โปร่งใส เลือกด้วยความมั่นใจ",
+          items: ["ประสิทธิภาพที่พิสูจน์", "ประโยชน์ที่ชัดเจน", "การเลือกที่ปลอดภัย", "วิธีแก้ปัญหาที่น่าเชื่อถือ"]
+        },
+        { 
+          title: "การรับประกันคุณภาพ", 
+          body: "ผลิตภัณฑ์ทั้งหมดตรงตามมาตรฐานคุณภาพสูงสุด เรายืนยันความมุ่งมั่นต่อความเป็นเลิศ",
+          items: ["คุณภาพที่ได้รับการรับรอง", "สูตรทดสอบแล้ว", "ความมุ่งมั่นต่อคุณภาพ", "มาตรฐานความเป็นเลิศ"]
+        },
       ],
     },
   };
@@ -844,7 +904,7 @@ function translateDraft(draft, languageId) {
       ...s,
       title: translation.sections?.[idx]?.title || s.title,
       body: translation.sections?.[idx]?.body || s.body,
-      items: s.items, // items는 그대로 유지
+      items: translation.sections?.[idx]?.items || s.items, // 번역된 items 적용
     })) || [],
   };
 }
@@ -2465,7 +2525,7 @@ ${fontLink}
               }}
             >
               <div style={{ fontSize: 12, fontWeight: 700, color: "#2B2925", marginBottom: 6 }}>
-                🌍 번역할 언어 선택 (다중선택 가능)
+                🌍 번역할 언어 선택
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {LANGUAGES.map((lang) => (
